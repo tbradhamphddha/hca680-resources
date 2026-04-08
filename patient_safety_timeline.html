@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Safety Timeline: HCA 680</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.5;color:#1a1a1a;background:#f7f5f0;padding:1.5rem 1rem;max-width:900px;margin:0 auto;}
+h1{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.7rem;letter-spacing:-0.02em;margin-bottom:0.15rem;}
+.sub{font-size:0.85rem;color:#5a5a56;margin-bottom:1.5rem;max-width:680px;}
+.badge{display:inline-block;font-size:0.72rem;color:#8a8a84;padding:3px 9px;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:5px;margin-bottom:1.25rem;letter-spacing:0.02em;}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:2rem;font-size:0.8rem;color:#5a5a56;}
+.legend span{display:flex;align-items:center;gap:5px;}
+.ldot{width:14px;height:14px;border-radius:3px;flex-shrink:0;}
+.era{margin-bottom:2.5rem;}
+.era-label{font-family:Georgia,serif;font-weight:700;font-size:1.1rem;padding:6px 14px;border-radius:6px;display:inline-block;margin-bottom:1.25rem;}
+.era-desc{font-size:0.82rem;color:#5a5a56;margin-bottom:1.25rem;max-width:640px;margin-top:-0.5rem;}
+.tl{position:relative;padding-left:28px;}
+.tl::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:rgba(0,0,0,0.1);border-radius:1px;}
+.ev{position:relative;margin-bottom:1.25rem;cursor:pointer;}
+.ev::before{content:'';position:absolute;left:-23px;top:7px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;z-index:1;}
+.ev.fed::before{background:#2c5f9e;}
+.ev.resp::before{background:#1a8c68;}
+.ev.acc::before{background:#c4501e;}
+.ev.ind::before{background:#7f77dd;}
+.ev-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.ev-year{font-family:Georgia,serif;font-weight:700;font-size:0.95rem;min-width:36px;}
+.ev-title{font-weight:600;font-size:0.88rem;}
+.ev-tag{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.06em;padding:2px 7px;border-radius:3px;font-weight:600;white-space:nowrap;}
+.ev.fed .ev-tag{background:#e6f1fb;color:#185fa5;}
+.ev.resp .ev-tag{background:#e1f5ee;color:#0f6e56;}
+.ev.acc .ev-tag{background:#faece7;color:#993c1d;}
+.ev.ind .ev-tag{background:#eeedfe;color:#534ab7;}
+.ev-detail{font-size:0.82rem;color:#5a5a56;line-height:1.6;max-height:0;overflow:hidden;transition:max-height 0.35s ease,margin 0.35s ease;margin-top:0;}
+.ev.open .ev-detail{max-height:400px;margin-top:6px;}
+.ev-expand{font-size:0.72rem;color:#8a8a84;margin-top:2px;}
+.ev:hover .ev-title{color:#2c5f9e;}
+.ev.open .ev-expand{display:none;}
+.cs{background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:9px;padding:1.1rem 1.35rem;margin-top:2rem;margin-bottom:0.85rem;}
+.cs h2{font-family:Georgia,serif;font-weight:700;font-size:1.05rem;margin-bottom:0.4rem;}
+.cs p{font-size:0.85rem;color:#5a5a56;line-height:1.65;}
+.fn{font-size:0.67rem;color:#8a8a84;margin-top:1.5rem;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="badge">HCA 680 &middot; Week 1 &middot; Patient safety ecosystem</div>
+
+<h1>Federal legislation &amp; the patient safety movement</h1>
+<p class="sub">A timeline of how U.S. policy, industry action, and the safety movement have shaped and responded to each other over four decades. Click any event to expand details.</p>
+
+<div class="legend">
+<span><span class="ldot" style="background:#2c5f9e;"></span>Federal legislation &amp; regulation</span>
+<span><span class="ldot" style="background:#1a8c68;"></span>Safety movement response</span>
+<span><span class="ldot" style="background:#c4501e;"></span>Accreditation &amp; standards</span>
+<span><span class="ldot" style="background:#7f77dd;"></span>Industry &amp; research milestones</span>
+</div>
+
+<!-- ERA 1 -->
+<div class="era">
+<div class="era-label" style="background:#e6f1fb;color:#185fa5;">Era 1: The wake-up call (1984 to 2001)</div>
+<p class="era-desc">Before patient safety had a name, landmark research and nursing home scandals revealed the scale of harm. Then a single report changed everything.</p>
+<div class="tl">
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">1984</span><span class="ev-title">Harvard Medical Practice Study</span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">Landmark study of 30,000+ hospitalizations in New York found adverse events in 3.7% of admissions, with 27.6% due to negligence. Published in 1991, this became the empirical foundation for To Err Is Human. Led by Lucian Leape, Troyen Brennan, and others.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">1987</span><span class="ev-title">Nursing Home Reform Act (OBRA '87)</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">Following an IOM investigation into widespread nursing home abuse and neglect, Congress enacted the first major reform of long-term care standards since the creation of Medicare and Medicaid in 1965. OBRA '87 established minimum care standards and a Residents' Bill of Rights, prohibited unnecessary physical and chemical restraints, required comprehensive resident assessments (Minimum Data Set), and standardized the survey and enforcement system. Physical restraint use dropped from 37% to 28% in the first years. This legislation established the modern framework for nursing home regulation and remains the foundation for long-term care oversight today.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev acc">
+<div class="ev-head"><span class="ev-year">1991</span><span class="ev-title">NCQA established; HEDIS measurement begins</span><span class="ev-tag">Standards</span></div>
+<div class="ev-detail">The National Committee for Quality Assurance (NCQA) began developing the Healthcare Effectiveness Data and Information Set (HEDIS), originally called the HMO Employer Data and Information Set (Version 1.0, 1991). HEDIS created the first standardized performance measures for health plans, covering effectiveness of care, access, and patient experience. Today, more than 235 million people are enrolled in plans that report HEDIS results across 90+ measures in 6 domains. Over 90% of U.S. health plans use HEDIS, making it one of healthcare's most widely used performance improvement tools. CMS requires Medicare Advantage HMOs to submit HEDIS data.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">1994</span><span class="ev-title">Lucian Leape publishes "Error in Medicine"</span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">Published in JAMA, Leape argued that medicine should adopt the systems-based error prevention approaches used in aviation and other high-risk industries. This was a radical reframing away from individual blame toward system design.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">1997</span><span class="ev-title">National Patient Safety Foundation (NPSF) established</span><span class="ev-tag">Industry</span></div>
+<div class="ev-detail">Grew out of a 1996 conference on medical error organized by the American Association for the Advancement of Science, the American Medical Association (AMA), and the Annenberg Center for Health Sciences at Eisenhower Medical Center, funded by the Robert Wood Johnson Foundation. Martin Hatlie, the AMA's legal counsel, was the leading force behind the foundation, modeled on the Anesthesia Patient Safety Foundation (APSF) founded by Jeep Pierce and Jeff Cooper. AMA Board Chair Nancy Dickey championed the initiative through seven months of AMA Board deliberations. Key founding participants included Richard Cook (University of Chicago), Jeffrey Cooper (Massachusetts General Hospital), David Gaba (Stanford), David Woods (Ohio State University), and Lucian Leape (Harvard School of Public Health). Initial funding came from the AMA ($1M over 3 years), 3M ($1M), CNA HealthPro ($1M), and Schering-Plough. NPSF became the first broad-based organization with a specific focus on patient safety. Diane Pinakiewicz, a founder and board member, later became president when NPSF separated from the AMA in 2004. NPSF merged with IHI in 2017.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">1999</span><span class="ev-title">IOM: <em>To Err Is Human</em></span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">The Institute of Medicine reported 44,000 to 98,000 Americans die annually from preventable medical errors in hospitals, more than car accidents, breast cancer, or AIDS. Called for a 50% reduction in errors within 5 years and proposed a national patient safety infrastructure. This single report launched the modern patient safety movement.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">1999</span><span class="ev-title">Healthcare Research and Quality Act</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">Signed into law just weeks after To Err Is Human. Designated AHRQ as the federal lead agency for patient safety research and charged it with identifying causes of preventable errors, developing strategies to reduce them, and disseminating effective solutions.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2000</span><span class="ev-title">AHRQ: <em>Doing What Counts for Patient Safety</em></span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">Released just 60 days after To Err Is Human, this AHRQ-led federal task force report outlined specific strategies to curb medical errors, including developing Patient Safety Indicators and funding safety research.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2001</span><span class="ev-title">IOM: <em>Crossing the Quality Chasm</em></span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">The IOM's follow-up report broadened the conversation beyond errors to the full quality of care, establishing six aims for improvement: safe, effective, patient-centered, timely, efficient, and equitable. This framework shaped quality and safety work for the next two decades.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+</div>
+</div>
+
+<!-- ERA 2 -->
+<div class="era">
+<div class="era-label" style="background:#e1f5ee;color:#0f6e56;">Era 2: Building infrastructure (2002 to 2009)</div>
+<p class="era-desc">The movement shifted from awareness to action, creating reporting systems, safety goals, campaigns, and federal protections for safety information.</p>
+<div class="tl">
+
+<div class="ev acc">
+<div class="ev-head"><span class="ev-year">2002</span><span class="ev-title">NQF: Serious Reportable Events ("Never Events")</span><span class="ev-tag">Standards</span></div>
+<div class="ev-detail">The National Quality Forum published its first list of 27 serious reportable events: egregious errors that should never occur (wrong-site surgery, retained foreign objects, patient death from falls). This became the foundation for CMS non-payment policies. Updated in 2006, 2011, and most recently listing 29 events.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev acc">
+<div class="ev-head"><span class="ev-year">2003</span><span class="ev-title">Joint Commission: First National Patient Safety Goals</span><span class="ev-tag">Accreditation</span></div>
+<div class="ev-detail">The Joint Commission leveraged its accreditation authority to identify required steps for preventing medical errors. The NPSGs covered patient identification, communication, medication safety, infection prevention, and fall reduction. Updated annually through 2025, then replaced by National Performance Goals in 2026.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2004</span><span class="ev-title">IHI: 100,000 Lives Campaign</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">Led by Donald Berwick, IHI challenged U.S. hospitals to adopt six evidence-based interventions to prevent avoidable deaths. Over 3,000 hospitals participated. IHI estimated the campaign saved over 122,000 lives in 18 months. Followed by the 5 Million Lives Campaign (2006 to 2008) expanding to 12 interventions.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2005</span><span class="ev-title">Patient Safety and Quality Improvement Act (PSQIA)</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">Created Patient Safety Organizations (PSOs) and provided federal privilege and confidentiality protections for voluntarily reported patient safety information ("patient safety work product"). This was critical infrastructure: providers could now report and analyze errors without fear of increased liability, enabling honest safety culture. AHRQ oversees PSO listing; OCR enforces confidentiality provisions.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2006</span><span class="ev-title">WHO: World Alliance for Patient Safety and Surgical Safety Checklist development</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">WHO launched a global effort culminating in the Surgical Safety Checklist (published 2008), based on Atul Gawande's research. Studies showed the checklist reduced surgical deaths by 47% and complications by 36%. Adopted by thousands of hospitals worldwide.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2008</span><span class="ev-title">CMS: Hospital-Acquired Conditions non-payment policy</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">CMS stopped paying hospitals for certain preventable conditions acquired during hospitalization (CAUTI, CLABSI, falls, wrong-site surgery, etc.). First time the federal government used payment policy as a direct lever for patient safety. Based on the NQF "Never Events" framework. Safety was no longer just a moral imperative but a financial one.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev acc">
+<div class="ev-head"><span class="ev-year">2008</span><span class="ev-title">DNV Healthcare receives CMS deeming authority</span><span class="ev-tag">Accreditation</span></div>
+<div class="ev-detail">CMS granted deeming authority to DNV, the first new hospital accreditor since HFAP (1945). DNV's approach integrated ISO 9001 quality management standards with Medicare CoPs, offering hospitals an alternative to The Joint Commission that emphasized continuous quality improvement and annual surveys.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2009</span><span class="ev-title">HITECH Act (part of ARRA)</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">The Health Information Technology for Economic and Clinical Health Act incentivized adoption of electronic health records with $27 billion in incentive payments. EHR adoption accelerated from roughly 10% to over 95% of hospitals. Key safety features included computerized physician order entry (CPOE), clinical decision support, and barcode medication administration, all technologies proven to reduce medication errors.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+</div>
+</div>
+
+<!-- ERA 3 -->
+<div class="era">
+<div class="era-label" style="background:#faece7;color:#993c1d;">Era 3: Accountability and value (2010 to 2019)</div>
+<p class="era-desc">The Affordable Care Act embedded safety into payment policy. The movement grappled with slow progress and expanded the scope of safety beyond the hospital to ambulatory, behavioral health, and long-term care settings.</p>
+<div class="tl">
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2010</span><span class="ev-title">Affordable Care Act: patient safety provisions</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">The ACA created multiple safety levers: the Hospital-Acquired Condition Reduction Program (1% payment penalty for worst quartile), the Hospital Value-Based Purchasing Program, the Hospital Readmissions Reduction Program, and the Partnership for Patients initiative. Also required QHP issuers to contract with hospitals using patient safety evaluation systems. The Nursing Home Transparency and Improvement Act (within the ACA) required public transparency of nursing home ownership, quality, and staffing and established Nursing Home Compare (now Care Compare). Safety became directly linked to reimbursement across settings.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2011</span><span class="ev-title">Partnership for Patients launched</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">A CMS-led public-private partnership with goals of reducing hospital-acquired conditions by 40% and readmissions by 20%. Over 3,700 hospitals participated through Hospital Engagement Networks. By 2014, HHS estimated 50,000 fewer patient deaths and $12 billion in savings. Created the AHRQ National Scorecard on Hospital-Acquired Conditions.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2012</span><span class="ev-title">ABIM Foundation: Choosing Wisely campaign launched</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">The American Board of Internal Medicine Foundation launched this campaign to promote conversations between clinicians and patients about avoiding unnecessary tests, treatments, and procedures. Nine specialty societies (representing 375,000 clinicians) initially offered 45 examples of commonly overused services lacking strong evidence. By 2023, more than 80 specialty societies had contributed over 700 recommendations. The campaign spread to 20+ countries and generated nearly 300 journal articles and over 10,000 media articles. Consumer Reports partnered to create patient-facing resources. Choosing Wisely addressed the patient safety dimension of overuse: up to 30% of U.S. healthcare spending goes toward unnecessary care that may cause harm rather than benefit.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2013</span><span class="ev-title">James (2013): Preventable deaths estimated at 210,000 to 440,000 per year</span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">John T. James published in the Journal of Patient Safety that the original IOM estimates were significantly low. Using updated methodology, he estimated 210,000 to 440,000 patients per year experience some type of preventable harm contributing to their death. This reignited urgency and debate about measurement methodology.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2014</span><span class="ev-title">CMS final rule: Behavioral health and rehabilitation safety standards updated</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">CMS updated Conditions of Participation for psychiatric hospitals (42 CFR 482.60-62) and finalized requirements for inpatient psychiatric facilities under the Inpatient Psychiatric Facility Quality Reporting (IPFQR) Program, including measures for hours of physical restraint use, hours of seclusion, patients discharged on multiple antipsychotic medications, screening for metabolic disorders, and transition records. Rehabilitation facilities also received updated CoPs addressing patient safety in specialized treatment environments.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2014</span><span class="ev-title">HHS: HACs reduced 17%, saving 87,000 lives (2010 to 2014)</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">The AHRQ National Scorecard showed overall hospital-acquired conditions dropped 17%, resulting in 2.1 million fewer harms, $20 billion in savings, and an estimated 87,000 lives saved. Demonstrated that large-scale national efforts could produce measurable results, though critics noted much of the progress came from targeted interventions (CLABSI, CAUTI) rather than systemic change.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2015</span><span class="ev-title">NAM: <em>Improving Diagnosis in Health Care</em></span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">The National Academies of Sciences, Engineering, and Medicine expanded the safety conversation to include diagnostic errors, estimated to affect roughly 5% of U.S. adults in outpatient settings annually. This broadened patient safety beyond the hospital and beyond errors of commission to include errors of omission and cognition.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2015</span><span class="ev-title">NPSF: <em>Free from Harm</em>, 15-year progress report</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">The National Patient Safety Foundation assessed 15 years since To Err Is Human and concluded that improvements had occurred at a "much slower rate than initially expected." Recommended eight priorities including total systems safety, culture of safety, patient and family engagement, and workforce safety. Set the stage for the next wave of safety reform.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2016</span><span class="ev-title">CMS: Updated Nursing Home Requirements of Participation</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">The most comprehensive revision to nursing home regulations since OBRA '87. Updates included requirements for a compliance and ethics program, antibiotic stewardship, updated infection control standards, expanded resident rights, discharge planning improvements, and new requirements for quality assurance and performance improvement (QAPI) programs in all long-term care facilities. Also extended protections for residents in behavioral health and dementia care units within nursing homes.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2016</span><span class="ev-title">21st Century Cures Act</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">Addressed patient safety across multiple care settings. Key provisions included combating the opioid crisis (with implications for behavioral health safety), advancing electronic health record interoperability (reducing information gaps during care transitions), establishing the Helping Families in Mental Health Crisis provisions, and expanding telehealth access. The information blocking provisions aimed to ensure patients could access their own health data across ambulatory, hospital, and behavioral health settings.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2017</span><span class="ev-title">NPSF merges with IHI</span><span class="ev-tag">Industry</span></div>
+<div class="ev-detail">The National Patient Safety Foundation merged with the Institute for Healthcare Improvement, consolidating the two leading safety and quality organizations. Signaled that safety and quality improvement were increasingly viewed as inseparable disciplines. The Lucian Leape Institute continued within IHI.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2018</span><span class="ev-title">National Steering Committee for Patient Safety convened</span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">IHI convened 27 organizations to develop a comprehensive national action plan. This multi-stakeholder coalition included patient advocates, provider organizations, federal agencies, and safety experts, representing the broadest collaborative in patient safety history. Their work culminated in the Safer Together plan (2020).</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+</div>
+</div>
+
+<!-- ERA 4 -->
+<div class="era">
+<div class="era-label" style="background:#eeedfe;color:#534ab7;">Era 4: Structural transformation (2020 to present)</div>
+<p class="era-desc">COVID-19 reversed years of progress. The response: a shift from measuring outcomes to requiring safety infrastructure, with unprecedented federal mandates on culture, leadership, and transparency.</p>
+<div class="tl">
+
+<div class="ev resp">
+<div class="ev-head"><span class="ev-year">2020</span><span class="ev-title">IHI/NSC: <em>Safer Together: National Action Plan to Advance Patient Safety</em></span><span class="ev-tag">Response</span></div>
+<div class="ev-detail">The 27-member National Steering Committee published a comprehensive action plan with 17 recommendations across four foundational areas: culture, leadership, and governance; patient and family engagement; workforce safety; and learning systems. This plan directly informed the CMS Patient Safety Structural Measure: each PSSM domain maps to a Safer Together recommendation.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2020-22</span><span class="ev-title">COVID-19 reverses safety gains</span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">The pandemic caused significant declines in hospital safety metrics: CLABSI rates increased 28%, CAUTI rates increased 19%, MRSA bacteremia increased 14%, and C. diff increased 4% (2020 vs. 2019 baseline). Nursing homes experienced devastating outbreaks. Demonstrated that underlying safety systems were not robust enough to withstand crisis conditions, exactly the vulnerability that HRO principles are designed to address.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2021</span><span class="ev-title">WHO: Global Patient Safety Action Plan 2021 to 2030</span><span class="ev-tag">Industry</span></div>
+<div class="ev-detail">WHO adopted the first global framework for patient safety, with the vision of "a world in which no one is harmed in health care." Set strategic objectives around policies, systems, clinical processes, and patient and family engagement. Endorsed by all WHO member states.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2022</span><span class="ev-title">NAM: <em>The National Imperative to Improve Nursing Home Quality</em></span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">The National Academies issued a comprehensive report calling for fundamental reform of nursing home care, regulation, and financing. Documented persistent quality problems across long-term care despite 30+ years of OBRA '87 regulation. Recommended workforce investment, transparency, accountability, and a shift from minimum-standard compliance to continuous quality improvement in long-term care settings.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev ind">
+<div class="ev-head"><span class="ev-year">2022</span><span class="ev-title">PCAST: Report on patient safety to the President</span><span class="ev-tag">Research</span></div>
+<div class="ev-detail">The President's Council of Advisors on Science and Technology issued a report calling for renewed federal commitment to patient safety, noting that progress had stalled and COVID-19 had exposed fundamental weaknesses. Recommended structural measures, leadership accountability, and patient engagement, directly influencing the CMS PSSM.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2023</span><span class="ev-title">CMS: Minimum staffing standards for nursing homes proposed</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">CMS proposed the first-ever federal minimum staffing requirements for nursing homes, including a minimum of 0.55 registered nurse hours per resident day, 2.45 nurse aide hours per resident day, and a requirement for a registered nurse on-site 24 hours a day, 7 days a week. Linked directly to post-COVID evidence that inadequate staffing was the primary driver of poor outcomes in long-term care. Finalized in 2024 with phased implementation.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2024</span><span class="ev-title">CMS: Patient Safety Structural Measure (PSSM) finalized</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">CMS adopted the PSSM in the FY 2025 IPPS final rule: 25 attestation statements across five domains (leadership commitment, strategic planning, culture of safety, accountability and transparency, patient and family engagement). First time CMS mandated reporting on safety infrastructure and culture rather than just outcomes. Hospitals report starting CY 2025; scores public on Care Compare fall 2026; non-reporters face reduced Medicare payments in FY 2027.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2025</span><span class="ev-title">CMS: World Patient Safety Day commitment and new eCQMs</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">On September 17, 2025, CMS publicly committed to raising the bar for patient safety with new initiatives including AI-supported digital quality measures to identify preventable harms earlier. CMS also expanded the Hospital Harm eCQM set, adding measures for falls with injury, postoperative respiratory failure, and hypoglycemia/hyperglycemia. By 2026, seven specific Hospital Harm eCQMs are poised to replace the traditional Patient Safety Indicator (PSI) claims measures, reflecting a shift toward electronic clinical quality measurement across hospital, ambulatory, and outpatient settings.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev acc">
+<div class="ev-head"><span class="ev-year">2026</span><span class="ev-title">Joint Commission: NPSGs replaced by National Performance Goals + Accreditation 360</span><span class="ev-tag">Accreditation</span></div>
+<div class="ev-detail">The Joint Commission replaced 23 years of National Patient Safety Goals with 14 National Performance Goals, shifting from task-based compliance to measurable outcomes. Introduced Accreditation 360 (continuous readiness vs. periodic surveys), SAFEST (spotlighting high-performing hospitals), and NPG 12 (staffing as a patient safety goal). The most significant accreditation overhaul since 1965.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+<div class="ev fed">
+<div class="ev-head"><span class="ev-year">2026</span><span class="ev-title">PSSM scores published on CMS Care Compare</span><span class="ev-tag">Federal</span></div>
+<div class="ev-detail">Beginning fall 2026, every acute care hospital's Patient Safety Structural Measure score (0 to 5 points) will be publicly visible on Medicare.gov. For the first time, patients and families can see whether a hospital's leadership, culture, and systems prioritize safety, not just whether outcomes meet benchmarks. Hospitals that failed to report face reduced Medicare payments in FY 2027.</div>
+<div class="ev-expand">Click to expand ↓</div>
+</div>
+
+</div>
+</div>
+
+<div class="cs">
+<h2>Key patterns for discussion</h2>
+<p>1. <strong>Crisis leads to legislation leads to infrastructure:</strong> Each era begins with a catalyzing event (research, pandemic, report) that generates political will for action, which then creates infrastructure for the safety movement to build upon.<br><br>
+2. <strong>Voluntary to mandatory:</strong> Practices that started as voluntary best practices (safety reporting, just culture, CRP, patient engagement) are progressively becoming regulatory requirements (PSQIA, PSSM, NPGs).<br><br>
+3. <strong>Outcomes to structure:</strong> The regulatory focus has shifted from measuring what went wrong (HAC rates, PSI scores, mortality) to requiring that the right systems exist to prevent harm (PSSM, Accreditation 360).<br><br>
+4. <strong>Individual to system:</strong> The conceptual frame has evolved from individual blame (malpractice era) to systems thinking (To Err Is Human) to organizational culture and leadership accountability (PSSM, NPG 2).<br><br>
+5. <strong>Hospital to continuum:</strong> Safety regulation began in hospitals, expanded to nursing homes (OBRA '87), and now increasingly addresses ambulatory care (diagnostic errors, eCQMs), behavioral health (IPFQR, 21st Century Cures), long-term care (minimum staffing), and care transitions.<br><br>
+6. <strong>Persistent gap:</strong> Despite 25+ years of effort, preventable harm remains stubbornly high. COVID-19 demonstrated that safety gains were fragile, raising the question of whether structural mandates like the PSSM can create the resilience that voluntary efforts could not.</p>
+</div>
+
+<div class="cs">
+<h2>Discussion questions</h2>
+<p>1. Why did it take from 1999 (To Err Is Human) to 2024 (PSSM) for the federal government to require hospitals to demonstrate safety infrastructure rather than just measure outcomes?<br><br>
+2. The PSQIA (2005) created confidentiality protections to encourage honest reporting. The PSSM (2024) requires transparency and public reporting of safety metrics. How do you reconcile these two approaches?<br><br>
+3. COVID-19 reversed years of HAC reduction progress. What does this tell us about the difference between high reliability and ordinary safety improvement?<br><br>
+4. If you were a hospital CEO in 2026, which of the developments on this timeline would most influence how you allocate resources to patient safety? Why?<br><br>
+5. Compare the regulatory trajectory for hospitals with that for nursing homes and behavioral health settings. Where are the gaps?</p>
+</div>
+
+<p class="fn">Sources: IOM/NAM reports (1999, 2001, 2015, 2022); AHRQ (2000, 2010, 2020); PSQIA (Pub. L. 109-41, 2005); ACA (Pub. L. 111-148, 2010); HITECH Act (Pub. L. 111-5, 2009); 21st Century Cures Act (Pub. L. 114-255, 2016); OBRA '87 (Pub. L. 100-203, 1987); CMS IPPS Final Rules (2008, 2024); CMS Nursing Home Final Rules (2016, 2024); Joint Commission (2003, 2026); ABIM Foundation/Choosing Wisely (2012); NCQA/HEDIS; IHI/National Steering Committee (2020); PCAST (2022); WHO (2006, 2021); CMS CCSQ Strategic Roadmap (2025); AAMC (2019); Health Affairs (2019); PMC/NCBI. Created for HCA 680: Integrity of Care, Patient Safety and Risk, Edgewood University MHA Program.</p>
+
+<script>
+document.querySelectorAll('.ev').forEach(function(el){
+  el.addEventListener('click',function(){
+    var wasOpen = this.classList.contains('open');
+    document.querySelectorAll('.ev.open').forEach(function(e){e.classList.remove('open');});
+    if(!wasOpen) this.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
