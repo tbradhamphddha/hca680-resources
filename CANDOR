@@ -7,19 +7,35 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
+  /* ══════════════════════════════════════════════
+     EDGEWOOD UNIVERSITY BRAND COLORS
+     Source: Edgewood University Color Guide
+     ══════════════════════════════════════════════ */
   :root {
-    --navy: #1a3a5c;
-    --navy-light: #2a5a8c;
-    --teal: #1a8a7d;
-    --teal-light: #e6f5f3;
-    --warm-bg: #faf8f5;
-    --cream: #f5f0e8;
-    --text: #2d2d2d;
-    --text-muted: #5a5a5a;
-    --accent-gold: #c8963e;
-    --accent-red: #b8433e;
-    --border: #ddd5c8;
-    --white: #ffffff;
+    /* Primary */
+    --eu-red: #BB0000;
+    --eu-black: #000000;
+    --eu-white: #FFFFFF;
+
+    /* Secondary */
+    --eu-gold: #C4B06A;
+    --eu-slate-blue: #5794AD;
+    --eu-dark-gray: #6D6E71;
+    --eu-light-gray: #C2C4C6;
+
+    /* Accent */
+    --eu-dark-gold: #C8932B;
+    --eu-dark-web-gray: #58595B;
+    --eu-warm-web-gray: #F0EEEB;
+
+    /* Derived / functional */
+    --eu-red-dark: #960000;
+    --eu-red-light: #fdf2f2;
+    --eu-gold-light: #f9f6ee;
+    --eu-slate-blue-light: #eef5f8;
+    --text-primary: #2d2d2d;
+    --text-secondary: var(--eu-dark-web-gray);
+    --border: #d8d5d0;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
     --radius: 8px;
@@ -29,8 +45,8 @@
 
   body {
     font-family: 'Source Sans Pro', 'Segoe UI', sans-serif;
-    color: var(--text);
-    background: var(--warm-bg);
+    color: var(--text-primary);
+    background: var(--eu-warm-web-gray);
     line-height: 1.7;
     font-size: 16px;
   }
@@ -43,8 +59,8 @@
 
   /* ── Header ── */
   .page-header {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    color: var(--white);
+    background: var(--eu-black);
+    color: var(--eu-white);
     padding: 40px 36px 32px;
     border-radius: var(--radius) var(--radius) 0 0;
     position: relative;
@@ -54,14 +70,14 @@
     content: '';
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--teal), var(--accent-gold));
+    height: 5px;
+    background: var(--eu-red);
   }
   .page-header .week-label {
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 2.5px;
-    opacity: 0.75;
+    color: var(--eu-gold);
     margin-bottom: 8px;
     font-weight: 600;
   }
@@ -74,13 +90,14 @@
   }
   .page-header .subtitle {
     font-size: 17px;
-    opacity: 0.85;
+    opacity: 0.8;
     font-style: italic;
+    color: var(--eu-light-gray);
   }
 
   /* ── Main Content Area ── */
   .content-body {
-    background: var(--white);
+    background: var(--eu-white);
     border-left: 1px solid var(--border);
     border-right: 1px solid var(--border);
     padding: 36px;
@@ -90,10 +107,10 @@
   h2 {
     font-family: 'Merriweather', Georgia, serif;
     font-size: 22px;
-    color: var(--navy);
+    color: var(--eu-black);
     margin: 36px 0 16px;
     padding-bottom: 8px;
-    border-bottom: 2px solid var(--teal-light);
+    border-bottom: 3px solid var(--eu-red);
   }
   h2:first-child { margin-top: 0; }
 
@@ -101,17 +118,20 @@
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 18px;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--eu-black);
     margin: 24px 0 10px;
   }
 
   p { margin-bottom: 16px; }
 
+  a { color: var(--eu-red); }
+  a:hover { color: var(--eu-red-dark); }
+
   /* ── Instructor Video Box ── */
   .video-intro-box {
-    background: var(--cream);
+    background: var(--eu-warm-web-gray);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--teal);
+    border-left: 5px solid var(--eu-red);
     border-radius: var(--radius);
     padding: 24px 28px;
     margin-bottom: 28px;
@@ -123,7 +143,7 @@
     flex-shrink: 0;
     width: 48px;
     height: 48px;
-    background: var(--teal);
+    background: var(--eu-red);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -132,37 +152,38 @@
   .video-intro-box .icon svg {
     width: 22px;
     height: 22px;
-    fill: var(--white);
+    fill: var(--eu-white);
   }
   .video-intro-box .text {
     flex: 1;
   }
   .video-intro-box .text strong {
     font-size: 17px;
-    color: var(--navy);
+    color: var(--eu-black);
     display: block;
     margin-bottom: 4px;
   }
   .video-intro-box .text p {
     margin: 0;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 15px;
   }
 
   /* ── Key Concept Callout ── */
   .key-concept {
-    background: linear-gradient(135deg, var(--navy) 0%, #1e4a6e 100%);
-    color: var(--white);
+    background: var(--eu-black);
+    color: var(--eu-white);
     border-radius: var(--radius);
     padding: 24px 28px;
     margin: 24px 0;
     position: relative;
+    border-left: 5px solid var(--eu-red);
   }
   .key-concept .label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    opacity: 0.7;
+    color: var(--eu-gold);
     margin-bottom: 8px;
     font-weight: 600;
   }
@@ -173,7 +194,7 @@
     font-style: italic;
   }
   .key-concept p strong {
-    color: var(--accent-gold);
+    color: var(--eu-gold);
     font-style: normal;
   }
 
@@ -183,25 +204,29 @@
     flex-direction: column;
     gap: 0;
     margin: 24px 0 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
   }
   .component-card {
     display: flex;
     align-items: flex-start;
     gap: 16px;
     padding: 18px 20px;
-    border-left: 3px solid var(--teal);
-    background: var(--white);
-    position: relative;
+    border-left: 4px solid var(--eu-red);
+    background: var(--eu-white);
+    border-bottom: 1px solid var(--border);
   }
+  .component-card:last-child { border-bottom: none; }
   .component-card:nth-child(odd) {
-    background: var(--teal-light);
+    background: var(--eu-warm-web-gray);
   }
   .component-card .step-num {
     flex-shrink: 0;
     width: 36px;
     height: 36px;
-    background: var(--teal);
-    color: var(--white);
+    background: var(--eu-red);
+    color: var(--eu-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -215,14 +240,14 @@
   }
   .component-card .step-content strong {
     font-size: 16px;
-    color: var(--navy);
+    color: var(--eu-black);
     display: block;
     margin-bottom: 4px;
   }
   .component-card .step-content p {
     margin: 0;
     font-size: 15px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     line-height: 1.55;
   }
 
@@ -238,12 +263,12 @@
     margin-bottom: 12px;
   }
   .video-section-label.required {
-    background: var(--accent-red);
-    color: var(--white);
+    background: var(--eu-red);
+    color: var(--eu-white);
   }
   .video-section-label.recommended {
-    background: var(--accent-gold);
-    color: var(--white);
+    background: var(--eu-dark-gold);
+    color: var(--eu-white);
   }
 
   .video-grid {
@@ -262,17 +287,17 @@
     transition: box-shadow 0.2s, border-color 0.2s;
     text-decoration: none;
     color: inherit;
-    background: var(--white);
+    background: var(--eu-white);
   }
   .video-card:hover {
     box-shadow: var(--shadow-md);
-    border-color: var(--teal);
+    border-color: var(--eu-red);
   }
   .video-card .play-icon {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    background: var(--teal-light);
+    background: var(--eu-red-light);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -281,7 +306,7 @@
   .video-card .play-icon svg {
     width: 16px;
     height: 16px;
-    fill: var(--teal);
+    fill: var(--eu-red);
     margin-left: 2px;
   }
   .video-card .video-info {
@@ -289,19 +314,19 @@
   }
   .video-card .video-info .video-title {
     font-weight: 700;
-    color: var(--navy);
+    color: var(--eu-black);
     font-size: 15px;
     display: block;
     margin-bottom: 2px;
   }
   .video-card .video-info .video-desc {
     font-size: 13px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     line-height: 1.45;
   }
   .video-card .arrow {
     flex-shrink: 0;
-    color: var(--teal);
+    color: var(--eu-red);
     font-size: 18px;
     opacity: 0.5;
     transition: opacity 0.2s;
@@ -324,36 +349,42 @@
     position: relative;
   }
   .timeline-phase:not(:last-child) {
-    border-right: 1px solid rgba(255,255,255,0.3);
+    border-right: 1px solid var(--border);
   }
-  .timeline-phase.phase1 { background: var(--teal-light); }
-  .timeline-phase.phase2 { background: var(--cream); }
-  .timeline-phase.phase3 { background: #f0ece4; }
+  .timeline-phase.phase1 {
+    background: var(--eu-red-light);
+  }
+  .timeline-phase.phase2 {
+    background: var(--eu-gold-light);
+  }
+  .timeline-phase.phase3 {
+    background: var(--eu-warm-web-gray);
+  }
   .timeline-phase .phase-label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 700;
-    color: var(--teal);
+    color: var(--eu-red);
     margin-bottom: 4px;
   }
   .timeline-phase .phase-name {
     font-family: 'Merriweather', serif;
     font-size: 14px;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--eu-black);
     margin-bottom: 4px;
     line-height: 1.3;
   }
   .timeline-phase .phase-duration {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
 
   /* ── Reflection Box ── */
   .reflection-box {
-    background: var(--cream);
-    border: 1px solid var(--border);
+    background: var(--eu-gold-light);
+    border: 1px solid #d8d0b0;
     border-radius: var(--radius);
     padding: 24px 28px;
     margin: 28px 0;
@@ -366,8 +397,8 @@
     left: 24px;
     width: 28px;
     height: 28px;
-    background: var(--accent-gold);
-    color: var(--white);
+    background: var(--eu-dark-gold);
+    color: var(--eu-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -378,25 +409,25 @@
   }
   .reflection-box h3 {
     margin-top: 4px;
-    color: var(--accent-gold);
+    color: var(--eu-dark-gold);
     font-size: 16px;
   }
   .reflection-box p {
     margin-bottom: 0;
     font-size: 15px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
 
   /* ── Connection Box ── */
   .connection-box {
-    border: 2px dashed var(--teal);
+    border: 2px solid var(--eu-slate-blue);
     border-radius: var(--radius);
     padding: 20px 24px;
     margin: 24px 0;
-    background: var(--teal-light);
+    background: var(--eu-slate-blue-light);
   }
   .connection-box h3 {
-    color: var(--teal);
+    color: var(--eu-slate-blue);
     margin-top: 0;
     font-size: 16px;
   }
@@ -407,28 +438,37 @@
 
   /* ── Toolkit CTA ── */
   .toolkit-cta {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    background: var(--eu-black);
     border-radius: var(--radius);
     padding: 28px 32px;
     margin: 28px 0;
     text-align: center;
-    color: var(--white);
+    color: var(--eu-white);
+    position: relative;
+    overflow: hidden;
+  }
+  .toolkit-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--eu-red);
   }
   .toolkit-cta h3 {
-    color: var(--white);
+    color: var(--eu-white);
     font-family: 'Merriweather', serif;
     margin: 0 0 8px;
     font-size: 20px;
   }
   .toolkit-cta p {
     margin-bottom: 16px;
-    opacity: 0.85;
+    color: var(--eu-light-gray);
     font-size: 15px;
   }
   .toolkit-cta a.btn {
     display: inline-block;
-    background: var(--accent-gold);
-    color: var(--white);
+    background: var(--eu-red);
+    color: var(--eu-white);
     text-decoration: none;
     font-weight: 700;
     padding: 12px 28px;
@@ -438,26 +478,53 @@
     margin: 4px 8px;
   }
   .toolkit-cta a.btn:hover {
-    background: #b8862e;
+    background: var(--eu-red-dark);
   }
   .toolkit-cta a.btn.secondary {
     background: transparent;
-    border: 2px solid rgba(255,255,255,0.5);
+    border: 2px solid var(--eu-gold);
+    color: var(--eu-gold);
   }
   .toolkit-cta a.btn.secondary:hover {
-    border-color: var(--white);
-    background: rgba(255,255,255,0.1);
+    background: rgba(196,176,106,0.15);
+  }
+
+  /* ── Resource Links ── */
+  .resource-link {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    text-decoration: none;
+    color: inherit;
+    background: var(--eu-white);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .resource-link:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--eu-red);
+  }
+  .resource-link .resource-title {
+    font-weight: 700;
+    color: var(--eu-red);
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .resource-link .resource-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
   }
 
   /* ── Footer ── */
   .page-footer {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-top: none;
+    background: var(--eu-black);
     border-radius: 0 0 var(--radius) var(--radius);
     padding: 20px 36px;
     font-size: 13px;
-    color: var(--text-muted);
+    color: var(--eu-light-gray);
     text-align: center;
   }
 
@@ -468,6 +535,7 @@
     .content-body { padding: 24px 20px; }
     .video-intro-box { flex-direction: column; gap: 12px; }
     .timeline { flex-direction: column; }
+    .timeline-phase:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
     .toolkit-cta a.btn { display: block; margin: 8px 0; }
   }
 </style>
@@ -562,7 +630,7 @@
 
     <div class="connection-box">
       <h3>Connecting to Our Course Themes</h3>
-      <p>Notice how CANDOR operationalizes concepts we've been building all semester. <strong>Just Culture</strong> — separating system failures from reckless behavior and meeting harm with healing. <strong>Psychological Safety</strong> — providers must feel safe reporting events for the process to work. <strong>Systems Thinking</strong> — investigation focuses on system conditions, not just individual actions. <strong>Values-Based Leadership</strong> — truth through transparent disclosure, compassion through care for both patients and caregivers, justice through fair investigation and resolution.</p>
+      <p>Notice how CANDOR operationalizes concepts we've been building this term. <strong>Just Culture</strong> — separating system failures from reckless behavior and meeting harm with healing. <strong>Psychological Safety</strong> — providers must feel safe reporting events for the process to work. <strong>Systems Thinking</strong> — investigation focuses on system conditions, not just individual actions. <strong>Values-Based Leadership</strong> — truth through transparent disclosure, compassion through care for both patients and caregivers, justice through fair investigation and resolution.</p>
     </div>
 
     <!-- ═══ IMPLEMENTATION ═══ -->
@@ -695,17 +763,25 @@
     <!-- ═══ ADDITIONAL RESOURCES ═══ -->
     <h2>Additional Resources</h2>
 
-    <p><strong>CANDOR Event Checklist</strong> — A practical tool organizations use to manage the immediate response after a harm event. Review this to understand the operational steps involved.<br>
-    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist4.html" target="_blank" rel="noopener">View the CANDOR Event Checklist &rarr;</a></p>
+    <a class="resource-link" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist4.html" target="_blank" rel="noopener">
+      <span class="resource-title">CANDOR Event Checklist &rarr;</span>
+      <span class="resource-desc">A practical tool organizations use to manage the immediate response after a harm event. Review this to understand the operational steps involved.</span>
+    </a>
 
-    <p><strong>Disclosure Checklist</strong> — Part I covers preparation for the initial disclosure conversation (within 60 minutes). Part II covers follow-up communication. Notice the emphasis on communication skills at the end.<br>
-    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist5.html" target="_blank" rel="noopener">View the Disclosure Checklist &rarr;</a></p>
+    <a class="resource-link" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist5.html" target="_blank" rel="noopener">
+      <span class="resource-title">Disclosure Checklist &rarr;</span>
+      <span class="resource-desc">Part I covers preparation for the initial disclosure conversation (within 60 minutes). Part II covers follow-up communication. Notice the emphasis on communication skills at the end.</span>
+    </a>
 
-    <p><strong>Care for the Caregiver Implementation Guide</strong> — A step-by-step guide for building a peer support program. This connects directly to our Week 2 discussion of second victims and psychological safety.<br>
-    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide6.html" target="_blank" rel="noopener">View the Care for the Caregiver Guide &rarr;</a></p>
+    <a class="resource-link" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide6.html" target="_blank" rel="noopener">
+      <span class="resource-title">Care for the Caregiver Implementation Guide &rarr;</span>
+      <span class="resource-desc">A step-by-step guide for building a peer support program. This connects directly to our Week 2 discussion of second victims and psychological safety.</span>
+    </a>
 
-    <p><strong>Case Scenarios: Handling Challenging Communications</strong> — Practice scenarios for navigating difficult disclosure conversations — angry families, uncertain findings, and complex clinical situations.<br>
-    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide5/scenarios.html" target="_blank" rel="noopener">View Case Scenarios &rarr;</a></p>
+    <a class="resource-link" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide5/scenarios.html" target="_blank" rel="noopener">
+      <span class="resource-title">Case Scenarios: Handling Challenging Communications &rarr;</span>
+      <span class="resource-desc">Practice scenarios for navigating difficult disclosure conversations — angry families, uncertain findings, and complex clinical situations.</span>
+    </a>
 
   </div>
 
