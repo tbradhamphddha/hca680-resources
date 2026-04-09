@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4: The CANDOR Process — A Communication and Resolution Framework</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --navy: #1a3a5c;
+    --navy-light: #2a5a8c;
+    --teal: #1a8a7d;
+    --teal-light: #e6f5f3;
+    --warm-bg: #faf8f5;
+    --cream: #f5f0e8;
+    --text: #2d2d2d;
+    --text-muted: #5a5a5a;
+    --accent-gold: #c8963e;
+    --accent-red: #b8433e;
+    --border: #ddd5c8;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans Pro', 'Segoe UI', sans-serif;
+    color: var(--text);
+    background: var(--warm-bg);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white);
+    padding: 40px 36px 32px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--accent-gold));
+  }
+  .page-header .week-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    opacity: 0.75;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .page-header h1 {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .page-header .subtitle {
+    font-size: 17px;
+    opacity: 0.85;
+    font-style: italic;
+  }
+
+  /* ── Main Content Area ── */
+  .content-body {
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 36px;
+  }
+
+  /* ── Section Headings ── */
+  h2 {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 22px;
+    color: var(--navy);
+    margin: 36px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--teal-light);
+  }
+  h2:first-child { margin-top: 0; }
+
+  h3 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 24px 0 10px;
+  }
+
+  p { margin-bottom: 16px; }
+
+  /* ── Instructor Video Box ── */
+  .video-intro-box {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .video-intro-box .icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-intro-box .icon svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--white);
+  }
+  .video-intro-box .text {
+    flex: 1;
+  }
+  .video-intro-box .text strong {
+    font-size: 17px;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .video-intro-box .text p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  /* ── Key Concept Callout ── */
+  .key-concept {
+    background: linear-gradient(135deg, var(--navy) 0%, #1e4a6e 100%);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .key-concept .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .key-concept p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .key-concept p strong {
+    color: var(--accent-gold);
+    font-style: normal;
+  }
+
+  /* ── Five Components Visual ── */
+  .components-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 24px 0 28px;
+  }
+  .component-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    border-left: 3px solid var(--teal);
+    background: var(--white);
+    position: relative;
+  }
+  .component-card:nth-child(odd) {
+    background: var(--teal-light);
+  }
+  .component-card .step-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--teal);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 2px;
+  }
+  .component-card .step-content {
+    flex: 1;
+  }
+  .component-card .step-content strong {
+    font-size: 16px;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .component-card .step-content p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  /* ── Video Resource Cards ── */
+  .video-section-label {
+    display: inline-block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .video-section-label.required {
+    background: var(--accent-red);
+    color: var(--white);
+  }
+  .video-section-label.recommended {
+    background: var(--accent-gold);
+    color: var(--white);
+  }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .video-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+    background: var(--white);
+  }
+  .video-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--teal);
+  }
+  .video-card .play-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--teal-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-card .play-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--teal);
+    margin-left: 2px;
+  }
+  .video-card .video-info {
+    flex: 1;
+  }
+  .video-card .video-info .video-title {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 15px;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .video-card .video-info .video-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+  .video-card .arrow {
+    flex-shrink: 0;
+    color: var(--teal);
+    font-size: 18px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .video-card:hover .arrow { opacity: 1; }
+
+  /* ── Implementation Timeline ── */
+  .timeline {
+    margin: 20px 0 28px;
+    display: flex;
+    gap: 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .timeline-phase {
+    padding: 18px 20px;
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .timeline-phase:not(:last-child) {
+    border-right: 1px solid rgba(255,255,255,0.3);
+  }
+  .timeline-phase.phase1 { background: var(--teal-light); }
+  .timeline-phase.phase2 { background: var(--cream); }
+  .timeline-phase.phase3 { background: #f0ece4; }
+  .timeline-phase .phase-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .timeline-phase .phase-name {
+    font-family: 'Merriweather', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .timeline-phase .phase-duration {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Reflection Box ── */
+  .reflection-box {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 28px 0;
+    position: relative;
+  }
+  .reflection-box::before {
+    content: '?';
+    position: absolute;
+    top: -14px;
+    left: 24px;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-gold);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    font-family: 'Merriweather', serif;
+  }
+  .reflection-box h3 {
+    margin-top: 4px;
+    color: var(--accent-gold);
+    font-size: 16px;
+  }
+  .reflection-box p {
+    margin-bottom: 0;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  /* ── Connection Box ── */
+  .connection-box {
+    border: 2px dashed var(--teal);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 24px 0;
+    background: var(--teal-light);
+  }
+  .connection-box h3 {
+    color: var(--teal);
+    margin-top: 0;
+    font-size: 16px;
+  }
+  .connection-box p {
+    margin-bottom: 0;
+    font-size: 15px;
+  }
+
+  /* ── Toolkit CTA ── */
+  .toolkit-cta {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin: 28px 0;
+    text-align: center;
+    color: var(--white);
+  }
+  .toolkit-cta h3 {
+    color: var(--white);
+    font-family: 'Merriweather', serif;
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+  .toolkit-cta p {
+    margin-bottom: 16px;
+    opacity: 0.85;
+    font-size: 15px;
+  }
+  .toolkit-cta a.btn {
+    display: inline-block;
+    background: var(--accent-gold);
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: background 0.2s;
+    margin: 4px 8px;
+  }
+  .toolkit-cta a.btn:hover {
+    background: #b8862e;
+  }
+  .toolkit-cta a.btn.secondary {
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+  .toolkit-cta a.btn.secondary:hover {
+    border-color: var(--white);
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 20px 36px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .page-header { padding: 28px 20px 24px; }
+    .page-header h1 { font-size: 22px; }
+    .content-body { padding: 24px 20px; }
+    .video-intro-box { flex-direction: column; gap: 12px; }
+    .timeline { flex-direction: column; }
+    .toolkit-cta a.btn { display: block; margin: 8px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="page-header">
+    <div class="week-label">Week 4 &middot; HCA 680</div>
+    <h1>The CANDOR Process</h1>
+    <div class="subtitle">Communication and Optimal Resolution — An AHRQ Framework for Responding to Patient Harm</div>
+  </div>
+
+  <div class="content-body">
+
+    <!-- ═══ INSTRUCTOR VIDEO ═══ -->
+    <div class="video-intro-box">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
+      <div class="text">
+        <strong>Instructor Overview: The CANDOR Process (~15 min)</strong>
+        <p>Start here. Watch the recorded lecture where Dr. Bradham walks you through the CANDOR framework, its five components, and why Communication and Resolution Programs represent a paradigm shift in how organizations respond to patient harm events.</p>
+        <p style="margin-top: 8px;"><em>[Instructor video link will be inserted here]</em></p>
+      </div>
+    </div>
+
+    <!-- ═══ INTRODUCTION ═══ -->
+    <h2>Why CANDOR Matters</h2>
+
+    <p>For decades, the default response when a patient was unexpectedly harmed followed a "deny and defend" strategy — restrict information, avoid admissions of fault, and let legal teams manage the fallout. This approach fails everyone: patients and families feel abandoned, providers carry guilt in silence, organizations miss opportunities to learn, and litigation increases rather than decreases.</p>
+
+    <p>Communication and Resolution Programs (CRPs) offer a fundamentally different path. Rather than circling the wagons, organizations commit to transparent communication with patients and families, thorough investigation of what went wrong, support for the providers involved, and fair resolution — including, when appropriate, compensation.</p>
+
+    <p>AHRQ's <strong>CANDOR</strong> process — <strong>C</strong>ommunication <strong>AND</strong> <strong>O</strong>ptimal <strong>R</strong>esolution — is one of the most well-developed and widely referenced CRP frameworks available. It was built from the work of early adopters like the University of Michigan Health System, whose implementation of transparent communication and proactive resolution led to notable reductions in malpractice lawsuits and claims costs.</p>
+
+    <div class="key-concept">
+      <div class="label">Key Concept</div>
+      <p>A CANDOR event is any event involving <strong>unexpected harm</strong> — physical, emotional, or financial — to a patient. The process activates even when a cause is not yet known. <strong>You don't wait for answers. You respond because a patient was harmed.</strong></p>
+    </div>
+
+    <!-- ═══ FIVE COMPONENTS ═══ -->
+    <h2>The Five Components of CANDOR</h2>
+
+    <p>The CANDOR process is an integrated system with five components that work together. Components 2 through 5 operate as a cyclical process — investigation informs disclosure, which informs resolution, which generates organizational learning.</p>
+
+    <div class="components-flow">
+
+      <div class="component-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Identification of a CANDOR Event</strong>
+          <p>An unexpected harm event is recognized and reported. This is the trigger that activates the entire process. The harm may be physical, emotional, or financial — and the cause does not need to be known.</p>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>CANDOR System Activation</strong>
+          <p>The organization activates its multidisciplinary CANDOR Response Team. This coordinated activation triggers the next two components — Response/Disclosure and Investigation — to begin simultaneously.</p>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Response and Disclosure</strong>
+          <p>This component has two parallel tracks. <em>Disclosure Communication</em> begins with an initial conversation within 60 minutes of event identification — not a full explanation, but an honest acknowledgment that something unexpected happened. Full disclosure occurs after investigation, typically within 30–45 days. <em>Care for the Caregiver</em> provides structured support for the clinicians and staff impacted by the event — addressing the second victim phenomenon directly.</p>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Event Investigation and Analysis</strong>
+          <p>Running parallel to disclosure, a thorough system-focused investigation examines what happened, why, and what conditions contributed. This connects directly to the RCA and RCA2 methodologies you're studying this week. The goal: understand root causes and develop a plan to prevent recurrence.</p>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Resolution</strong>
+          <p>The organization applies what the investigation revealed to improve systems and prevent future harm. Resolution may also include determining how to address the harm event with the patient and family — which can include an offer of compensation. This is where learning translates to lasting change.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="connection-box">
+      <h3>Connecting to Our Course Themes</h3>
+      <p>Notice how CANDOR operationalizes concepts we've been building all semester. <strong>Just Culture</strong> — separating system failures from reckless behavior and meeting harm with healing. <strong>Psychological Safety</strong> — providers must feel safe reporting events for the process to work. <strong>Systems Thinking</strong> — investigation focuses on system conditions, not just individual actions. <strong>Values-Based Leadership</strong> — truth through transparent disclosure, compassion through care for both patients and caregivers, justice through fair investigation and resolution.</p>
+    </div>
+
+    <!-- ═══ IMPLEMENTATION ═══ -->
+    <h2>Implementation: What Leaders Need to Know</h2>
+
+    <p>Implementing a CRP like CANDOR is not a quick project — AHRQ estimates 12 to 18 months for full implementation. As future healthcare administrators, understanding the scope and leadership commitment required is essential. CANDOR implementation unfolds across three phases:</p>
+
+    <div class="timeline">
+      <div class="timeline-phase phase1">
+        <div class="phase-label">Phase I</div>
+        <div class="phase-name">Assessment</div>
+        <div class="phase-duration">~3 months</div>
+      </div>
+      <div class="timeline-phase phase2">
+        <div class="phase-label">Phase II</div>
+        <div class="phase-name">Process Implementation</div>
+        <div class="phase-duration">~12 months</div>
+      </div>
+      <div class="timeline-phase phase3">
+        <div class="phase-label">Phase III</div>
+        <div class="phase-name">Sustainability</div>
+        <div class="phase-duration">~3 months + ongoing</div>
+      </div>
+    </div>
+
+    <p><strong>Phase I: Assessment</strong> — Building the business case, securing organizational buy-in from senior leadership, conducting a gap analysis of current policies and processes, and assembling a multidisciplinary implementation team. This is "setting the stage."</p>
+
+    <p><strong>Phase II: CANDOR Process Implementation</strong> — The longest phase. Training staff across the organization, operationalizing event reporting, disclosure communication protocols, Care for the Caregiver programs, and resolution processes. Data collection on process and outcome measures begins here.</p>
+
+    <p><strong>Phase III: Sustainability</strong> — Ensuring the process becomes embedded in organizational culture. Continuous training, ongoing data collection, and alignment with the organization's mission and values. This is where high reliability principles intersect with CRP — sustainability requires ongoing commitment, not a one-time implementation.</p>
+
+    <div class="key-concept">
+      <div class="label">Leadership Insight</div>
+      <p>The CANDOR Implementation Team Leader must be a <strong>senior leader with influence and authority</strong> to drive culture change. This cannot be delegated to middle management and forgotten. Successful implementation requires <strong>visible, committed leadership</strong> — the kind of leadership you are being prepared for in this program.</p>
+    </div>
+
+    <!-- ═══ VIDEOS: REQUIRED ═══ -->
+    <h2>AHRQ CANDOR Videos</h2>
+
+    <p>AHRQ created a series of scenario-based training videos as part of the CANDOR toolkit. These are short, practical, and give you a window into what effective (and ineffective) communication looks like after a harm event. Pay close attention to the contrast between the "appropriate" and "inappropriate" disclosure videos — the differences are instructive.</p>
+
+    <span class="video-section-label required">Required Viewing</span>
+
+    <div class="video-grid">
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/introduction.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Introduction to CANDOR</span>
+          <span class="video-desc">Overview of the CANDOR process and its purpose — watch this first to orient yourself to the framework.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/app-disclosure.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Appropriate Disclosure to a Patient</span>
+          <span class="video-desc">Demonstrates how a care team should communicate with a patient after a harm event — note the tone, language, and what is (and isn't) said.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/inapp-disclosure.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Inappropriate Disclosure to a Patient</span>
+          <span class="video-desc">Shows what poor disclosure looks like — compare directly with the appropriate version above. What goes wrong and why?</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+    </div>
+
+    <span class="video-section-label recommended">Recommended Viewing</span>
+
+    <div class="video-grid">
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/physicians.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Peer Support Interaction — Physician</span>
+          <span class="video-desc">Demonstrates the Care for the Caregiver component — how peer support works for a physician involved in a harm event.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/nurses.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Peer Support Interaction — Nurse</span>
+          <span class="video-desc">Same concept, different provider role. Think about how peer support differs across disciplines and what makes it effective.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/disclosure.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Disclosure Conversation with Family</span>
+          <span class="video-desc">A scenario showing how the care team conducts a disclosure meeting with an affected family — note the team approach.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/planning.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Resolution Planning</span>
+          <span class="video-desc">Shows how an organization plans for resolution after investigation — connecting findings to action.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="video-card" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/videos/compensation.html" target="_blank" rel="noopener">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="video-info">
+          <span class="video-title">Offer of Compensation</span>
+          <span class="video-desc">Demonstrates how an organization communicates a compensation offer to a harmed patient's family.</span>
+        </div>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!-- ═══ REFLECTION ═══ -->
+    <div class="reflection-box">
+      <h3>Reflection Prompt</h3>
+      <p>Think about the De'Markus Page case from our safety stories — the two-year-old who died after a 10x potassium phosphate overdose caused by a misplaced decimal point, with multiple safety barriers that failed to catch the error. If that organization had a fully implemented CANDOR process, how would the response have differed? What would the initial disclosure conversation look like for that family? What would Care for the Caregiver look like for the resident who made the error? Hold these questions as you work through this week's material on RCA2 and event management.</p>
+    </div>
+
+    <!-- ═══ TOOLKIT CTA ═══ -->
+    <div class="toolkit-cta">
+      <h3>Explore the Full AHRQ CANDOR Toolkit</h3>
+      <p>The complete toolkit includes eight modules with training slides, facilitator guides, checklists, gap analysis tools, and implementation planning templates. This is a professional-grade resource you'll want to bookmark for your career.</p>
+      <a class="btn" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/index.html" target="_blank" rel="noopener">Full CANDOR Toolkit</a>
+      <a class="btn secondary" href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/impguide.html" target="_blank" rel="noopener">Implementation Guide</a>
+    </div>
+
+    <!-- ═══ ADDITIONAL RESOURCES ═══ -->
+    <h2>Additional Resources</h2>
+
+    <p><strong>CANDOR Event Checklist</strong> — A practical tool organizations use to manage the immediate response after a harm event. Review this to understand the operational steps involved.<br>
+    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist4.html" target="_blank" rel="noopener">View the CANDOR Event Checklist &rarr;</a></p>
+
+    <p><strong>Disclosure Checklist</strong> — Part I covers preparation for the initial disclosure conversation (within 60 minutes). Part II covers follow-up communication. Notice the emphasis on communication skills at the end.<br>
+    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/checklist5.html" target="_blank" rel="noopener">View the Disclosure Checklist &rarr;</a></p>
+
+    <p><strong>Care for the Caregiver Implementation Guide</strong> — A step-by-step guide for building a peer support program. This connects directly to our Week 2 discussion of second victims and psychological safety.<br>
+    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide6.html" target="_blank" rel="noopener">View the Care for the Caregiver Guide &rarr;</a></p>
+
+    <p><strong>Case Scenarios: Handling Challenging Communications</strong> — Practice scenarios for navigating difficult disclosure conversations — angry families, uncertain findings, and complex clinical situations.<br>
+    <a href="https://www.ahrq.gov/patient-safety/settings/hospital/candor/modules/guide5/scenarios.html" target="_blank" rel="noopener">View Case Scenarios &rarr;</a></p>
+
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="page-footer">
+    HCA 680: Integrity of Care — Patient Safety and Risk &middot; Edgewood University &middot; Henry Predolin College of Health Sciences
+  </div>
+
+</div>
+
+</body>
+</html>
