@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRO Principles in Practice | HCA 680 | Edgewood University</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+        :root {
+            --eu-red: #BB0000;
+            --eu-slate: #5794AD;
+            --eu-dark-gray: #6D6E71;
+            --eu-light-gray: #C2C6C8;
+            --eu-gold: #C8932B;
+            --eu-warm-gray: #F8F6F3;
+            --eu-black: #1a1a1a;
+            --eu-white: #ffffff;
+
+            --p1-color: #B8423A;
+            --p2-color: #5794AD;
+            --p3-color: #C8932B;
+            --p4-color: #4A8C6F;
+            --p5-color: #7B5EA7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', Georgia, serif;
+            color: var(--eu-black);
+            background: var(--eu-warm-gray);
+            line-height: 1.7;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, var(--eu-black) 0%, #2a2a2a 40%, #1a1a1a 100%);
+            color: var(--eu-white);
+            padding: 2.5rem 2rem 2.2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--p1-color) 0%, var(--p1-color) 20%, var(--p2-color) 20%, var(--p2-color) 40%, var(--p3-color) 40%, var(--p3-color) 60%, var(--p4-color) 60%, var(--p4-color) 80%, var(--p5-color) 80%, var(--p5-color) 100%);
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+        }
+
+        .hero-college {
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 400;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--eu-gold);
+            margin-bottom: 1.2rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 0.4rem;
+        }
+
+        .hero-sub {
+            font-size: 0.95rem;
+            color: var(--eu-light-gray);
+            font-weight: 300;
+            margin-top: 0.6rem;
+        }
+
+        .hero-citation {
+            font-size: 0.78rem;
+            color: var(--eu-dark-gray);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 3rem;
+        }
+
+        /* ── Intro ── */
+        .intro {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            color: #4a4a4a;
+        }
+
+        .prsdc-badge {
+            display: inline-block;
+            background: var(--eu-black);
+            color: var(--eu-white);
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            padding: 0.4rem 1.2rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Principle Card ── */
+        .principle {
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            background: var(--eu-white);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .principle:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .principle-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 1.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+            position: relative;
+        }
+
+        .principle-header:hover {
+            background: rgba(0,0,0,0.015);
+        }
+
+        .principle-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--eu-white);
+        }
+
+        .principle-header-text {
+            flex: 1;
+        }
+
+        .principle-header-text h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .principle-header-text .definition {
+            font-size: 0.88rem;
+            color: var(--eu-dark-gray);
+            font-style: italic;
+            margin-top: 0.15rem;
+            line-height: 1.45;
+        }
+
+        .toggle-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--eu-warm-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.2s ease;
+        }
+
+        .toggle-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--eu-dark-gray);
+            stroke-width: 2.5;
+            fill: none;
+        }
+
+        .principle.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* ── Expanded Content ── */
+        .principle-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .principle.open .principle-body {
+            max-height: 2000px;
+        }
+
+        .principle-content {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .action-section-title {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            margin-top: 0.5rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #eee;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            padding: 0.7rem 0.9rem;
+            margin-bottom: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 2.2rem;
+            transition: background 0.15s ease;
+        }
+
+        .action-list li:hover {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .action-list li::before {
+            content: '';
+            position: absolute;
+            left: 0.7rem;
+            top: 1rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .action-list li .action-verb {
+            font-weight: 300;
+            color: var(--eu-dark-gray);
+        }
+
+        .action-list li .principle-name {
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* ── Principle-specific colors ── */
+        .principle-1 .principle-number { background: var(--p1-color); }
+        .principle-1 .principle-header-text h2 { color: var(--p1-color); }
+        .principle-1 .action-section-title { color: var(--p1-color); }
+        .principle-1 .action-list li::before { background: var(--p1-color); }
+        .principle-1 .action-list li .principle-name { color: var(--p1-color); }
+
+        .principle-2 .principle-number { background: var(--p2-color); }
+        .principle-2 .principle-header-text h2 { color: var(--p2-color); }
+        .principle-2 .action-section-title { color: var(--p2-color); }
+        .principle-2 .action-list li::before { background: var(--p2-color); }
+        .principle-2 .action-list li .principle-name { color: var(--p2-color); }
+
+        .principle-3 .principle-number { background: var(--p3-color); }
+        .principle-3 .principle-header-text h2 { color: var(--p3-color); }
+        .principle-3 .action-section-title { color: var(--p3-color); }
+        .principle-3 .action-list li::before { background: var(--p3-color); }
+        .principle-3 .action-list li .principle-name { color: var(--p3-color); }
+
+        .principle-4 .principle-number { background: var(--p4-color); }
+        .principle-4 .principle-header-text h2 { color: var(--p4-color); }
+        .principle-4 .action-section-title { color: var(--p4-color); }
+        .principle-4 .action-list li::before { background: var(--p4-color); }
+        .principle-4 .action-list li .principle-name { color: var(--p4-color); }
+
+        .principle-5 .principle-number { background: var(--p5-color); }
+        .principle-5 .principle-header-text h2 { color: var(--p5-color); }
+        .principle-5 .action-section-title { color: var(--p5-color); }
+        .principle-5 .action-list li::before { background: var(--p5-color); }
+        .principle-5 .action-list li .principle-name { color: var(--p5-color); }
+
+        /* ── What Can I Do ── */
+        .what-can-i-do {
+            margin-top: 1rem;
+        }
+
+        .what-can-i-do-title {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #eee;
+        }
+
+        .tip-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tip-list li {
+            padding: 0.5rem 0.9rem 0.5rem 2.2rem;
+            font-size: 0.9rem;
+            position: relative;
+            color: #4a4a4a;
+            line-height: 1.5;
+        }
+
+        .tip-list li::before {
+            content: '\2794';
+            position: absolute;
+            left: 0.7rem;
+            top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* ── Back Link ── */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--eu-slate);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover { color: var(--eu-red); }
+
+        .back-link svg {
+            width: 14px; height: 14px;
+            vertical-align: -2px;
+            margin-right: 0.3rem;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            font-size: 0.78rem;
+            color: var(--eu-dark-gray);
+            border-top: 1px solid var(--eu-light-gray);
+        }
+
+        footer a {
+            color: var(--eu-slate);
+            text-decoration: none;
+        }
+
+        .source-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--eu-dark-gray);
+            font-style: italic;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--eu-light-gray);
+        }
+
+        .source-note a {
+            color: var(--eu-slate);
+            text-decoration: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .hero { padding: 2rem 1.2rem 1.8rem; }
+            .container { padding: 1.5rem 1rem 2.5rem; }
+            .principle-header { padding: 1rem; gap: 0.75rem; }
+            .principle-content { padding: 0 1rem 1.2rem; }
+            .principle-header-text .definition { font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Hero ── -->
+    <header class="hero">
+        <img class="hero-logo" src="eu%20logo_primary.jpg" alt="Edgewood University">
+        <div class="hero-college">HCA 680: Patient Safety and Risk</div>
+        <h1>HRO Principles in Practice</h1>
+        <div class="hero-sub">The Five Principles of High Reliability Organizing</div>
+        <div class="hero-citation">Weick &amp; Sutcliffe, <em>Managing the Unexpected</em></div>
+    </header>
+
+    <!-- ── Content ── -->
+    <main class="container">
+
+        <a class="back-link" href="index.html">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Course Resources
+        </a>
+
+        <div class="intro">
+            <div class="prsdc-badge">P &middot; R &middot; S &middot; D &middot; C</div>
+            <p>
+                High Reliability Organizations create a <strong>mindfulness infrastructure</strong>
+                through five interconnected principles. Mindfulness is a rich awareness and a capacity
+                for action that facilitates discovering and managing unexpected events before they
+                escalate into crises. The five principles below use the PRSDC format. Click each
+                principle to see what it looks like in practice.
+            </p>
+        </div>
+
+        <!-- ═══ Principle 1 ═══ -->
+        <div class="principle principle-1 open">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">P</div>
+                <div class="principle-header-text">
+                    <h2>Preoccupation with Failure</h2>
+                    <div class="definition">Finding and regarding small, inconsequential errors as a symptom that something is wrong; finding the half event.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> treat a near miss as a learning opportunity rather than a lucky break, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> report a close call even though no one was harmed, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> ask "what can go wrong?" before starting a procedure, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> update a procedure after experiencing a close call, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> reward someone for spotting a problem or near miss, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> seek out and encourage bad news from your team, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> focus on the work system rather than blaming the person, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                        <li><span class="action-verb">When you</span> create an environment where people feel free to talk to leaders about problems, <span class="action-verb">you are practicing</span> <span class="principle-name">preoccupation with failure.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Be on the lookout for small, emerging failures.</li>
+                            <li>Take small failures and near misses seriously. Fix small problems before they grow into big ones.</li>
+                            <li>Focus on the work system or work process, not the person.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Principle 2 ═══ -->
+        <div class="principle principle-2">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">R</div>
+                <div class="principle-header-text">
+                    <h2>Reluctance to Simplify Interpretations</h2>
+                    <div class="definition">Thinking critically and encouraging diversity in experience, perspective, and opinion.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> question an assumption rather than accepting it at face value, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> ask "why?" five times to dig deeper into a complex problem, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> encourage a colleague to share a different perspective, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> challenge the status quo instead of accepting "that's the way we've always done it," <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> spend more time analyzing an unexpected event than defending your initial view, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> value the skeptic on the team for raising uncomfortable questions, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> listen carefully to ensure no one's view goes unheard, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> look for incomplete information or assumptions masquerading as facts, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Be on the lookout for incorrect, incomplete information or assumptions masquerading as facts.</li>
+                            <li>Think using a <em>Questioning Mind</em> to break confirmation bias. Confirmation bias (stopping when a fact supports your conclusion) defeats this principle.</li>
+                            <li>Do not accept simple explanations for complex problems. Ask why five times to dig deeper.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Principle 3 ═══ -->
+        <div class="principle principle-3">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">S</div>
+                <div class="principle-header-text">
+                    <h2>Sensitivity to Operations</h2>
+                    <div class="definition">Situational awareness: paying attention to what is happening on the front line. Seeing the right work done the right way.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> think ahead to your needs for the day, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> think about how your work affects others, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> offer to help other teams, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> ask questions during a tiered huddle, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> make sure people have what they need to do their job, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> gather your team to discuss the day, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> check to see how things are going, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                        <li><span class="action-verb">When you</span> focus on how work is actually done rather than how it was designed, <span class="action-verb">you are being</span> <span class="principle-name">sensitive to operations.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Maintain situational awareness of your work. Share that awareness often with the team.</li>
+                            <li>Speak up during tiered huddles. Share your concerns and needs. Identify impacts your work has on others.</li>
+                            <li>Focus on how the work is actually done regardless of how work is imagined or designed.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Principle 4 ═══ -->
+        <div class="principle principle-4">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">D</div>
+                <div class="principle-header-text">
+                    <h2>Deference to Expertise</h2>
+                    <div class="definition">Pushing decision making down and around to the person with the most related knowledge and expertise, regardless of rank.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> ask for help or advice or support, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> include patient and family in care choices, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> stop to get help, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> read and acknowledge a best practice alert, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> stop and check the policy or protocol, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When someone says you should stop and you do, and you thank them, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> make the space safe for others to ask questions, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                        <li><span class="action-verb">When you</span> support someone who asks a question or asks to stop, <span class="action-verb">you are practicing</span> <span class="principle-name">deference to expertise.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Encourage a culture of teamwork and shared decision-making.</li>
+                            <li>Ask others for their thoughts. Offer your thoughts when asked.</li>
+                            <li>Practice the social skills that flatten authority gradients and reduce power distance.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Principle 5 ═══ -->
+        <div class="principle principle-5">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">C</div>
+                <div class="principle-header-text">
+                    <h2>Commitment to Resilience</h2>
+                    <div class="definition">Developing capabilities to detect, contain, and bounce back from upsets and events that do occur.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> participate in training and simulation exercises, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> ask "what if...?" as a normal part of your work, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> learn from mistakes and share those lessons with others, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> take on challenging stretch assignments to build new skills, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> use your knowledge in novel ways to solve an unfamiliar problem, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> build informal networks of contacts you can call on to solve problems, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> rely on one another during a crisis rather than working in isolation, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                        <li><span class="action-verb">When you</span> invest in developing your team's competence and response repertoires, <span class="action-verb">you are demonstrating</span> <span class="principle-name">commitment to resilience.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Mentally simulate your work: what activities lie upstream and downstream? How can things unravel?</li>
+                            <li>Build capabilities to cope with disturbances through varied job experiences and cross-training.</li>
+                            <li>Encourage flexibility and remove barriers to cross-functional collaboration on your team.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="source-note">
+            Content adapted from Weick, K. E. &amp; Sutcliffe, K. M. (2015). <em>Managing the Unexpected: Sustained Performance in a Complex World</em> (3rd ed.). Hoboken, NJ: Wiley.<br>
+            Sutcliffe, K. M. (2011). High reliability organizations. <em>Best Practice &amp; Research Clinical Anaesthesiology, 25</em>(2), 133-144.
+        </div>
+
+    </main>
+
+    <footer>
+        <p>
+            &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+            <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+        </p>
+    </footer>
+
+    <script>
+        function togglePrinciple(header) {
+            const principle = header.closest('.principle');
+            principle.classList.toggle('open');
+        }
+    </script>
+
+</body>
+</html>
