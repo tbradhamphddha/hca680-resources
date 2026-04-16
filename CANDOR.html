@@ -57,43 +57,126 @@
     padding: 20px;
   }
 
-  /* ── Header ── */
-  .page-header {
-    background: var(--eu-black);
-    color: var(--eu-white);
-    padding: 40px 36px 32px;
-    border-radius: var(--radius) var(--radius) 0 0;
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     position: relative;
-    overflow: hidden;
-  }
-  .page-header::after {
+}
+ 
+.resource-header::before {
     content: '';
     position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 5px;
-    background: var(--eu-red);
-  }
-  .page-header .week-label {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 2.5px;
-    color: var(--eu-gold);
-    margin-bottom: 8px;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+ 
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+ 
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+ 
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
     font-weight: 600;
-  }
-  .page-header h1 {
-    font-family: 'Merriweather', Georgia, serif;
-    font-size: 28px;
-    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+ 
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
     line-height: 1.3;
-    margin-bottom: 6px;
-  }
-  .page-header .subtitle {
-    font-size: 17px;
-    opacity: 0.8;
-    font-style: italic;
-    color: var(--eu-light-gray);
-  }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ 
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+ 
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+ 
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+ 
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+ 
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+ 
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+ 
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+ 
 
   /* ── Main Content Area ── */
   .content-body {
@@ -544,6 +627,18 @@
 
 <div class="page-container">
 
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Communication and Optimal Resolution — An AHRQ Framework for Responding to Patient Harm</div> 
+    </div>
+    <a class="resource-header-back" href="index.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Course Home
+    </a>
+</header>
+  
   <!-- ═══ HEADER ═══ -->
   <div class="page-header">
     <div class="week-label">Week 4 &middot; HCA 680</div>
