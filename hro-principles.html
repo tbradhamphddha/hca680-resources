@@ -33,60 +33,81 @@
             line-height: 1.7;
         }
 
-        /* ── Hero ── */
-        .hero {
-            background: linear-gradient(135deg, var(--eu-black) 0%, #2a2a2a 40%, #1a1a1a 100%);
-            color: var(--eu-white);
-            padding: 2.5rem 2rem 2.2rem;
-            text-align: center;
+        /* ── Resource Header ── */
+        .resource-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             position: relative;
         }
 
-        .hero::before {
+        .resource-header::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--p1-color) 0%, var(--p1-color) 20%, var(--p2-color) 20%, var(--p2-color) 40%, var(--p3-color) 40%, var(--p3-color) 60%, var(--p4-color) 60%, var(--p4-color) 80%, var(--p5-color) 80%, var(--p5-color) 100%);
+            height: 4px;
+            background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
         }
 
-        .hero-logo {
-            width: 120px;
-            height: auto;
-            margin-bottom: 1rem;
-            border-radius: 6px;
+        .resource-header-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 4px;
+            flex-shrink: 0;
         }
 
-        .hero-college {
+        .resource-header-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .resource-header-course {
             font-family: 'Source Sans 3', sans-serif;
-            font-weight: 400;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
+            font-weight: 600;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--eu-gold);
-            margin-bottom: 1.2rem;
+            line-height: 1.2;
         }
 
-        .hero h1 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-            font-weight: 700;
-            line-height: 1.25;
-            margin-bottom: 0.4rem;
+        .resource-header-title {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.3;
         }
 
-        .hero-sub {
-            font-size: 0.95rem;
-            color: var(--eu-light-gray);
-            font-weight: 300;
-            margin-top: 0.6rem;
-        }
-
-        .hero-citation {
+        .resource-header-back {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-family: 'Source Sans 3', sans-serif;
             font-size: 0.78rem;
-            color: var(--eu-dark-gray);
-            font-style: italic;
-            margin-top: 0.5rem;
+            color: var(--eu-light-gray);
+            text-decoration: none;
+            padding: 0.35rem 0.7rem;
+            border-radius: 4px;
+            transition: color 0.2s ease, background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .resource-header-back:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .resource-header-back svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
         }
 
         /* ── Container ── */
@@ -345,40 +366,23 @@
             font-size: 0.75rem;
         }
 
-        /* ── Back Link ── */
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--eu-slate);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .back-link:hover { color: var(--eu-red); }
-
-        .back-link svg {
-            width: 14px; height: 14px;
-            vertical-align: -2px;
-            margin-right: 0.3rem;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-        }
-
         /* ── Footer ── */
-        footer {
+        .resource-footer {
             text-align: center;
-            padding: 2rem 1.5rem;
-            font-size: 0.78rem;
+            padding: 1.5rem;
+            font-size: 0.75rem;
             color: var(--eu-dark-gray);
             border-top: 1px solid var(--eu-light-gray);
+            background: var(--eu-warm-gray);
         }
 
-        footer a {
+        .resource-footer a {
             color: var(--eu-slate);
             text-decoration: none;
+        }
+
+        .resource-footer a:hover {
+            text-decoration: underline;
         }
 
         .source-note {
@@ -398,7 +402,21 @@
 
         /* ── Responsive ── */
         @media (max-width: 600px) {
-            .hero { padding: 2rem 1.2rem 1.8rem; }
+            .resource-header {
+                flex-wrap: wrap;
+                padding: 0.7rem 1rem;
+                gap: 0.6rem;
+            }
+            .resource-header-back {
+                order: -1;
+                width: 100%;
+                justify-content: flex-start;
+                padding: 0.2rem 0;
+                font-size: 0.72rem;
+            }
+            .resource-header-title {
+                font-size: 0.95rem;
+            }
             .container { padding: 1.5rem 1rem 2.5rem; }
             .principle-header { padding: 1rem; gap: 0.75rem; }
             .principle-content { padding: 0 1rem 1.2rem; }
@@ -408,22 +426,21 @@
 </head>
 <body>
 
-    <!-- ── Hero ── -->
-    <header class="hero">
-        <img class="hero-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
-        <div class="hero-college">HCA 680: Patient Safety and Risk</div>
-        <h1>HRO Principles in Practice</h1>
-        <div class="hero-sub">The Five Principles of High Reliability Organizing</div>
-        <div class="hero-citation">Weick &amp; Sutcliffe, <em>Managing the Unexpected</em></div>
+    <!-- ── Header ── -->
+    <header class="resource-header">
+        <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+        <div class="resource-header-text">
+            <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+            <div class="resource-header-title">HRO Principles in Practice</div>
+        </div>
+        <a class="resource-header-back" href="index.html">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Course Home
+        </a>
     </header>
 
     <!-- ── Content ── -->
     <main class="container">
-
-        <a class="back-link" href="index.html">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            Back to Course Resources
-        </a>
 
         <div class="intro">
             <div class="prsdc-badge">P &middot; S &middot; D &middot; R &middot; C</div>
@@ -431,7 +448,7 @@
                 High Reliability Organizations create a <strong>mindfulness infrastructure</strong>
                 through five interconnected principles. Mindfulness is a rich awareness and a capacity
                 for action that facilitates discovering and managing unexpected events before they
-                escalate into crises. The five principles below use the PRSDC format. Click each
+                escalate into crises. The five principles below use the PSDRC format. Click each
                 principle to see what it looks like in practice.
             </p>
         </div>
@@ -470,9 +487,44 @@
                 </div>
             </div>
         </div>
- 
+
         <!-- ═══ Principle 2 ═══ -->
         <div class="principle principle-2">
+            <div class="principle-header" onclick="togglePrinciple(this)">
+                <div class="principle-number">R</div>
+                <div class="principle-header-text">
+                    <h2>Reluctance to Simplify Interpretations</h2>
+                    <div class="definition">Thinking critically and encouraging diversity in experience, perspective, and opinion.</div>
+                </div>
+                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div class="principle-body">
+                <div class="principle-content">
+                    <div class="action-section-title">HRO in Action</div>
+                    <ul class="action-list">
+                        <li><span class="action-verb">When you</span> question an assumption rather than accepting it at face value, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> ask "why?" five times to dig deeper into a complex problem, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> encourage a colleague to share a different perspective, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> challenge the status quo instead of accepting "that's the way we've always done it," <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> spend more time analyzing an unexpected event than defending your initial view, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> value the skeptic on the team for raising uncomfortable questions, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> listen carefully to ensure no one's view goes unheard, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                        <li><span class="action-verb">When you</span> look for incomplete information or assumptions masquerading as facts, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
+                    </ul>
+                    <div class="what-can-i-do">
+                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
+                        <ul class="tip-list">
+                            <li>Be on the lookout for incorrect, incomplete information or assumptions masquerading as facts.</li>
+                            <li>Think using a <em>Questioning Mind</em> to break confirmation bias. Confirmation bias (stopping when a fact supports your conclusion) defeats this principle.</li>
+                            <li>Do not accept simple explanations for complex problems. Ask why five times to dig deeper.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Principle 3 ═══ -->
+        <div class="principle principle-3">
             <div class="principle-header" onclick="togglePrinciple(this)">
                 <div class="principle-number">S</div>
                 <div class="principle-header-text">
@@ -506,8 +558,8 @@
             </div>
         </div>
 
-        <!-- ═══ Principle 3 ═══ -->
-        <div class="principle principle-3">
+        <!-- ═══ Principle 4 ═══ -->
+        <div class="principle principle-4">
             <div class="principle-header" onclick="togglePrinciple(this)">
                 <div class="principle-number">D</div>
                 <div class="principle-header-text">
@@ -541,41 +593,6 @@
             </div>
         </div>
 
-  <!-- ═══ Principle 4 ═══ -->
-        <div class="principle principle-4">
-            <div class="principle-header" onclick="togglePrinciple(this)">
-                <div class="principle-number">R</div>
-                <div class="principle-header-text">
-                    <h2>Reluctance to Simplify Interpretations</h2>
-                    <div class="definition">Thinking critically and encouraging diversity in experience, perspective, and opinion.</div>
-                </div>
-                <div class="toggle-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-            </div>
-            <div class="principle-body">
-                <div class="principle-content">
-                    <div class="action-section-title">HRO in Action</div>
-                    <ul class="action-list">
-                        <li><span class="action-verb">When you</span> question an assumption rather than accepting it at face value, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> ask "why?" five times to dig deeper into a complex problem, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> encourage a colleague to share a different perspective, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> challenge the status quo instead of accepting "that's the way we've always done it," <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> spend more time analyzing an unexpected event than defending your initial view, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> value the skeptic on the team for raising uncomfortable questions, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> listen carefully to ensure no one's view goes unheard, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                        <li><span class="action-verb">When you</span> look for incomplete information or assumptions masquerading as facts, <span class="action-verb">you are practicing</span> <span class="principle-name">reluctance to simplify interpretations.</span></li>
-                    </ul>
-                    <div class="what-can-i-do">
-                        <div class="what-can-i-do-title action-section-title">What Can I Do?</div>
-                        <ul class="tip-list">
-                            <li>Be on the lookout for incorrect, incomplete information or assumptions masquerading as facts.</li>
-                            <li>Think using a <em>Questioning Mind</em> to break confirmation bias. Confirmation bias (stopping when a fact supports your conclusion) defeats this principle.</li>
-                            <li>Do not accept simple explanations for complex problems. Ask why five times to dig deeper.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <!-- ═══ Principle 5 ═══ -->
         <div class="principle principle-5">
             <div class="principle-header" onclick="togglePrinciple(this)">
@@ -618,11 +635,9 @@
 
     </main>
 
-    <footer>
-        <p>
-            &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-            <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-        </p>
+    <footer class="resource-footer">
+        &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+        <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
     </footer>
 
     <script>
