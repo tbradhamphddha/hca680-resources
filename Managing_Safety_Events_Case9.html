@@ -181,8 +181,48 @@ const MANAGER_UPDATE = "Per the home health clinical supervisor's follow-up, the
 
 let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
 const app=document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'PSE 2 — Minor Temporary Harm',
+    taxonomyEventType: 'EE2 — Burn (Environmental); Home Health',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
 function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
 function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+
 
 function renderIntro(){
   app.innerHTML=`<div class="card"><span class="step-label">Case 9</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a burn injury reported from a home health occupational therapy visit. This case takes place in the home care setting.</p><p>Read the event carefully before working through the discussion points.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
@@ -205,11 +245,13 @@ function renderDeviationStep(){
 
 function handleDev(btn,opt){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.type==="main"){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">That captures the GAPS deviation in this event.</span> Two things needed to happen and did not: the temperature was not verified using an objective measure before application, and the skin check was not performed within the required window. Both failures are amplified by a patient-specific factor that was known: this patient has a brain injury that impairs her ability to reliably communicate pain or discomfort. When a patient cannot tell you something is wrong, the clinician's monitoring responsibility increases, not decreases. The standard of care requires more vigilant temperature verification and earlier skin assessment for patients with this profile, not the same as for patients without communication limitations.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Continue to Discussion Point 2";
     nb.onclick=()=>{step="reach";render();};
   } else if(opt.type==="incorrect"){
@@ -218,11 +260,13 @@ function handleDev(btn,opt){
       ?"The event does not identify a problem with the microwave itself. The issue is in how the temperature of the heated pack was assessed before it was applied to the patient. Have you thought about what an adequate temperature verification process looks like for a patient who cannot reliably communicate that something is too hot?"
       :"Heat packs are an accepted modality in home health occupational therapy. The issue is not the use of the modality but how it was applied and monitored in the context of this specific patient's clinical needs.";
     fb.innerHTML=`<span style="font-weight:700;">Let's look at this from a different angle.</span> ${d}`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> The Known Complication Test can help us think through whether this outcome was a known complication rather than a safety event. Let's work through those four questions.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
     nb.onclick=()=>{kctIndex=0;step="kct";render();};
   }
@@ -248,9 +292,11 @@ function renderKctStep(){
 
 function handleKct(btn,val,q){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val===q.answer;
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
   const notes=[
     ["Wet heat pack application to the wrist and hand is an appropriate occupational therapy modality for a patient recovering from a traumatic brain injury.","Think about the clinical picture: heat therapy to the wrist and hand is a standard occupational therapy treatment. The modality itself was appropriate for this patient's condition, pointing toward YES."],
@@ -260,6 +306,7 @@ function handleKct(btn,val,q){
   ];
   const[c,i]=notes[kctIndex];
   fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{kctIndex++;renderKctStep();};
 }
@@ -280,12 +327,16 @@ function renderReachStep(){
 
 function handleReach(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val==='Yes, it reached the patient';
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
-  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The patient was unable to communicate discomfort reliably, and no early skin check was performed to compensate for that limitation. The burn occurred and was not discovered until 15 minutes after application. The deviation reached the patient without any barrier catching it.`;}
-  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A barrier would have been an early skin check or an objective temperature verification that caught a problem before the burn occurred. Neither happened. The burn developed over 15 minutes while the patient, who could not communicate her discomfort, was left unmonitored.`;}
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The patient was unable to communicate discomfort reliably, and no early skin check was performed to compensate for that limitation. The burn occurred and was not discovered until 15 minutes after application. The deviation reached the patient without any barrier catching it.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A barrier would have been an early skin check or an objective temperature verification that caught a problem before the burn occurred. Neither happened. The burn developed over 15 minutes while the patient, who could not communicate her discomfort, was left unmonitored.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{step="harm-info";render();};
 }
@@ -301,14 +352,17 @@ function renderHarmInfoStep(){
 
 function handleHarmInfo(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   btn.classList.add('selected-correct');
   requestedInfo=val.startsWith('Yes');
   const fb=document.getElementById('fb');fb.classList.add('show','neutral');
   const nb=document.getElementById('nb');nb.classList.add('show');
   if(requestedInfo){
     fb.innerHTML=`<span style="font-weight:700;">Reaching out for more information is sound practice.</span> The vignette notes the burn healed without scarring, but confirming the full clinical trajectory is good practice. You contact the clinical supervisor.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   } else {
     fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is reasonable.</span> The vignette tells us the burn healed without scarring. Let's score based on what is documented.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   }
   nb.onclick=()=>{step="harm-level";render();};
 }
@@ -355,15 +409,18 @@ function renderCsaSentinelStep(){
 
 function handleSentinel(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(val==='no'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient sustained a minor temporary burn that healed fully without scarring. The harm does not meet the sentinel event threshold. Let's use the SAC Matrix to think through the appropriate level of response.`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>This patient sustained a minor second-degree burn that healed completely without scarring or lasting effects. Have you thought about whether that level of harm meets the death, severe, or permanent threshold?`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Reconsider My Answer";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
@@ -380,14 +437,17 @@ function renderCsaMatrixStep(){
 
 function handleSev(btn,val){
   document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('sev-fb');fb.classList.add('show');
   if(val==='minor'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">Minor is the right severity classification.</span> The SAC Matrix defines Minor as no injury or no increased stay or level of care. The patient sustained a minor burn treated with wound ointment and a bandage, healed fully, and the home health visit schedule was not significantly altered. This aligns with Minor severity.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     showProb();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> The patient sustained a minor second-degree burn treated with a bandage and wound ointment. There was no increase in care level, no hospitalization, and no lasting effects. Have you thought about which category captures a minor injury with minimal intervention and no lasting clinical impact?`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
   }
 }
@@ -403,9 +463,11 @@ function showProb(){
 
 function handleProbFn(btn,val){
   document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   sacProbability=val;btn.classList.add('selected-correct');
   const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
   fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Minor + Occasional = SAC 1.":"The scenario context suggests Occasional. At Minor severity, all probability categories produce a SAC score of 1."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatRes();
 }
 
@@ -417,8 +479,41 @@ function showMatRes(){
 }
 
 function renderSummary(){
-  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 9 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>EE2 &mdash; Burn/Smoke Inhalation (Environmental); Home Health Setting</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; temperature not objectively verified; skin check not performed within required timeframe; patient's known communication impairment not accounted for in monitoring</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; burn developed over 15 minutes without monitoring; patient could not communicate discomfort</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full healing confirmed within two weeks; no scarring; protocol review revealed objective temperature verification and 5-minute skin check requirements not followed":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (second-degree burn; healed fully without scarring)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Minor severity, any probability) &mdash; monitor and trend; full CSA not indicated by matrix</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on the home health setting.</span> This case illustrates a dimension of the continuum of care that is often underrepresented in patient safety discussions: home health. In a home environment, the clinician is operating without immediate backup, without the institutional infrastructure of a hospital, and with patients whose home environments may present unique risks. Monitoring and assessment protocols that work in a clinical setting may need to be adapted for the home, particularly for patients with communication or sensory limitations. Healthcare administrators overseeing home health programs must ensure that protocols account for the unique risk profile of care delivered in the community setting.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 9</button></div>`;
-  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 9 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>EE2 &mdash; Burn/Smoke Inhalation (Environmental); Home Health Setting</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; temperature not objectively verified; skin check not performed within required timeframe; patient's known communication impairment not accounted for in monitoring</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; burn developed over 15 minutes without monitoring; patient could not communicate discomfort</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full healing confirmed within two weeks; no scarring; protocol review revealed objective temperature verification and 5-minute skin check requirements not followed":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (second-degree burn; healed fully without scarring)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Minor severity, any probability) &mdash; monitor and trend; full CSA not indicated by matrix</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on the home health setting.</span> This case illustrates a dimension of the continuum of care that is often underrepresented in patient safety discussions: home health. In a home environment, the clinician is operating without immediate backup, without the institutional infrastructure of a hospital, and with patients whose home environments may present unique risks. Monitoring and assessment protocols that work in a clinical setting may need to be adapted for the home, particularly for patients with communication or sensory limitations. Healthcare administrators overseeing home health programs must ensure that protocols account for the unique risk profile of care delivered in the community setting.</div><button class="restart-btn" id="rb">Restart Case 9</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 9,
+      log: {
+        finalClassification: 'PSE 2 — Minor Temporary Harm',
+        taxonomyEventType: 'EE2 — Burn (Environmental)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step="intro";render();};
 }
 
 function render(){
@@ -432,10 +527,5 @@ function render(){
   else if(step==="summary")renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
