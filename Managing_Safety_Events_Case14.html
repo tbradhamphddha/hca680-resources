@@ -418,21 +418,25 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.key==='pse2'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is the right classification.</span> The patient required a two-week course of oral antibiotics. The infection resolved fully with no further complications. Oral antibiotic treatment represents a minimal intervention: it does not require hospitalization, IV therapy, or significant escalation in the level of care. The harm was real and required treatment, but it falls within the minor temporary category given the limited scope of the intervention and the full resolution.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='sse5'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the intervention level more carefully.</span> SSE 5 captures significant harm requiring meaningful escalation of care. A two-week course of oral antibiotics, while a real treatment burden, is on the lower end of the intervention spectrum compared to what SSE 5 typically captures: IV antibiotics, hospitalization, or procedural intervention. The infection resolved fully without those escalations. Have you thought about which category better reflects minor harm resolved with oral treatment?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical or life-threatening harm. A CLABSI treated with oral antibiotics with full resolution was a real complication, but it did not meet the critical or life-threatening threshold. Have you thought about which category better captures harm that was real but resolved with minimal intervention?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
