@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 8</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--slate-blue);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.4rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 8: Sponge Count Discrepancy</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A 58-year-old patient undergoes an open bowel resection. Facility policy requires that sponge counts be conducted jointly by the scrub tech and the circulating nurse at opening, before closure, and at final closure. At the closing count, the scrub tech and circulating nurse conduct the count together and identify a discrepancy: one sponge is unaccounted for. The surgical team searches the field, the drapes, the floor, and the surrounding area. The sponge cannot be located. Per facility protocol for unresolved count discrepancies, an intraoperative X-ray is ordered before the patient is closed. The X-ray confirms the sponge is in the surgical field. The surgeon retrieves the sponge, the count is reconciled, and the patient is closed. The patient recovers without complication and is discharged on schedule.";
+const MANAGER_UPDATE = "Per the perioperative manager's review, the patient experienced no harm and the intraoperative protocol functioned as designed. A review of the OR records over the past quarter shows that count discrepancies requiring X-ray confirmation have occurred on three occasions in the past six months. In each instance, the X-ray protocol was followed and no item was ultimately retained. However, the recurring discrepancies suggest the counting process itself may have underlying vulnerabilities that have not yet been examined systematically.";
+
+let step="intro", requestedInfo=null, kctIndex=0, sentinelAnswer=null, sacSeverity=null, sacProbability=null;
+const app=document.getElementById('app');
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 8</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a surgical count discrepancy reported from the operating room. Read the event carefully before working through the discussion points. Something important happened in this case that is different from many of the events you have reviewed so far.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="helper-text">Read carefully. The protocol response in this event is worth examining as closely as the deviation itself.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"main",label:"A sponge became unaccounted for during the surgical procedure, representing a deviation from the expected standard that all sponges are traceable at all times during surgery",type:"main"},
+    {key:"protocol",label:"There was no deviation because the count discrepancy protocol was followed correctly and the sponge was found",type:"incorrect"},
+    {key:"xray",label:"The team should not have needed to order an X-ray because the count process should have prevented any discrepancy",type:"secondary"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That identifies the underlying deviation accurately.</span> The standard of care in surgical practice requires that all sponges and instruments be accounted for throughout the procedure. A count discrepancy, where a sponge cannot be located, represents a departure from that standard regardless of how the situation is ultimately resolved. The fact that the protocol worked and the sponge was found does not mean nothing went wrong. Something went wrong earlier in the procedure that allowed a sponge to reach a position where the count could not account for it.<br><br>This is an important distinction for patient safety practice: the success of a recovery protocol does not eliminate the underlying deviation. It demonstrates that the safety system functioned as designed. Both things are true simultaneously: a deviation occurred, and the system caught it. Now let's look at what the system did well and what that tells us about the underlying vulnerability.`;
+    nb.classList.add('show');nb.textContent="Explore What the System Did";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The protocol functioning correctly is genuinely important, and we will examine it closely.</span> However, the fact that the discrepancy protocol was followed does not mean a deviation did not occur. The deviation is that a sponge became unaccounted for in the first place. The protocol caught it, which is exactly what it was designed to do. Have you thought about what the underlying deviation was that required the protocol to activate?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else if(opt.type==="secondary"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">That identifies the right concern at the right level.</span> The X-ray is a recovery protocol: it is the backstop for when the count process itself has already failed. Have you thought about what that means for what the primary deviation is? The X-ray being needed is evidence that something upstream in the count process was not working as designed.`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that before settling on it.</span> The Known Complication Test can help us think through whether this outcome might be a known complication rather than a safety event. Let's work through those four questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; What the System Did</span><h3 class="case-title">When the Safety System Works</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The underlying deviation is identified.</span> A sponge became unaccounted for. Now let's look at what happened next and what it tells us about the safety system.</div><div class="question">What does the team's response to the count discrepancy tell us about the safety system in this operating room?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"worked",label:"The discrepancy protocol functioned as designed: the count identified the problem, the team could not resolve it manually, and the X-ray backstop caught the sponge before the patient was closed",type:"main"},
+    {key:"xraybad",label:"Needing to use the X-ray means the count process failed, which is itself a serious system failure",type:"partial"},
+    {key:"luck",label:"The outcome depended on whether the X-ray protocol was known and followed, which means it was somewhat fortunate",type:"partial"},
+    {key:"nodiff",label:"Since the patient was not harmed, the system response does not need further examination",type:"incorrect"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is exactly the right read of this situation.</span><br><br>This case is one of the most valuable types of events in patient safety: a near miss where the safety system worked. The count identified the discrepancy. The manual search was inconclusive. Rather than proceeding to closure under uncertainty, the team activated the next layer of the safety system: the intraoperative X-ray protocol. That protocol confirmed the sponge location and allowed retrieval before the patient was closed.<br><br>This is James Reason's Swiss Cheese Model working as it should: multiple layers of defense aligned, and no holes lined up to allow the hazard through. The count was the first layer. The manual search was the second. The X-ray was the third. All three activated in sequence, and the patient was protected.<br><br>The question this near miss raises is not just "what went wrong?" but "what did the system do right, and what would have happened if any one of those layers had not functioned?" That question is the heart of what a structured review of this event should examine.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="xraybad"
+      ?"The X-ray being needed does indicate the earlier layers of the count process did not prevent the discrepancy. That is worth examining. But consider what the alternative would have been if the X-ray protocol had not been followed: the patient would have been closed with a retained sponge. The X-ray was not a failure. It was the safety net doing its job. Have you thought about how to hold both of those things true at once?"
+      :"Whether the outcome depends on protocol knowledge and adherence is actually a deep and important observation. If the X-ray step had been skipped due to time pressure, unfamiliarity, or cultural deference to the surgeon's preference, the sponge would have been retained. Have you thought about what this event would have looked like if the X-ray protocol had not been activated? That counterfactual is exactly what a structured review should examine.";
+    fb.innerHTML=`<span style="font-weight:700;">That is a dimension worth exploring further.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The absence of patient harm is the best possible outcome, and it is worth understanding why it happened.</span> Near misses where no harm occurs are among the most valuable events an organization can learn from, precisely because they reveal system vulnerabilities at a point where correction costs nothing. Have you thought about what this event tells us about the layers of the safety system and what would have happened if any one of them had not functioned?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the procedure (open bowel resection) appropriate or warranted for this patient based on nationally recognized standards of care?",answer:"YES"},
+  {text:"Was the potential complication (retained surgical sponge) a known risk of abdominal surgery, and was the standard of care employed to mitigate that risk?",answer:"NO"},
+  {text:"Was the potential complication identified in a timely manner?",answer:"YES"},
+  {text:"Was the potential complication addressed according to the standard of care, in a timely manner?",answer:"YES"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["Open bowel resection was the indicated procedure for this patient. The surgery itself was clinically appropriate.","The procedure was clinically indicated and appropriate, pointing toward YES."],
+    ["A retained sponge is a known risk of abdominal surgery. However, the count process and the X-ray backstop protocol are the standard of care mitigations for that risk. The discrepancy reveals that the count process did not prevent the sponge from reaching an unaccounted position, which means the primary mitigation did not fully function. This points to NO.","Consider both parts: was the risk known, and was the standard of care employed to prevent it? The count process is the primary mitigation. A discrepancy occurring means the process did not prevent the risk from materializing. This points to NO."],
+    ["The count identified the discrepancy before closure. That is timely identification, before the patient was harmed.","The discrepancy was identified during the closing count, before the patient was closed. That is timely in the most important sense: early enough to activate the recovery protocol."],
+    ["The team followed the unresolved discrepancy protocol, ordered the X-ray, retrieved the sponge, and closed the patient safely. That is the standard of care response to an unresolved count discrepancy.","Activating the X-ray protocol and retrieving the sponge before closure is exactly the standard of care response. This points toward YES."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">One of the four answers came back NO.</span> This is a safety event. The fact that no harm occurred does not change that determination. The deviation, a sponge reaching an unaccounted position, occurred. The recovery protocol prevented harm. Both things are true. Let's go back and identify the deviation before moving forward.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="reference-box"><strong>Defining "reaching the patient":</strong> A deviation reaches the patient when no detection barrier intercepts it before it causes harm. If a barrier catches the error first, the event is classified as a Near Miss Safety Event (NMSE). In this case, the question is whether the sponge reached the patient in a way that caused harm, or whether a barrier intervened.</div><div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it before harm occurred'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val.startsWith('No');
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent.startsWith('No'))b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){
+    fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination for this event.</span> The count discrepancy protocol, followed by the intraoperative X-ray, intercepted the deviation before the patient was closed. The sponge was retrieved. The patient was not harmed. In the SEC framework, when a barrier catches a deviation before it causes harm to the patient, the event is classified as a <strong>Near Miss Safety Event (NMSE)</strong>.<br><br>This is an important classification to understand. A near miss is not a non-event. It is a safety event that revealed a real vulnerability in the system, one that a different set of circumstances could have allowed to become a retained foreign object. The near miss classification is not a lesser category: it is a different branch of the SEC algorithm, and it still warrants careful review.`;
+  } else {
+    fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's think carefully about what happened and in what order.</span> The sponge was in the surgical field, which is why the count could not account for it. However, the count discrepancy protocol was activated before the patient was closed. The X-ray confirmed the sponge location, and the surgeon retrieved it. The patient was closed without the sponge inside. The patient was not harmed. Have you thought about whether what occurred constitutes the deviation reaching the patient in the way the SEC framework defines it?`;
+  }
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="reference-box"><strong>Near Miss Safety Events and harm level:</strong> Because the deviation did not reach the patient in a way that caused harm, there is no patient harm to score. However, the SEC framework still asks us to consider the potential harm that would have resulted if the barrier had not functioned, and we will use that for the SAC Matrix in the next step. Before that, do you need more information about the broader context of this event?</div><div class="question">Before moving to the priority assessment, do you need more information from the manager or designee?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting context before the priority assessment is sound practice.</span> You reach out to the perioperative manager for a broader picture of this event.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>This pattern of three discrepancies in six months is important context for the priority and review decisions ahead.`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is reasonable.</span> The vignette tells us no harm occurred and the protocol functioned. Let's move to the priority assessment. Note that if you had requested the manager update, you would learn this is the third count discrepancy requiring X-ray confirmation in six months, which adds important context for what a review should examine.`;
+  }
+  nb.onclick=()=>{step="csa";render();};
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="reference-box"><strong>Why this question applies to near misses:</strong> The Joint Commission's Sentinel Event Policy defines sentinel events based on outcomes that reach the patient. A near miss, where the deviation did not reach the patient, does not meet the sentinel event definition. However, it is still worth working through this question to understand the boundary and what would have been required if the outcome had been different.</div><div class="question">Does this near miss event meet The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='no'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as patient safety events that reach a patient and result in death, severe harm, or permanent harm. This event did not reach the patient in a harmful way: the sponge was retrieved before closure and no harm occurred. This is not a sentinel event.<br><br>However, consider the counterfactual: if the X-ray protocol had not been activated, or if the X-ray had been skipped under time pressure, this event would have resulted in a retained foreign object, which is explicitly on the JC sentinel event list regardless of outcome. The near miss status is entirely dependent on the protocol functioning. That is worth keeping in mind as we assess priority. Let's use the SAC Matrix to think through the appropriate level of organizational response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria in the context of this event.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event is a patient safety event that reaches a patient and results in death, severe harm, or permanent harm.</div>The key phrase here is "reaches a patient." The deviation in this event was intercepted by the count discrepancy protocol and the intraoperative X-ray before the patient was closed. No harm occurred. Have you thought about how that compares to the sentinel event definition?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update (for reference)</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3>${rem}<div class="reference-box"><strong>Applying the SAC Matrix to a Near Miss:</strong> When no harm occurred, the SAC Matrix is applied using the <em>potential</em> severity of the outcome that would have resulted if the barrier had not functioned. In this case, the question is: if the X-ray protocol had not been activated and the sponge had been retained, what would the severity and probability have been?<br><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent / Occasional / Uncommon / Remote</strong></ul><em>Scenario context: Based on the manager's update, count discrepancies requiring X-ray have occurred three times in six months at this facility.</em></div><div class="question">If the sponge had been retained, how would you classify the <strong>potential severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong> of a retained sponge event at this facility, given the discrepancy pattern?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='catastrophic'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Catastrophic is the right potential severity.</span> Had the sponge been retained, the event would have been an unintended retention of a foreign object, which is explicitly on the JC sentinel event list regardless of the level of harm that resulted. Any JC sentinel event is Catastrophic in the SAC Matrix. The near miss status does not change the potential severity assessment.`;
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's think about what the outcome would have been.</span> If the sponge had been retained and discovered post-operatively, the event would have been an unintended foreign object retention, which is a JC sentinel event regardless of outcome. Any JC sentinel event is classified as Catastrophic severity in the SAC Matrix. Have you thought about how the potential outcome, rather than the actual outcome, shapes this assessment?`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent (three discrepancies in six months suggests high recurrence)'},{val:'occasional',label:'Occasional (count discrepancies occur but are not frequent)'},{val:'uncommon',label:'Uncommon (this type of event is rare at this facility)'},{val:'remote',label:'Remote (this type of event is extremely rare)'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  let note=val==='frequent'
+    ?"Three count discrepancies requiring X-ray in six months suggests this type of near miss is occurring at a Frequent rate at this facility. Note that at Catastrophic potential severity, any probability category produces a SAC score of 3."
+    :"The scenario context suggests the discrepancy pattern is occurring at a rate that may be higher than Occasional. Note that at Catastrophic potential severity, any probability category produces a SAC score of 3. The probability classification shapes how you think about the urgency and scope of review, even when the matrix score is the same.";
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${note}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 3 (Highest Potential Risk)</strong><br><br>Catastrophic potential severity with any probability = SAC 3. A structured review is warranted based on the potential severity of what could have occurred if the barrier had not functioned.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">A note on review type for near miss events.</span> A SAC 3 near miss warrants a structured review, but the type of review depends on organizational context and the pattern of events. Options include a full Comprehensive Systematic Analysis (CSA), an Apparent Cause Analysis (ACA), or, if there are multiple similar events as in this case, a Common Cause Analysis (CCA) examining the shared conditions across all three discrepancy events together. The goal is to understand why the underlying count process is producing discrepancies, not just to confirm that the X-ray protocol functioned. Always verify what your organizational policy and accreditation body require.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 8 Complete</span><h3 class="case-title">SEC Classification</h3><div class="score-badge">Near Miss Safety Event</div><p>No harm reached the patient</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>PR4 &mdash; Retained Foreign Object (Near Miss); Inpatient Surgery</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; a sponge became unaccounted for during surgery, representing a departure from the expected standard that all sponges are traceable throughout the procedure</td></tr><tr><td>What the system did</td><td>Count discrepancy protocol activated; manual search inconclusive; intraoperative X-ray ordered per protocol; sponge retrieved before closure</td></tr><tr><td>Did the deviation reach the patient?</td><td>No &mdash; the count discrepancy and X-ray protocols intercepted the deviation before the patient was closed; classified as Near Miss Safety Event (NMSE)</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; three count discrepancies requiring X-ray in past six months; pattern suggests underlying vulnerability in the count process":"No &mdash; note that the manager update reveals a recurring discrepancy pattern"}</td></tr><tr><td>Level of harm</td><td>No harm (Near Miss) &mdash; potential harm if barrier had not functioned: SSE 5 or higher depending on outcome of undetected retention</td></tr><tr><td>SEC Classification</td><td>Near Miss Safety Event (NMSE)</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; deviation did not reach the patient; if retention had occurred, it would have been a JC sentinel event regardless of outcome</td></tr><tr><td>SAC Matrix (potential severity)</td><td>3 (Catastrophic potential severity, any probability) &mdash; structured review warranted; ACA, CSA, or CCA depending on organizational decision</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">The most important concept from this case.</span> Near misses are among the most valuable patient safety events an organization can identify and examine. They reveal real system vulnerabilities at a point where the cost of learning is zero: no patient was harmed, no family was devastated, no sentinel event report was filed. The vulnerability that allowed this sponge to become unaccounted for is the same vulnerability that, under a different set of circumstances, without the X-ray protocol functioning, would have produced a retained surgical item and a JC sentinel event.<br><br>The question a structured review must answer is not only "did the protocol work?" but "why is the count process producing discrepancies, and what would happen if the X-ray protocol were not available or not activated?" Protecting the patient today while ignoring the upstream vulnerability leaves the next patient at risk.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 8</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
