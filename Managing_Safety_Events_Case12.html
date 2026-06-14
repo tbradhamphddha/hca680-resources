@@ -427,6 +427,7 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
@@ -435,18 +436,22 @@ function handleHarmLevel(btn,opt){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     if(requestedInfo){
       fb.innerHTML=`<span style="font-weight:700;">SSE 3: Moderate Permanent Harm is where the evidence points with the manager's update in hand.</span> The procedural scar at the chest tube insertion site is a permanent physical change that would not exist if the procedure had not been performed unnecessarily. The SEC definition of SSE 3 explicitly includes disfigurement as a form of Moderate Permanent Harm. A scar from an unnecessary invasive procedure meets that definition. This is a meaningful shift from SSE 5: the harm is not temporary. It is a permanent mark from an unnecessary procedure.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     } else {
       fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is a defensible classification based on the information available in the vignette.</span> The patient experienced the pain, risk, and recovery of an unnecessary procedure and was discharged without further complication. Without the manager update, the harm appears temporary. However, if you had requested the manager update, you would learn that the procedure left a scar: a permanent physical change from an unnecessary intervention. That detail shifts the classification from SSE 5 (temporary) to SSE 3 (moderate permanent). This case illustrates how the decision to request more information can materially change both the classification and the organizational response.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     }
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='sse3'&&!requestedInfo){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Your instinct toward permanent harm may be correct, but let's look at what the vignette tells us.</span> The patient was discharged without further complication. Without the manager update, the evidence for permanent harm is not established from the vignette alone. Have you thought about whether requesting more information from the manager might clarify whether any permanent effects resulted from the unnecessary procedure?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Request Information from Manager/Designee";
     nb.onclick=()=>{requestedInfo=true;renderHarmLevelStep();};
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the intervention level more carefully.</span> ${opt.key==='sse4'?"SSE 4 is reserved for critical or life-threatening harm requiring major surgery. The patient was stable enough to be discharged after the tube removal and follow-up X-ray. The harm, while meaningful, was not critical or life-threatening.":"Have you thought about which category best captures the level of harm from an unnecessary invasive procedure for a patient who was discharged without further complication?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
