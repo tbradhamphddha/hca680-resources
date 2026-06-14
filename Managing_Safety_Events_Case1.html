@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 1</title>
+<style>
+  :root {
+    --edgewood-red: #BB0000;
+    --black: #000000;
+    --white: #FFFFFF;
+    --dark-gold: #C8932B;
+    --warm-grey: #F0EEEB;
+    --dark-web-grey: #58595B;
+    --slate-blue: #5794AD;
+    --light-grey: #C2C6C8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    background: var(--warm-grey);
+    color: var(--black);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  header {
+    background: var(--black);
+    color: var(--white);
+    padding: 28px 20px;
+    text-align: center;
+  }
+  header h1 {
+    font-family: 'Spectral', Georgia, serif;
+    margin: 0 0 6px;
+    font-size: 1.7rem;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 0;
+    color: var(--light-grey);
+    font-size: 0.95rem;
+  }
+  .accent-bar { height: 6px; background: var(--edgewood-red); }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--light-grey);
+    border-radius: 6px;
+    padding: 24px;
+    margin-top: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: var(--dark-web-grey);
+  }
+  .progress-bar-bg {
+    background: var(--light-grey);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .progress-bar-fill {
+    background: var(--edgewood-red);
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .step-label {
+    display: inline-block;
+    background: var(--dark-gold);
+    color: var(--white);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .case-title {
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 1.4rem;
+    margin: 0 0 14px;
+    color: var(--black);
+  }
+
+  .vignette {
+    background: var(--warm-grey);
+    border-left: 4px solid var(--slate-blue);
+    padding: 16px 18px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+  }
+
+  .intro-text {
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+  }
+  .intro-text p { margin: 0 0 12px; }
+
+  .question {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 1.05rem;
+  }
+  .helper-text {
+    font-size: 0.92rem;
+    color: var(--dark-web-grey);
+    margin: 6px 0 14px;
+  }
+
+  .reference-box {
+    background: var(--warm-grey);
+    border: 1px solid var(--light-grey);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    color: var(--dark-web-grey);
+  }
+  .reference-box strong { color: var(--black); }
+  .reference-box ul { margin: 8px 0 0; padding-left: 18px; }
+  .reference-box li { margin-bottom: 4px; }
+
+  .info-box {
+    background: #fff8e6;
+    border: 1px solid var(--dark-gold);
+    border-left: 4px solid var(--dark-gold);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+  }
+  .info-box strong { display: block; margin-bottom: 4px; color: var(--dark-gold); }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .opt-btn {
+    flex: 1 1 220px;
+    background: var(--white);
+    border: 2px solid var(--slate-blue);
+    color: var(--black);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 600;
+    padding: 14px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+  .opt-btn:hover { background: var(--slate-blue); color: var(--white); }
+  .opt-btn.selected-correct {
+    background: #2e7d32;
+    border-color: #2e7d32;
+    color: var(--white);
+  }
+  .opt-btn.selected-redirect {
+    background: var(--edgewood-red);
+    border-color: var(--edgewood-red);
+    color: var(--white);
+  }
+  .opt-btn:disabled { cursor: default; opacity: 1; }
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect) {
+    opacity: 0.45;
+  }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 5px;
+    font-size: 0.97rem;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadein 0.25s ease; }
+  .feedback.correct {
+    background: #eaf5ea;
+    border-left: 4px solid #2e7d32;
+  }
+  .feedback.redirect {
+    background: #fdeaea;
+    border-left: 4px solid var(--edgewood-red);
+  }
+  .feedback.neutral {
+    background: var(--warm-grey);
+    border-left: 4px solid var(--slate-blue);
+  }
+  .feedback strong { display: block; margin-bottom: 6px; }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+  }
+  .nav-btn {
+    background: var(--edgewood-red);
+    color: var(--white);
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+  }
+  .nav-btn.show { display: inline-block; }
+  .nav-btn:hover { background: #930000; }
+  .nav-btn.secondary {
+    background: var(--dark-web-grey);
+  }
+  .nav-btn.secondary:hover { background: #404142; }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.92rem;
+  }
+  .summary-table th, .summary-table td {
+    border: 1px solid var(--light-grey);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .summary-table th {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Spectral', Georgia, serif;
+    font-weight: 600;
+  }
+  .summary-table tr:nth-child(even) td { background: var(--warm-grey); }
+
+  .start-screen, .end-screen {
+    text-align: center;
+  }
+  .start-screen h2, .end-screen h2 {
+    font-family: 'Spectral', Georgia, serif;
+    color: var(--black);
+  }
+
+  .case-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 22px 0;
+  }
+  .case-grid button {
+    background: var(--white);
+    border: 2px solid var(--edgewood-red);
+    color: var(--edgewood-red);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 14px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 80px;
+  }
+  .case-grid button:hover { background: var(--edgewood-red); color: var(--white); }
+  .case-grid button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .restart-btn {
+    background: transparent;
+    border: 2px solid var(--dark-web-grey);
+    color: var(--dark-web-grey);
+    font-family: inherit;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 18px;
+  }
+  .restart-btn:hover { background: var(--dark-web-grey); color: var(--white); }
+
+  .small-note {
+    font-size: 0.85rem;
+    color: var(--dark-web-grey);
+    margin-top: 18px;
+    text-align: center;
+  }
+
+  .score-badge {
+    display: inline-block;
+    background: var(--edgewood-red);
+    color: var(--white);
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 6px;
+    margin: 14px 0;
+  }
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 1: Fall with Hip Fracture</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+
+<div class="accent-bar"></div>
+
+<div class="wrap">
+  <div id="app"></div>
+</div>
+
+<script>
+// =================================================================
+// CASE 1 DATA
+// =================================================================
+const VIGNETTE = "A patient was admitted with heart failure and received multiple medications, some of which were reported to cause dizziness and sleepiness. A fall risk assessment was completed, and the patient was identified as high risk of harm if they fall. The Fall Prevention interventions, including bed alarms, patient education, yellow socks, and rounding procedures, were implemented consistently. The family was visiting and decided to leave and get some dinner. Shortly thereafter, the patient got out of bed to go to the bathroom. The patient fell and complained of intense hip and leg pain. Evaluation determines that the patient had a hip fracture as a result of this fall, requiring surgical repair and rehabilitation therapy. The nurse found the bed alarm off and learned that the family had turned it off because it kept going off and didn't think to put it back on when they left the patient alone.";
+
+const MANAGER_UPDATE = "Per the surgeon's discharge note, the patient will not be able to bend their knee and will require device assistance from baseline.";
+
+// Step state
+let step = "intro"; // intro -> deviation -> kct -> deviation (loop) -> reach -> harm-info -> harm-level -> csa -> summary
+let requestedInfo = null; // true/false
+let kctVisited = false;
+
+// CSA step state
+let sentinelAnswer = null;
+let sentinelCriteriaShown = false;
+let sacSeverity = null;
+let sacProbability = null;
+
+const app = document.getElementById('app');
+
+// -----------------------------------------------------------------
+// INTRO
+// -----------------------------------------------------------------
+function renderIntro() {
+  app.innerHTML = `
+    <div class="card">
+      <span class="step-label">Case 1</span>
+      <div class="intro-text">
+        <p>You have been trained to review safety events reported by employees at your organization. You've got your toolkit and you're ready to get to work.</p>
+        <p>You open the first event and have to decide if it is a safety event. If so, you'll need to score it. Let's begin.</p>
+      </div>
+      ${renderVignette()}
+      <div class="nav-row">
+        <button class="nav-btn show" id="next-btn">Begin Discussion</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('next-btn').onclick = () => {
+    step = "deviation";
+    render();
+  };
+}
+
+function renderVignette() {
+  return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;
+}
+
+function progressBar(stepNum, totalSteps, label) {
+  const pct = Math.round((stepNum / totalSteps) * 100);
+  return `
+    <div class="progress-row">
+      <span>${label}</span>
+      <span>Step ${stepNum} of ${totalSteps}</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+  `;
+}
+
+// -----------------------------------------------------------------
+// STEP 1: DEVIATION IDENTIFICATION
+// -----------------------------------------------------------------
+const DEVIATION_OPTIONS = [
+  {
+    key: "alarm",
+    label: "The bed alarm was turned off by the family and not turned back on before they left the patient alone",
+    type: "main"
+  },
+  {
+    key: "education",
+    label: "The family was not educated about the importance of the bed alarm",
+    type: "secondary"
+  },
+  {
+    key: "assessment",
+    label: "The fall risk assessment was not completed",
+    type: "factually-incorrect"
+  },
+  {
+    key: "interventions",
+    label: "The fall prevention interventions were not implemented",
+    type: "factually-incorrect"
+  },
+  {
+    key: "none",
+    label: "There was no deviation in Generally Accepted Performance Standards (GAPS)",
+    type: "no-gaps"
+  }
+];
+
+function renderDeviationStep() {
+  app.innerHTML = `
+    ${progressBar(1, 4, "Discussion Point 1: Identifying Deviations")}
+    <div class="card">
+      <span class="step-label">Step 1 of 4</span>
+      <h3 class="case-title">Were There Any Deviations?</h3>
+      ${renderVignette()}
+      <div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? If so, where? Was there more than one?</div>
+      <div class="helper-text">Review the event again and select the option below that best represents the <em>main</em> deviation, the one most directly and causally connected to what happened to the patient.</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  DEVIATION_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleDeviationAnswer(btn, opt, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleDeviationAnswer(btn, opt, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (opt.type === "main") {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <strong>You have identified the proximate deviation in this event.</strong>
+      The bed alarm was turned off and never restored before the patient was left alone, and that is the issue most directly tied to what happened next.
+      <br><br>
+      Now let's think about causation for a moment. Is there a clear relationship between this deviation and the harm the patient experienced? The patient had been identified as high fall risk, and the bed alarm was a specifically prescribed safeguard in the fall prevention plan. When that alarm was off and the family left, the system had no way to alert staff that a high-risk patient was attempting to get up unassisted. That gap came immediately before the fall, which makes it causal, not just coincidental.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Continue to Discussion Point 2";
+    nextBtn.onclick = () => { step = "reach"; render(); };
+
+  } else if (opt.type === "secondary") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <strong>That is one way to view this event.</strong>
+      Family education is worth noting, and in a fuller event review it would likely surface as a contributing factor, one of several holes in the swiss cheese.
+      <br><br>
+      Have you thought about whether there is a more proximate deviation, something that happened directly before the fall, with a clearer causal connection to the harm? Take another look at the options and consider what was in place, and what was not, in the moments just before the patient got up.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => { renderDeviationStep(); };
+
+  } else if (opt.type === "factually-incorrect") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    let detail = "";
+    if (opt.key === "assessment") {
+      detail = "Looking back at the event: a fall risk assessment <em>was</em> completed, and the patient was identified as high risk.";
+    } else {
+      detail = "Looking back at the event: the fall prevention interventions, including bed alarms, patient education, yellow socks, and rounding, <em>were</em> implemented consistently.";
+    }
+    feedbackDiv.innerHTML = `
+      <strong>Let's go back to the event together.</strong>
+      ${detail}
+      <br><br>
+      Since that step was completed as expected, it is not the gap we are looking for here. Have you thought about what changed <em>after</em> those safeguards were in place? Something shifted between the time the interventions were set up and the moment the patient fell. Take another look at the options with that in mind.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => { renderDeviationStep(); };
+
+  } else if (opt.type === "no-gaps") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <strong>Let's explore that conclusion together before we settle on it.</strong>
+      One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is considered a known complication rather than a safety event. If the answer to any one of them is NO, we are looking at a safety event. Let's work through those questions and see where this case lands.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Apply the Known Complication Test";
+    nextBtn.onclick = () => { kctVisited = true; step = "kct"; render(); };
+  }
+}
+
+// -----------------------------------------------------------------
+// KNOWN COMPLICATION TEST (only reached if "no deviation" selected)
+// -----------------------------------------------------------------
+const KCT_QUESTIONS = [
+  {
+    text: "Was the procedure, treatment, or test (in this case, the patient getting up to use the bathroom while unsupervised) appropriate or warranted based on nationally recognized standards of care for a high fall-risk patient?",
+    answer: "NO"
+  },
+  {
+    text: "Was the complication (a fall resulting in hip fracture) a known risk, and was the standard of care employed to mitigate that risk at the time the patient got up?",
+    answer: "NO"
+  },
+  {
+    text: "Was the complication identified in a timely manner?",
+    answer: "YES"
+  },
+  {
+    text: "Was the complication treated according to the standard of care, in a timely manner?",
+    answer: "YES"
+  }
+];
+
+let kctIndex = 0;
+
+function renderKctStep() {
+  if (kctIndex >= KCT_QUESTIONS.length) {
+    renderKctResult();
+    return;
+  }
+  const q = KCT_QUESTIONS[kctIndex];
+  app.innerHTML = `
+    ${progressBar(1, 4, "Discussion Point 1: Known Complication Test")}
+    <div class="card">
+      <span class="step-label">Known Complication Test &middot; Question ${kctIndex + 1} of 4</span>
+      <h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>Reminder:</strong> If the answer to ALL four questions is YES, the event is a Known Complication, not a safety event. If the answer to ANY question is NO, the event is a safety event.
+      </div>
+      <div class="question">${q.text}</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['YES', 'NO'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.style.flex = "1 1 100px";
+    btn.textContent = val;
+    btn.onclick = () => handleKctAnswer(btn, val, q, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleKctAnswer(btn, selected, q, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = selected === q.answer;
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+  } else {
+    btn.classList.add('selected-redirect');
+    allBtns.forEach(b => { if (b.textContent === q.answer) b.classList.add('selected-correct'); });
+  }
+
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  feedbackDiv.classList.add(isCorrect ? 'correct' : 'neutral');
+
+  let note = "";
+  if (kctIndex === 0) {
+    note = isCorrect
+      ? "Think about what this fall prevention plan was telling us: bed alarms, education, yellow socks, and rounding were all in place because an unsupervised, unassisted trip to the bathroom was exactly the scenario the team was trying to prevent. An unsupervised attempt to get up does not align with the standard of care for this patient."
+      : "Have you thought about what the fall prevention plan was designed to do? Bed alarms, education, rounding, all of those measures were put in place because this patient was not considered safe to get up independently. An unsupervised attempt to use the bathroom runs counter to the standard of care for a patient at this level of fall risk.";
+  } else if (kctIndex === 1) {
+    note = isCorrect
+      ? "A fall and resulting fracture were recognized risks, which is exactly why the prevention plan existed. But the standard of care requires those safeguards to be active and in place. The bed alarm was off at the moment the patient got up, so the mitigation step that mattered most was not functioning."
+      : "Let's explore this a bit more. The fall was a known risk, and yes, a prevention plan was in place. But here is the question worth sitting with: was the specific safeguard designed to mitigate that risk actually functioning at the moment the patient got up? The alarm was off, which means the mitigation was not in place when it was needed most.";
+  } else if (kctIndex === 2) {
+    note = isCorrect
+      ? "Based on the event, the patient was found shortly after the fall and evaluated promptly, which supports a timely identification of the complication."
+      : "Looking at the event again, the patient was found relatively quickly after the fall and received prompt evaluation. Given that timeline, this question would point toward YES.";
+  } else {
+    note = isCorrect
+      ? "The event describes surgical repair and rehabilitation therapy following the fracture, which is consistent with the standard of care for this type of injury."
+      : "The event tells us the patient received surgical repair and rehabilitation therapy, which reflects the standard of care for a hip fracture. That supports a YES for this question.";
+  }
+  feedbackDiv.innerHTML = `<strong>${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</strong> ${note}`;
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.onclick = () => {
+    kctIndex++;
+    renderKctStep();
+  };
+}
+
+function renderKctResult() {
+  app.innerHTML = `
+    ${progressBar(1, 4, "Discussion Point 1: Known Complication Test")}
+    <div class="card">
+      <span class="step-label">Known Complication Test &middot; Result</span>
+      <h3 class="case-title">What Does This Tell Us?</h3>
+      <div class="feedback show neutral">
+        <strong>Here is what working through those four questions tells us.</strong>
+        Two of the four answers came back NO. The Known Complication Test is clear on this point: if the answer to any one question is NO, the event is a safety event, not a known complication.
+        <br><br>
+        So our earlier conclusion, that there was no deviation in GAPS, does not hold up under scrutiny. There was a deviation, and now we are better positioned to identify it. Let's go back and take another look.
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn show" id="next-btn">Return to Discussion Point 1</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('next-btn').onclick = () => {
+    step = "deviation";
+    render();
+  };
+}
+
+// -----------------------------------------------------------------
+// STEP 2: DID THE DEVIATION REACH THE PATIENT?
+// -----------------------------------------------------------------
+function renderReachStep() {
+  app.innerHTML = `
+    ${progressBar(2, 5, "Discussion Point 2: Did the Deviation Reach the Patient?")}
+    <div class="card">
+      <span class="step-label">Step 2 of 5</span>
+      <h3 class="case-title">Did the Deviation Reach the Patient?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>How are we defining "reaching the patient"?</strong> In the SEC algorithm, a deviation "reaches the patient" when it is not caught or corrected by a detection barrier before it can affect the patient, whether or not harm actually results. If a barrier (a person, a process, or a piece of technology) catches the issue first, the deviation does not reach the patient and the event would instead be considered a Near Miss.
+      </div>
+      <div class="question">Given that definition, did the deviation, the bed alarm being off, reach the patient?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Discussion Point 3</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['Yes, it reached the patient', 'No, a barrier caught it first'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = val;
+    btn.onclick = () => handleReachAnswer(btn, val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleReachAnswer(btn, selected, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = selected === 'Yes, it reached the patient';
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <strong>That is a sound read of this situation.</strong>
+      No barrier intervened between the deviation and the patient. The alarm was off, no one was alerted, and the patient got up, fell, and sustained an injury. When nothing catches the error before it affects the patient, the deviation has reached the patient.
+    `;
+  } else {
+    btn.classList.add('selected-redirect');
+    allBtns.forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <strong>Let's explore what a "catch" would have looked like here.</strong>
+      A barrier catching the deviation would mean something or someone intervened before the patient was affected. For example, a staff member noticing the alarm was off and restoring it before the patient attempted to get up, or a rounding check happening at exactly the right moment. Neither of those things happened. The patient got up, fell, and fractured her hip. Have you thought about what that means for whether the deviation reached the patient?
+    `;
+  }
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.onclick = () => { step = "harm-info"; render(); };}
+
+// -----------------------------------------------------------------
+// STEP 3a: DO YOU NEED MORE INFORMATION?
+// -----------------------------------------------------------------
+function renderHarmInfoStep() {
+  app.innerHTML = `
+    ${progressBar(3, 5, "Discussion Point 3: Level of Harm")}
+    <div class="card">
+      <span class="step-label">Step 3 of 5</span>
+      <h3 class="case-title">What Was the Level of Harm?</h3>
+      ${renderVignette()}
+      <div class="question">Before scoring the level of harm, do you need more information?</div>
+      <div class="helper-text">As the reviewer, you can request additional information from the unit manager or their designee before finalizing your classification.</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['Yes, request more information from the manager/designee', 'No, proceed with the information available'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = val;
+    btn.onclick = () => handleHarmInfoAnswer(btn, val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleHarmInfoAnswer(btn, selected, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  btn.classList.add('selected-correct');
+
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  feedbackDiv.classList.add('neutral');
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+
+  if (selected.startsWith('Yes')) {
+    requestedInfo = true;
+    feedbackDiv.innerHTML = `
+      <strong>That is a smart instinct.</strong>
+      Reaching out for more information before finalizing a classification is good practice, and it is exactly what a thorough reviewer does. You contact the unit manager for an update on the patient's condition.
+      <div class="info-box">
+        <strong>Manager/Designee Update</strong>
+        ${MANAGER_UPDATE}
+      </div>
+      With that information in hand, let's think about how it affects the level of harm.
+    `;
+  } else {
+    requestedInfo = false;
+    feedbackDiv.innerHTML = `
+      <strong>That is a reasonable choice given what is documented.</strong>
+      You have a hip fracture requiring surgical repair and rehabilitation therapy to work with. Let's see how you score the level of harm based on that information.
+    `;
+  }
+
+  nextBtn.onclick = () => { step = "harm-level"; render(); };
+}
+
+// -----------------------------------------------------------------
+// STEP 3b: HARM LEVEL SCORING
+// -----------------------------------------------------------------
+const HARM_OPTIONS = [
+  { key: "pse1", label: "Minor Permanent Harm (PSE 1)" },
+  { key: "pse2", label: "Minor Temporary Harm (PSE 2)" },
+  { key: "sse5", label: "Moderate Temporary Harm (SSE 5)" },
+  { key: "sse4", label: "Severe Temporary Harm (SSE 4)" },
+  { key: "sse3", label: "Moderate Permanent Harm (SSE 3)" },
+  { key: "sse2", label: "Severe Permanent Harm (SSE 2)" }
+];
+
+function renderHarmLevelStep() {
+  const reminder = requestedInfo
+    ? `<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`
+    : "";
+
+  app.innerHTML = `
+    ${progressBar(3, 5, "Discussion Point 3: Level of Harm")}
+    <div class="card">
+      <span class="step-label">Step 3 of 5</span>
+      <h3 class="case-title">Score the Level of Harm</h3>
+      ${renderVignette()}
+      ${reminder}
+      <div class="reference-box">
+        <strong>SEC Levels of Harm (selected categories):</strong>
+        <ul>
+          <li><strong>PSE 1 / 2</strong> &mdash; Minor permanent or minor temporary harm</li>
+          <li><strong>SSE 5</strong> &mdash; Moderate temporary harm</li>
+          <li><strong>SSE 4</strong> &mdash; Severe temporary harm</li>
+          <li><strong>SSE 3</strong> &mdash; Moderate permanent harm</li>
+          <li><strong>SSE 2</strong> &mdash; Severe permanent harm</li>
+        </ul>
+        Note: "Permanent" and "temporary" describe the expected duration of the harm relative to the patient's baseline, not whether the harm itself was severe or moderate.
+      </div>
+      <div class="question">Based on the information available to you, how would you classify the level of harm in this event?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">See Final Score</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  HARM_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleHarmLevelAnswer(btn, opt, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleHarmLevelAnswer(btn, opt, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  // Determine correct answer based on path
+  const correctKey = requestedInfo ? "sse2" : "sse4";
+
+  if (opt.key === correctKey) {
+    allBtns.forEach(b => b.disabled = true);
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+
+    if (requestedInfo) {
+      feedbackDiv.innerHTML = `
+        <strong>SSE 2: Severe Permanent Harm is where the evidence points.</strong> A hip fracture requiring surgical repair is serious on its own, but the manager's update adds a critical dimension: the patient will not regain knee flexion and will require a mobility device going forward. That describes a lasting change from the patient's baseline function, not a temporary setback. When a deviation results in a permanent loss of function, the SEC framework distinguishes that from harm the patient is expected to recover from. Combined with the severity of the injury and the surgical intervention, SSE 2 is the appropriate classification.
+      `;
+    } else {
+      feedbackDiv.innerHTML = `
+        <strong>SSE 4: Severe Temporary Harm is a supportable classification based on the information available.</strong> A hip fracture requiring surgical repair and rehabilitation is a serious injury, and without additional information about the patient's expected recovery, this is a reasonable score at this point in the review.
+      `;
+    }
+
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Continue to Discussion Point 5";
+    nextBtn.onclick = () => { step = "csa"; render(); };
+
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+
+    if (!requestedInfo) {
+      feedbackDiv.innerHTML = `
+        <strong>Let's think about what we still do not know.</strong>
+        Based on the documentation so far, a hip fracture requiring surgical repair and rehabilitation is a serious injury, but the event does not yet tell us what the patient's recovery is expected to look like. Have you thought about whether reaching out to the unit manager or designee might give you what you need to finalize this score?
+      `;
+      allBtns.forEach(b => b.disabled = true);
+      nextBtn.classList.add('show');
+      nextBtn.textContent = "Request Information from Manager/Designee";
+      nextBtn.onclick = () => {
+        requestedInfo = true;
+        renderHarmLevelStep();
+      };
+    } else {
+      let hint = "";
+      if (opt.key === "sse4" || opt.key === "sse5") {
+        hint = `Have you thought about what the manager's update is actually describing? The patient will not be able to bend their knee and will require device assistance from baseline going forward. Is that a state the patient is expected to recover from, or is it a lasting change to how they will function? How does your answer to that question affect the duration classification?`;
+      } else if (opt.key === "sse3") {
+        hint = `The manager's update does point toward permanent harm, and that reading of the discharge note is on track. Let's explore the severity dimension a bit further. Consider the full picture: a hip fracture, surgical repair, permanent loss of knee flexion, and ongoing device-assisted mobility. How does that combination weigh against the difference between moderate and severe harm in the SEC framework?`;
+      } else {
+        hint = `Let's go back to both the injury and the manager's update together. A hip fracture with surgical repair, a permanent loss of knee flexion, and the need for device assistance going forward: how do those details together inform both the severity and the duration of the harm?`;
+      }
+      feedbackDiv.innerHTML = `<span style="font-weight:700;">Let's explore this a bit further.</span> ${hint}`;
+      btn.disabled = true;
+      btn.classList.remove('selected-redirect');
+      nextBtn.classList.add('show');
+      nextBtn.textContent = "Try Again";
+      nextBtn.onclick = () => {
+        feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+        feedbackDiv.innerHTML = '';
+        nextBtn.classList.remove('show');
+        allBtns.forEach(b => {
+          b.disabled = false;
+          b.classList.remove('selected-correct', 'selected-redirect');
+        });
+      };
+    }
+  }
+}
+
+// -----------------------------------------------------------------
+// STEP 4: CSA DISCUSSION POINT
+// -----------------------------------------------------------------
+
+// Sub-step A: Is this a Sentinel Event?
+function renderCsaSentinelStep() {
+  app.innerHTML = `
+    ${progressBar(4, 5, "Discussion Point 4: Should a CSA Be Completed?")}
+    <div class="card">
+      <span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span>
+      <h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>Why this matters:</strong> The Joint Commission's Sentinel Event Policy (effective July 1, 2026) defines specific event types that require a comprehensive systematic analysis (CSA) regardless of any other consideration. Knowing whether an event meets sentinel event criteria is therefore a foundational step in determining what your organization is obligated to do next.
+      </div>
+      <div class="question">Based on what you know about this event, do you believe it meets The Joint Commission's definition of a sentinel event?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Priority Matrix</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  [
+    { val: 'yes', label: 'Yes, this is a sentinel event' },
+    { val: 'no', label: 'No, this is not a sentinel event' },
+    { val: 'unsure', label: 'Unsure, I need to think through it' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleSentinelAnswer(btn, opt.val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleSentinelAnswer(btn, val, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  sentinelAnswer = val;
+
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (val === 'yes') {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">That is well-reasoned.</span> The Joint Commission Sentinel Event Policy (July 2026) includes falls in a staffed-around-the-clock care setting that result in any fracture or that require surgery. This patient sustained a hip fracture and underwent surgical repair, which meets both criteria simultaneously. A CSA is required for Joint Commission-accredited organizations when a sentinel event occurs, independent of any other prioritization tool. Let's now look at the SAC Matrix to think through resource allocation.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.onclick = () => renderCsaMatrixStep();
+
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+
+    const criteriaBlock = `
+      <div class="info-box" style="margin-top:12px;">
+        <strong>JC Sentinel Event Policy (July 2026): Fall Criteria</strong>
+        A fall in a staffed-around-the-clock care setting is a sentinel event when it results in any of the following:
+        <ul style="margin:8px 0 0 18px; padding:0;">
+          <li>Any fracture</li>
+          <li>Surgery, casting, or traction</li>
+          <li>Required consult or management for a neurological or internal injury</li>
+          <li>A patient with coagulopathy who receives blood products because of the fall</li>
+          <li>Death or permanent harm from injuries sustained in the fall</li>
+        </ul>
+      </div>
+    `;
+
+    if (val === 'no') {
+      feedbackDiv.innerHTML = `
+        <span style="font-weight:700;">Let's look at this more carefully.</span> It is worth going back to the specific criteria The Joint Commission uses to define sentinel events for falls. Have a look at the policy language below and consider how this event compares.
+        ${criteriaBlock}
+        This patient fell in an inpatient unit, sustained a hip fracture, and required surgical repair. How does that compare to what you see in the fall criteria? Take another look and reconsider your selection.
+      `;
+    } else {
+      feedbackDiv.innerHTML = `
+        <span style="font-weight:700;">Let's work through this together.</span> The Joint Commission provides specific criteria for falls that meet the sentinel event threshold. Here is the relevant language from the July 2026 policy.
+        ${criteriaBlock}
+        Looking at those criteria alongside what happened to this patient: a hip fracture in a staffed inpatient unit, requiring surgical repair. How does that land against the list? Select again once you have had a chance to consider it.
+      `;
+    }
+
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Reconsider My Answer";
+    nextBtn.onclick = () => {
+      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+      feedbackDiv.innerHTML = '';
+      nextBtn.classList.remove('show');
+      nextBtn.textContent = "Continue to Priority Matrix";
+      allBtns.forEach(b => {
+        b.disabled = false;
+        b.classList.remove('selected-correct', 'selected-redirect');
+      });
+    };
+  }
+}
+
+// Sub-step B: SAC Matrix
+function renderCsaMatrixStep() {
+  const sentinelNote = sentinelAnswer === 'yes'
+    ? `<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">Sentinel event confirmed.</span> Because this event meets The Joint Commission's sentinel event criteria, a CSA is required for accredited organizations. The SAC Matrix below helps you think through the appropriate level of response and resource allocation beyond that baseline requirement.</div>`
+    : `<div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">A note before we proceed.</span> Even setting aside the sentinel event question for a moment, the SAC Matrix is a useful tool for thinking systematically about whether and how to allocate resources for a comprehensive analysis. Let's work through it.</div>`;
+
+  app.innerHTML = `
+    ${progressBar(4, 5, "Discussion Point 4: Should a CSA Be Completed?")}
+    <div class="card">
+      <span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span>
+      <h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3>
+      ${sentinelNote}
+      <div class="reference-box">
+        <strong>Safety Assessment Code (SAC) Matrix (RCA2, Appendix A)</strong><br>
+        The SAC Matrix pairs <strong>Severity</strong> with <strong>Probability</strong> to produce a priority score: 3 = highest risk (CSA warranted), 2 = intermediate risk (consider CSA), 1 = lowest risk (monitor and trend).<br><br>
+        <strong>Severity categories:</strong>
+        <ul>
+          <li><strong>Catastrophic:</strong> Death or major permanent loss of function (not related to illness); OR any JC sentinel event</li>
+          <li><strong>Major:</strong> Permanent lessening of bodily function; surgical intervention required; or increased LOS/level of care for 3 or more patients</li>
+          <li><strong>Moderate:</strong> Increased length of stay or level of care for 1 or 2 patients</li>
+          <li><strong>Minor:</strong> No injury, no increased stay or level of care</li>
+        </ul>
+        <strong>Probability categories:</strong>
+        <ul>
+          <li><strong>Frequent:</strong> May happen several times in 1 year</li>
+          <li><strong>Occasional:</strong> May happen several times in 1 to 2 years</li>
+          <li><strong>Uncommon:</strong> May happen sometime in 2 to 5 years</li>
+          <li><strong>Remote:</strong> May happen sometime in 5 to 30 years</li>
+        </ul>
+        <em>Scenario context: At your organization, falls resulting in fracture and surgical repair occur occasionally.</em>
+      </div>
+
+      <div class="question">First, how would you classify the <strong>severity</strong> of this event using the SAC categories?</div>
+      <div class="helper-text">Consider the harm the patient experienced, the surgical intervention required, and the manager's update if you requested it.</div>
+      <div class="options" id="severity-options"></div>
+      <div class="feedback" id="severity-feedback"></div>
+
+      <div id="probability-section" style="display:none; margin-top:22px;">
+        <div class="question">Now, how would you classify the <strong>probability</strong> of this type of event occurring at your organization?</div>
+        <div class="helper-text">Use the scenario context provided above: falls resulting in fracture and surgical repair occur occasionally at your organization.</div>
+        <div class="options" id="probability-options"></div>
+        <div class="feedback" id="probability-feedback"></div>
+      </div>
+
+      <div id="matrix-result" style="display:none; margin-top:22px;"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">See Final Summary</button></div>
+    </div>
+  `;
+
+  // Severity options
+  const sevOptions = document.getElementById('severity-options');
+  [
+    { val: 'catastrophic', label: 'Catastrophic' },
+    { val: 'major', label: 'Major' },
+    { val: 'moderate', label: 'Moderate' },
+    { val: 'minor', label: 'Minor' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleSeverityAnswer(btn, opt.val, sevOptions);
+    sevOptions.appendChild(btn);
+  });
+}
+
+function handleSeverityAnswer(btn, val, sevOptions) {
+  const allBtns = sevOptions.querySelectorAll('button');
+  allBtns.forEach(b => { b.disabled = true; b.classList.remove('selected-correct', 'selected-redirect'); });
+  sacSeverity = val;
+
+  const feedbackDiv = document.getElementById('severity-feedback');
+  feedbackDiv.classList.add('show');
+
+  if (val === 'catastrophic') {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Catastrophic is where this event lands.</span> The SAC Matrix defines Catastrophic as including major permanent loss of function not related to the natural course of illness, and also explicitly includes any event meeting The Joint Commission's sentinel event criteria. This patient will not regain knee flexion and requires permanent device assistance, which is a permanent loss of function. The event also meets JC sentinel event criteria. Either consideration alone places this in the Catastrophic category.
+    `;
+    showProbabilitySection();
+
+  } else if (val === 'major') {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Major is a reasonable starting point, and there is one more dimension to consider.</span> The SAC Matrix defines Major as including events requiring surgical intervention, and this event clearly meets that criterion. However, look again at the Catastrophic definition: it includes major permanent loss of function not related to illness, and also any JC sentinel event. The manager's update tells us the patient will not regain knee flexion and requires permanent device assistance. How does that compare to the Catastrophic criteria?
+    `;
+    // Allow retry for severity
+    allBtns.forEach(b => { b.disabled = false; });
+    btn.disabled = true;
+
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's look at the criteria more closely.</span> A patient who sustained a hip fracture requiring surgical repair, who will not regain knee flexion, and who requires permanent device assistance represents more than a moderate or minor outcome. Work back through the severity definitions and consider which category best captures what happened to this patient.
+    `;
+    allBtns.forEach(b => { b.disabled = false; });
+    btn.disabled = true;
+  }
+}
+
+function showProbabilitySection() {
+  const section = document.getElementById('probability-section');
+  section.style.display = 'block';
+
+  const probOptions = document.getElementById('probability-options');
+  [
+    { val: 'frequent', label: 'Frequent (several times per year)' },
+    { val: 'occasional', label: 'Occasional (several times in 1 to 2 years)' },
+    { val: 'uncommon', label: 'Uncommon (sometime in 2 to 5 years)' },
+    { val: 'remote', label: 'Remote (sometime in 5 to 30 years)' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleProbabilityAnswer(btn, opt.val, probOptions);
+    probOptions.appendChild(btn);
+  });
+}
+
+function handleProbabilityAnswer(btn, val, probOptions) {
+  const allBtns = probOptions.querySelectorAll('button');
+  allBtns.forEach(b => { b.disabled = true; });
+  sacProbability = val;
+  btn.classList.add('selected-correct');
+
+  const feedbackDiv = document.getElementById('probability-feedback');
+  feedbackDiv.classList.add('show', 'neutral');
+
+  let probNote = '';
+  if (val === 'occasional') {
+    probNote = 'Occasional aligns with the scenario context provided: this type of event occurs several times in a 1 to 2 year period at your organization.';
+  } else if (val === 'frequent') {
+    probNote = 'Frequent would mean this type of event occurs several times per year. The scenario context suggests Occasional is a closer fit, but the SAC score outcome is the same at Catastrophic severity regardless.';
+  } else {
+    probNote = 'The scenario context suggests Occasional is the closer fit for this organization. That said, note that at Catastrophic severity, the SAC score is 3 regardless of probability category.';
+  }
+
+  feedbackDiv.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${probNote}`;
+
+  // Show matrix result
+  showMatrixResult();
+}
+
+function showMatrixResult() {
+  const resultDiv = document.getElementById('matrix-result');
+  resultDiv.style.display = 'block';
+
+  const sacScore = 3; // Catastrophic always = 3 regardless of probability
+
+  resultDiv.innerHTML = `
+    <div class="reference-box" style="border-left:4px solid var(--edgewood-red);">
+      <strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>
+      Catastrophic severity paired with any probability category produces a SAC score of 3. A score of 3 indicates that a comprehensive systematic analysis is warranted and organizational resources should be allocated to conduct one.
+      <br><br>
+      <table class="summary-table" style="margin-top:8px; font-size:0.85rem;">
+        <tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr>
+        <tr><td><strong>Frequent</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Occasional</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Uncommon</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Remote</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+      </table>
+    </div>
+    <div class="feedback show neutral" style="margin-top:16px;">
+      <span style="font-weight:700;">One more thing to keep in mind before moving on.</span> The SAC Matrix is a useful tool for guiding resource allocation decisions, but it operates alongside, not instead of, organizational policy and accreditation requirements. Your organization's own policies may define additional thresholds for when a CSA is required. For Joint Commission-accredited organizations, this event independently triggers a CSA requirement as a sentinel event. Always verify what your accreditation body and internal policies require, and use the matrix to help determine the appropriate scope and urgency of the response.
+    </div>
+  `;
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.textContent = "See Final Summary";
+  nextBtn.onclick = () => { step = "summary"; render(); };
+}
+
+// -----------------------------------------------------------------
+// FINAL SUMMARY
+// -----------------------------------------------------------------
+function renderSummary() {
+  const finalScore = requestedInfo ? "SSE 2 &mdash; Severe Permanent Harm" : "SSE 4 &mdash; Severe Temporary Harm";
+  const scoreShort = requestedInfo ? "SSE 2" : "SSE 4";
+
+  app.innerHTML = `
+    ${progressBar(5, 5, "Final Summary")}
+    <div class="card end-screen">
+      <span class="step-label">Case 1 Complete</span>
+      <h3 class="case-title">Final SEC Classification</h3>
+      <div class="score-badge">${scoreShort}</div>
+      <p>${finalScore}</p>
+      <table class="summary-table">
+        <tr><th>Discussion Point</th><th>Conclusion</th></tr>
+<tr><td>Taxonomy Event Type</td><td>EE3 &mdash; Fall (Environmental); Inpatient Medical-Surgical</td></tr>
+        <tr><td>Deviation from GAPS?</td><td>Yes &mdash; bed alarm turned off and not restored before the patient was left unsupervised</td></tr>
+        <tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; no barrier intervened before the fall</td></tr>
+        <tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes" : "No"}</td></tr>
+        <tr><td>Level of harm</td><td>${finalScore}</td></tr>
+        <tr><td>SEC Classification</td><td>Serious Safety Event</td></tr>
+        <tr><td>Sentinel event per JC?</td><td>Yes &mdash; fall resulting in fracture and surgical repair meets JC criteria (July 2026)</td></tr>
+        <tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr>
+      </table>
+      ${!requestedInfo ? `
+      <div class="feedback show neutral" style="text-align:left; margin-top:20px;">
+        <strong>Something worth reflecting on as you close this case.</strong>
+        Because no additional information was requested, this event was scored as SSE 4 based on what was documented at the time. In practice, the manager's update, that the patient will not regain knee flexion and will require permanent device assistance, would shift this classification to SSE 2: Severe Permanent Harm. This is a good illustration of why gathering complete information before finalizing a score matters. The same event can land in a different category depending on what the reviewer knows, and that difference has real implications for the response the organization is obligated to provide.
+      </div>` : ''}
+      <p class="small-note">References: HPI SEC &amp; SSER Patient Safety Measurement System for Healthcare; RCA2 SAC Matrix (Appendix A); The Joint Commission Sentinel Event Policy, July 2026</p>
+      <button class="restart-btn" id="restart-btn">Restart Case 1</button>
+    </div>
+  `;
+  document.getElementById('restart-btn').onclick = () => {
+    requestedInfo = null;
+    kctVisited = false;
+    kctIndex = 0;
+    sentinelAnswer = null;
+    sentinelCriteriaShown = false;
+    sacSeverity = null;
+    sacProbability = null;
+    step = "intro";
+    render();
+  };
+}
+
+// -----------------------------------------------------------------
+// ROUTER
+// -----------------------------------------------------------------
+function render() {
+  if (step === "intro") renderIntro();
+  else if (step === "deviation") renderDeviationStep();
+  else if (step === "kct") { kctIndex = 0; renderKctStep(); }
+  else if (step === "reach") renderReachStep();
+  else if (step === "harm-info") renderHarmInfoStep();
+  else if (step === "harm-level") renderHarmLevelStep();
+  else if (step === "csa") renderCsaSentinelStep();
+  else if (step === "summary") renderSummary();
+}
+
+render();
+</script>
+
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
