@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 11</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 11: Delayed Cancer Diagnosis</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A 54-year-old woman presents to her primary care provider with lower back pain. Imaging is ordered to evaluate a musculoskeletal concern. The radiologist's report documents a pulmonary nodule in the right lower lobe as an incidental secondary finding and explicitly recommends follow-up imaging in three months. The ordering provider reviews the imaging report, addresses the musculoskeletal finding discussed with the patient, and does not act on the pulmonary nodule finding. No follow-up imaging is ordered or communicated to the patient. Fourteen months later, the patient returns with persistent cough and unintentional weight loss. Imaging reveals an advanced non-small cell lung carcinoma. The oncology team determines that the tumor is almost certainly the nodule identified fourteen months earlier, at a stage that would likely have been surgically resectable at the time it was first identified. The patient is not a surgical candidate due to the extent of disease. She is receiving palliative-intent systemic therapy. Her prognosis is significantly and permanently compromised.";
+const MANAGER_UPDATE = "Per the ambulatory care director's review, the patient's oncologist has confirmed that the cancer is non-resectable at this stage and that the prognosis is significantly shortened. The patient is aware of her diagnosis and prognosis and is receiving palliative-intent treatment. A review of the practice's incidental finding tracking system reveals that no formal process existed at the time of the original visit for flagging radiologist recommendations for follow-up imaging and ensuring the ordering provider acknowledged and acted on them. The radiologist's recommendation was documented and accessible but was not connected to a reliable notification or reminder system. Three other similar delayed-follow-up events have been identified in this practice in the past two years.";
+
+let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
+const app=document.getElementById('app');
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 11</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a delayed diagnosis concern reported from an ambulatory primary care practice. This case involves an incidental imaging finding that was not followed up.</p><p>Read the event carefully. The harm in this case developed over fourteen months and may be one of the most consequential cases you have reviewed.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>Context for incidental findings:</strong> When a radiologist documents a secondary finding and makes a follow-up recommendation, the ordering provider has a professional obligation to review, act on, or explicitly explain their clinical decision not to act on that recommendation. A finding that is documented in a report is not the same as a finding that has been communicated to and acknowledged by the patient. The loop is closed only when the patient is informed, understands the recommendation, and either receives follow-up or receives a documented explanation for why follow-up was not indicated.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"followup",label:"The ordering provider did not act on a documented radiologist recommendation for follow-up imaging and did not communicate the secondary finding to the patient",type:"main"},
+    {key:"radiologist",label:"The radiologist failed to directly contact the ordering provider about the secondary finding",type:"secondary"},
+    {key:"system",label:"There was no system in place to track and close the loop on incidental radiologist recommendations, and the individual provider failure occurred within that system gap",type:"main2"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"||opt.type==="main2"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    const isProviderFirst=opt.type==="main";
+    fb.innerHTML=`<span style="font-weight:700;">${isProviderFirst?"That identifies the proximate deviation accurately.":"That identifies the system-level deviation accurately."}</span> ${isProviderFirst?"The radiologist's report was clear: a pulmonary nodule was present and follow-up imaging in three months was recommended. That recommendation was in the record. The ordering provider reviewed the report and did not act on that specific finding or communicate it to the patient. The loop was never closed. In ambulatory care, closing the loop on incidental findings is a defined clinical obligation, not an optional step.":"The absence of a reliable system for tracking, flagging, and confirming action on incidental findings is a structural gap that made the individual provider failure more likely. When an important finding depends entirely on one provider reviewing one report without any prompting, reminder, or verification, the system has created a single point of failure with no backup."}<br><br>In this case, both dimensions are present: an individual provider did not act, and a system that should have caught that inaction did not exist. Let's look at what the broader context tells us.`;
+    nb.classList.add('show');nb.textContent="Explore the System Context";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="secondary"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The radiologist did document the finding and made a recommendation.</span> Radiologists are generally not expected to directly contact ordering providers for every secondary finding unless it rises to an emergency level. The recommendation was documented in the report and was accessible. Have you thought about whose responsibility it is to act on a documented radiologist recommendation, and whether that obligation was met in this case?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion before we settle on it.</span> The Known Complication Test can help us evaluate whether this outcome might be a known complication rather than a safety event. Let's work through those four questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Exploring the System Context</span><h3 class="case-title">What System Gap Contributed to This Event?</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The deviation is identified.</span> The ordering provider did not act on a documented follow-up recommendation and did not communicate it to the patient. Now let's look at the system condition that made this possible.</div><div class="question">Which of the following best describes the system-level gap that contributed to this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"nosystem",label:"No formal process existed for flagging, tracking, and confirming provider action on incidental radiologist follow-up recommendations",type:"main"},
+    {key:"training",label:"Providers were not trained on the importance of incidental finding follow-up",type:"incorrect"},
+    {key:"ehr",label:"The EHR made it difficult to see radiologist recommendations alongside the ordering provider's workflow",type:"partial"},
+    {key:"volume",label:"High patient volume in ambulatory care makes it impractical to follow up on every secondary finding",type:"partial"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">The absence of a systematic follow-up tracking process is the structural gap at the root of this event.</span><br><br>The radiologist made a recommendation. That recommendation sat in a report, accessible but unconnected to any reliable mechanism that would ensure the ordering provider acknowledged it, acted on it, or explained a clinical reason for not acting on it. There was no flag, no reminder, no verification step, no one assigned to confirm the loop had been closed.<br><br>In ambulatory care, the management of incidental findings is a well-documented patient safety challenge. Findings are discovered, recommendations are made, and then the outcome depends entirely on one provider's attention and follow-through, in a setting where patient volume is high and there is no equivalent of a nursing handoff or bedside check-in to prompt review. The manager's update tells us this has happened three other times at this practice in two years. That pattern is not the result of four careless providers. It is the result of a system that has no reliable mechanism for closing the loop on secondary findings.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="ehr"
+      ?"EHR workflow design is worth examining and may be a contributing factor. However, the manager's update tells us no formal process existed for tracking and confirming action on incidental recommendations at all. Have you thought about what it means when the entire safety net for incidental findings is the EHR interface rather than a defined accountability process?"
+      :"Patient volume is a real challenge in ambulatory care. However, the standard of care does not distinguish between busy and not-busy when it comes to communicating a potentially serious finding to a patient. Have you thought about what three similar events in two years tells us about whether volume is the explanation, or whether there is a system gap that makes this outcome likely regardless of volume?";
+    fb.innerHTML=`<span style="font-weight:700;">That is one dimension worth examining.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what the event tells us.</span> The ordering provider reviewed the radiology report, which indicates familiarity with imaging follow-up as a clinical responsibility. The issue is not knowledge of the obligation but the absence of a system that supported fulfilling it reliably. Have you thought about what three similar events in two years tells us about whether this is a training problem or a process design problem?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the imaging ordered for back pain appropriate or warranted for this patient?",answer:"YES"},
+  {text:"Was the development of lung cancer a known risk for this patient, and was the standard of care employed to evaluate and follow up the incidental finding once identified?",answer:"NO"},
+  {text:"Was the complication (advanced lung cancer) identified in a timely manner?",answer:"NO"},
+  {text:"Was the complication treated according to the standard of care in a timely manner?",answer:"NO"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["Imaging for back pain is appropriate and indicated. The ordering of the imaging itself was clinically warranted.","Imaging to evaluate back pain in a primary care setting is standard and appropriate. This points toward YES."],
+    ["The pulmonary nodule was identified on imaging as a secondary finding. The standard of care requires that incidental findings with follow-up recommendations be acted upon and communicated to the patient. Neither occurred. The mitigation, follow-up imaging in three months, was not employed. This points to NO.","Consider both parts of this question. Was lung cancer a known risk? For a pulmonary nodule, yes. Was the standard of care employed to evaluate it? No follow-up was ordered or communicated. This points to NO."],
+    ["The cancer was not identified until fourteen months later, when it had progressed to an advanced, non-resectable stage. Had the follow-up imaging been performed three months after the initial finding, the tumor would likely have been identified at an early, potentially resectable stage. The delay of fourteen months is not timely. This points to NO.","Think about what timely identification would have looked like: follow-up imaging three months after the initial finding. The cancer was not identified for fourteen months, by which point it was non-resectable. This points to NO."],
+    ["When the cancer was finally identified, it was at an advanced stage that precluded surgical intervention. The treatment available was palliative-intent rather than curative. The opportunity for timely, curative-intent treatment was lost during the fourteen-month delay. This points to NO.","The patient is receiving palliative-intent therapy, not curative treatment, because the cancer was identified too late for surgical intervention. The most effective treatment window had passed. This points to NO."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">Three of the four answers came back NO.</span> The Known Complication Test is unambiguous: this is a safety event. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> No barrier intercepted the failure to follow up. No system flagged the unaddressed recommendation. No one notified the patient. The fourteen-month window during which curative-intent treatment might have been possible passed without intervention. The deviation reached the patient in the most consequential way possible: it allowed a treatable cancer to become untreatable.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like.</span> A catch would require something to intercept the gap in follow-up: a system flag, a reminder, a patient portal message, a nurse reaching out to schedule follow-up. None of those things happened. The patient returned fourteen months later with advanced disease. Nothing caught the deviation before it affected her outcome.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information before classifying is sound practice.</span> The vignette describes a significantly compromised prognosis, but the specifics of the oncology assessment and the system context are important. You reach out to the ambulatory care director.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the patient has advanced non-small cell lung carcinoma, is not a surgical candidate, and has a significantly and permanently compromised prognosis. Let's score based on what is documented.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>SSE 1</strong> &mdash; Death</li><li><strong>SSE 2</strong> &mdash; Severe Permanent Harm: life-changing; permanent loss of vital physiologic or neurologic function; or a life-altering permanent change in health status</li><li><strong>SSE 3</strong> &mdash; Moderate Permanent Harm: significant permanent harm impacting daily living or functioning; impaired sense or function; disfigurement</li><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring meaningful treatment; resolves fully</li></ul>Assign based on actual patient outcome.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [{key:"sse1",label:"Death (SSE 1)"},{key:"sse2",label:"Severe Permanent Harm (SSE 2)"},{key:"sse3",label:"Moderate Permanent Harm (SSE 3)"},{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.key==='sse2'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">SSE 2: Severe Permanent Harm is where this event lands.</span> The patient has advanced non-small cell lung carcinoma that is not surgically resectable. She is receiving palliative-intent treatment. The oncology team has assessed that the tumor was almost certainly identifiable and likely resectable fourteen months earlier. The delay did not cause the cancer, but it changed the trajectory from potentially curative to palliative. That is a life-altering, permanent change in health status that falls squarely within the definition of Severe Permanent Harm.<br><br>This is one of the most sobering applications of the SEC framework: the harm is not an injury or a procedure complication. It is a woman's life expectancy, changed permanently because a follow-up recommendation was not acted upon and no system existed to catch that gap.`;
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='sse1'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The patient is currently alive.</span> SSE 1 is reserved for death. The patient is receiving palliative-intent treatment and her prognosis is significantly shortened, but she has not died at the time of this review. The correct classification is based on her current status. Have you thought about which category captures a permanent, life-altering change in health status for a living patient with a significantly compromised prognosis?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else if(opt.key==='sse3'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the difference between SSE 2 and SSE 3.</span> SSE 3 captures moderate permanent harm: significant harm impacting daily living or functioning. SSE 2 captures severe permanent harm: life-changing, including life-altering permanent change in health status. A permanently compromised prognosis from a delayed cancer diagnosis, with the loss of a curative treatment window, is a life-changing harm, not merely a harm that impacts functioning. Have you thought about which category better captures the magnitude of what happened to this patient?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit what happened to this patient.</span> SSE 5 captures temporary harm that resolves fully. This patient has advanced lung cancer with a permanently compromised prognosis, receiving palliative-intent treatment. The harm is permanent and life-altering. Have you thought about which category captures permanent, life-changing harm?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='yes'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient has experienced permanent, severe harm: a life-altering change in health status resulting from a delayed cancer diagnosis. Her prognosis is significantly and permanently compromised. This meets the permanent harm criterion directly. A CSA is required for Joint Commission-accredited organizations.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>This patient has a permanently compromised prognosis from a delayed cancer diagnosis. Her health status has been permanently and severely altered. Have you thought about how that compares to the permanent harm criterion?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">Sentinel event confirmed.</span> Permanent harm has occurred. A CSA is required.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care</li><li><strong>Minor:</strong> No injury</li></ul><strong>Probability:</strong><ul><li><strong>Frequent / Occasional / Uncommon / Remote</strong></ul><em>Scenario context: Delayed follow-up on incidental findings has occurred occasionally at this ambulatory practice.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='catastrophic'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Catastrophic is the right category.</span> The SAC Matrix defines Catastrophic as including any JC sentinel event and events resulting in major permanent loss of function or life-altering change in health status. This event meets both criteria.`;
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the Catastrophic definition.</span> Catastrophic includes any JC sentinel event. We confirmed this is a sentinel event. That classification alone places this in the Catastrophic category.`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent'},{val:'occasional',label:'Occasional'},{val:'uncommon',label:'Uncommon'},{val:'remote',label:'Remote'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> At Catastrophic severity, any probability category produces a SAC score of 3.`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>Catastrophic severity with any probability = SAC 3. A CSA is warranted.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">Before moving on.</span> Always verify what your accreditation body and internal policies require beyond what the matrix indicates.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 11 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 2</div><p>Severe Permanent Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>CM8.3 / CM8.6 &mdash; Delayed Diagnosis / Delayed Treatment (Care Management); Ambulatory Setting</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; ordering provider did not act on radiologist's documented follow-up recommendation; secondary finding not communicated to patient</td></tr><tr><td>Contributing system factor</td><td>No formal process existed for tracking, flagging, and confirming provider action on incidental radiologist recommendations; three similar events in two years</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; fourteen months passed without follow-up; resectable cancer became non-resectable</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; oncology confirmed non-resectable, shortened prognosis; no incidental finding tracking process existed; three similar events identified":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 2 &mdash; Severe Permanent Harm (life-altering change in health status; permanently compromised prognosis)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>Yes &mdash; permanent, severe harm meets JC sentinel event criteria (July 2026)</td></tr><tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on second victim syndrome in this context.</span> The ordering provider who did not follow up on the radiologist's recommendation will likely carry the weight of this outcome. In ambulatory care, providers often learn the long-term consequences of their decisions through cases like this one. The absence of a support system to help that provider process what happened, alongside a just and transparent analysis of the system gaps that contributed, is itself a patient safety and organizational wellbeing failure. A complete response to this event includes both the system fix and attending to the people involved.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 11</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
