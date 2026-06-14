@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 7</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 7: Time-Out Failure</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A 47-year-old patient is scheduled for a laparoscopic cholecystectomy. The OR team is running behind schedule due to two prior cases running longer than planned. The circulating nurse initiates the time-out, but the surgeon, who has already begun positioning the patient, talks through it without pausing. Two team members are not present when the time-out is called: the scrub tech is retrieving equipment from the supply room, and the anesthesiologist is at the medication cart. The time-out is documented in the electronic health record as complete. The procedure begins without confirmation of the correct patient identity, the correct procedure, or antibiotic prophylaxis administration. Antibiotics had not in fact been administered. The patient develops a surgical site infection requiring readmission, intravenous antibiotics, and wound debridement. The patient recovers fully with no permanent sequelae.";
+const MANAGER_UPDATE = "Per the perioperative services manager's follow-up, the patient completed a full course of IV antibiotics and underwent wound debridement during the readmission. No permanent complications are documented and the patient has returned to baseline. A review of OR records for the week of the event shows that four of the seven time-outs conducted were documented as complete while team members were not all present or the surgeon was still actively engaged in another task. This was not identified or addressed in real time.";
+
+let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
+const app=document.getElementById('app');
+
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 7</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a surgical case involving a time-out that did not function as designed and a resulting surgical site infection requiring readmission.</p><p>Read the event carefully before working through the discussion points.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>A note on documentation and performance:</strong> In the SEC algorithm, a deviation from GAPS is evaluated based on what actually occurred, not on what was documented. A time-out that is documented as complete but was not conducted as required is itself a GAPS deviation. Documentation of a safety process is not a substitute for performing it.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="helper-text">Consider what the Universal Protocol requires for a time-out to be valid, and whether those requirements were met.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"timeout",label:"The time-out was not conducted as required: the surgeon did not pause, two team members were absent, and antibiotic prophylaxis was not confirmed or administered, despite the time-out being documented as complete",type:"main"},
+    {key:"antibiotics",label:"Antibiotic prophylaxis was not ordered for this patient",type:"factually-incorrect"},
+    {key:"schedule",label:"The OR schedule was running behind, which is a system failure that caused this event",type:"secondary"},
+    {key:"documentation",label:"The documentation of the time-out as complete was accurate because a time-out was attempted",type:"factually-incorrect"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That captures all of the GAPS deviations in this event.</span> There are two distinct but related failures here.<br><br>The first is the time-out itself. A valid time-out requires all team members to be present, all activity to pause, and each checklist element to be actively confirmed. The surgeon was still positioning the patient and talking through the time-out rather than engaging with it. Two team members were absent. Nothing was actually confirmed, including antibiotic prophylaxis. That is not a time-out: it is a recitation that was never received or verified by the team.<br><br>The second is the documentation. The time-out was documented as complete. That documentation is itself a GAPS deviation because it created a false record, one that would make the failure invisible to anyone reviewing the case retrospectively. A documented time-out that did not occur is not evidence of safety. It is evidence of a documentation process that has become disconnected from the safety process it is meant to reflect.<br><br>Now let's look at what made this pattern possible.`;
+    nb.classList.add('show');nb.textContent="Explore the System Factor";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="secondary"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Schedule pressure is a real contributing factor and worth identifying as a system condition.</span> However, a busy schedule does not change what Universal Protocol requires, and it does not explain why the time-out was documented as complete when it was not conducted as required. Have you thought about the two distinct failures in this event: what happened during the time-out, and what happened in the documentation of it?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else if(opt.type==="factually-incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="antibiotics"
+      ?"The event does not say antibiotics were not ordered. It says they had not been administered at the time the procedure began. Antibiotic prophylaxis administration is one of the elements that should be confirmed during the time-out. The absence of that confirmation is part of the time-out failure, not an independent ordering issue."
+      :"Let's look at what a valid time-out requires. An attempt to conduct a time-out is not the same as conducting one. The Universal Protocol specifies that all team members must be present, all activity must pause, and each element must be actively confirmed. None of those requirements were met here. Have you thought about whether a time-out that was not conducted as required can be accurately documented as complete?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at this more carefully.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Exploring the System Factor</span><h3 class="case-title">What Made This Pattern Possible?</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The deviations are identified.</span> Time-out not conducted as required; antibiotic prophylaxis not confirmed or administered; time-out documented as complete despite not meeting requirements. Now consider what system conditions allowed this to happen.</div><div class="question">Which of the following best describes the system-level factor most relevant to understanding how these deviations occurred?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"pressure",label:"Production pressure from a behind-schedule OR created a latent condition in which completing the time-out was subordinated to the goal of getting the case started",type:"main"},
+    {key:"training",label:"The surgeon and circulating nurse were unfamiliar with time-out requirements",type:"incorrect"},
+    {key:"culture",label:"A culture of speaking up would have prevented any team member from proceeding without completing the time-out",type:"partial"},
+    {key:"tech",label:"The EHR time-out documentation system made it easy to document completion without actually completing the process",type:"partial"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Production pressure is the system-level condition at the root of this event.</span><br><br>James Reason's organizational accident model, the framework underlying the Swiss Cheese Model, distinguishes between <em>active failures</em>, the immediate unsafe acts that lead to an event, and <em>latent conditions</em>, the pre-existing organizational factors that create the environment in which active failures become likely. Production pressure is one of the most commonly identified latent conditions in healthcare safety events.<br><br>When an OR is running behind schedule, the organizational pressure to catch up creates a silent but powerful incentive to compress or skip steps that are perceived as consuming time. The time-out, which should take two minutes, can feel like an obstacle when the team is already 45 minutes behind. Over time, if that pressure is consistent and unaddressed, the time-out shifts from a genuine safety practice to a documentation ritual: something that gets recorded as done because everyone understands that recording it as done is what moves the case forward.<br><br>This is the latent condition: not the surgeon's behavior on this particular day, but the organizational environment in which production pressure is a persistent, unaddressed background condition that gradually erodes the integrity of the safety processes designed to protect patients. The manager's update tells us this happened in four of seven cases that week. That is not an individual deviation. That is a system operating under pressure without adequate countermeasures.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="culture"
+      ?"Psychological safety and a culture of speaking up are essential components of a safe OR environment, and their absence may have contributed here. However, consider what was driving the behavior in the first place. Have you thought about why the time-out was rushed, why two team members were absent, and why no one stopped the case? What organizational condition created the pressure behind those individual behaviors?"
+      :"EHR design that makes it easy to document without performing is a legitimate system vulnerability and worth examining. However, consider what motivated the documentation in the first place. Have you thought about why someone chose to document the time-out as complete when it was not? What pressure or incentive was in play that made that choice feel reasonable?";
+    fb.innerHTML=`<span style="font-weight:700;">That is one dimension of this, and it is worth examining.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what the event tells us.</span> The circulating nurse initiated the time-out, and the surgeon was actively working in the room. These are not signs of unfamiliarity with the process. Have you thought about what was different about this situation that led to the time-out being conducted the way it was? Consider the schedule context described in the vignette and what pressure that might have created for the team.`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the procedure (laparoscopic cholecystectomy) appropriate or warranted for this patient based on nationally recognized standards of care?",answer:"YES"},
+  {text:"Was the complication (surgical site infection) a known risk of laparoscopic cholecystectomy, and was the standard of care employed to mitigate that risk at the time of the procedure?",answer:"NO"},
+  {text:"Was the complication identified in a timely manner?",answer:"YES"},
+  {text:"Was the complication treated according to the standard of care, in a timely manner?",answer:"YES"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["A laparoscopic cholecystectomy was the indicated procedure for this patient. The surgery itself was appropriate and clinically warranted.","Think about the clinical picture: the patient had a condition requiring surgical removal of the gallbladder. The procedure was indicated, pointing toward YES."],
+    ["Surgical site infection is a known risk of laparoscopic cholecystectomy. However, the standard of care includes antibiotic prophylaxis specifically to mitigate that risk, and it was not administered because the time-out confirmation step that should have caught the omission did not function. The mitigation was absent, pointing to NO.","Consider the full question: was the risk known AND was the standard of care employed to mitigate it? Antibiotic prophylaxis is the primary mitigation for surgical site infection in abdominal surgery. It was not given. The reason it was not given, the failed time-out, is exactly the kind of system failure the Known Complication Test is designed to identify. This points to NO."],
+    ["The surgical site infection was identified during a readmission, which is the expected clinical pathway for detecting a post-surgical infection that develops after discharge. Identification was timely in that clinical context.","Post-surgical infections typically present after discharge. The patient was identified and readmitted for treatment, which reflects timely identification in the context of this type of complication. This points toward YES."],
+    ["IV antibiotics and wound debridement were administered during the readmission, which is the standard of care for a post-surgical wound infection. The patient recovered fully.","The treatment described, IV antibiotics and wound debridement, is consistent with the standard of care for a post-surgical site infection. The patient recovered fully, pointing toward YES."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">Here is what working through those four questions tells us.</span> One of the four answers came back NO. The Known Complication Test is clear: if the answer to any one question is NO, the event is a safety event.<br><br>Our earlier conclusion that there was no deviation in GAPS does not hold up. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="reference-box"><strong>Defining "reaching the patient":</strong> A deviation reaches the patient when no detection barrier intercepts it before it causes harm. If nothing intervenes, the deviation reaches the patient.</div><div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The time-out was the designed barrier to catch omissions including antibiotic prophylaxis before the procedure began. It did not function. The patient underwent surgery without antibiotics and subsequently developed a surgical site infection requiring readmission. The deviation reached the patient.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what the barrier was and whether it functioned.</span> The time-out is the designed safety check that should confirm antibiotic prophylaxis administration before any surgical procedure begins. It was documented as complete but was not conducted as required. The patient underwent surgery without antibiotics. A surgical site infection developed. The deviation was not caught before it reached the patient.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="helper-text">You may request additional information from the perioperative services manager or their designee before finalizing your classification.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information before classifying is sound practice.</span> A surgical site infection requiring readmission raises questions about the severity and expected recovery. You reach out to the perioperative services manager.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>With this information in hand, let's score the level of harm.`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the patient developed a surgical site infection requiring readmission, IV antibiotics, and wound debridement. The patient recovered fully. Let's score based on what is documented.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm, time-limited, requires a higher level of care, monitoring, or a minor procedure to resolve</li><li><strong>SSE 4</strong> &mdash; Severe Temporary Harm: critical, potentially life-threatening harm, requires major surgery to resolve; no permanent residual</li><li><strong>SSE 3</strong> &mdash; Moderate Permanent Harm: significant permanent harm impacting daily living or functioning</li></ul>Assign based on the actual patient outcome.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [
+    {key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},
+    {key:"sse4",label:"Severe Temporary Harm (SSE 4)"},
+    {key:"sse3",label:"Moderate Permanent Harm (SSE 3)"},
+    {key:"pse2",label:"Minor Temporary Harm (PSE 2)"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.key==='sse5'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is the right classification.</span> The patient developed a surgical site infection requiring hospital readmission, intravenous antibiotics, and wound debridement. That represents a significant escalation in the level of care and a meaningful clinical intervention beyond the original procedure. ${requestedInfo?"The manager's update confirms full recovery with no permanent complications, placing this firmly in the temporary category.":"The vignette indicates the patient recovered fully, supporting the temporary classification."} The readmission and debridement are the defining features of SSE 5: significant harm that required meaningful treatment to resolve, without reaching the critical or life-threatening threshold of SSE 4.`;
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='sse4'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical, potentially life-threatening harm requiring major surgery to resolve. A surgical site infection treated with IV antibiotics and wound debridement is a significant clinical complication, but it does not typically carry the life-threatening risk profile associated with SSE 4. ${requestedInfo?"The manager's update confirms full recovery, which supports a moderate rather than severe classification.":"Have you thought about whether the interventions required, IV antibiotics and wound debridement, align with the moderate or severe temporary harm categories?"}`;
+    nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
+    nb.onclick=requestedInfo
+      ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
+      :()=>{requestedInfo=true;renderHarmLevelStep();};
+  } else if(opt.key==='sse3'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the permanent harm criteria.</span> ${requestedInfo?"The manager's update confirms no permanent complications are documented and the patient has returned to baseline. Permanent harm categories require that the harm has no expected change in the patient's status or persists indefinitely. That is not the case here.":"The vignette indicates the patient recovered fully. Have you thought about whether the evidence supports a permanent harm classification?"}`;
+    nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
+    nb.onclick=requestedInfo
+      ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
+      :()=>{requestedInfo=true;renderHarmLevelStep();};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit what happened to this patient.</span> Minor temporary harm captures events requiring little or no intervention. This patient was readmitted to the hospital, received intravenous antibiotics, and underwent wound debridement. That level of care and intervention goes well beyond the minor harm threshold. Have you thought about which category captures significant harm that required meaningful clinical intervention but resolved fully?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="reference-box"><strong>Why this matters:</strong> The Joint Commission Sentinel Event Policy (July 2026) defines specific event types that require a CSA regardless of SAC score. Understanding the boundary between sentinel and non-sentinel events is an important skill for patient safety reviewers.</div><div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  sentinelAnswer=val;
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='no'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination for this event.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient experienced moderate temporary harm and recovered fully. SSE 5 does not meet the sentinel event threshold. This is an important distinction from Case 6, where wrong-site surgery is a sentinel event regardless of the level of harm because of the type of event it is. Here, the event type (time-out failure leading to a surgical site infection) is not on the JC sentinel event list based on type alone, and the harm level does not reach the threshold independently. That does not reduce the seriousness of this event. Let's use the SAC Matrix to think through the appropriate response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC definition carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Death</li><li>Severe harm, regardless of duration</li><li>Permanent harm, regardless of severity</li></ul>Some event types are sentinel events based on their nature regardless of outcome (for example, wrong-site surgery). A time-out failure leading to a surgical site infection is not one of those type-based sentinel events. And the harm level, moderate temporary with full recovery, does not meet the death, severe, or permanent threshold. Have you thought about how this compares to the sentinel event criteria?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a JC sentinel event.</span> The SAC Matrix will help determine whether and how to allocate resources for a comprehensive analysis.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br>Score 3 = highest risk, 2 = intermediate, 1 = lowest.<br><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; surgical intervention required; increased LOS or level of care for 3 or more patients</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Surgical site infections associated with antibiotic prophylaxis failures occur occasionally at your organization.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacSeverity=val;
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='major'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Major is the right severity classification.</span> The SAC Matrix defines Major as including events requiring surgical or significant medical intervention, and events resulting in increased LOS or level of care. This patient was readmitted, received IV antibiotics, and underwent wound debridement: a meaningful escalation in the level of care, with a surgical debridement procedure required to resolve the complication. That aligns with Major severity.`;
+    showProb();
+  } else if(val==='catastrophic'){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the Catastrophic definition again.</span> Catastrophic is reserved for death, major permanent loss of function, or any JC sentinel event. We confirmed this event is not a sentinel event, and the patient recovered fully without permanent harm. Have you thought about which category captures significant harm requiring readmission and debridement without reaching the catastrophic threshold?`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const h=val==='moderate'
+      ?"Moderate captures increased LOS or level of care for one to two patients. This patient was readmitted to the hospital, received IV antibiotics, and underwent wound debridement. That level of intervention goes beyond what Moderate typically captures. Have you thought about which category better reflects the need for a surgical procedure and hospital readmission?"
+      :"Minor captures events with no injury and no increased stay or level of care. A hospital readmission with IV antibiotics and wound debridement represents a significant escalation in care. Have you thought about which category better reflects what happened to this patient?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity categories.</span> ${h}`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent (several times per year)'},{val:'occasional',label:'Occasional (several times in 1 to 2 years)'},{val:'uncommon',label:'Uncommon (sometime in 2 to 5 years)'},{val:'remote',label:'Remote (sometime in 5 to 30 years)'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Major + Occasional = SAC 3, the highest priority level.":"The scenario context suggests Occasional. Note that Major + Occasional produces a SAC score of 3, and Major + Frequent also produces a SAC score of 3. The manager's update showing four incomplete time-outs in one week is worth keeping in mind when thinking about the frequency dimension."}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>Major severity paired with Occasional probability produces a SAC score of 3. A CSA is warranted.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="text-align:center;">3</td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">Before moving on.</span> The SAC Matrix guides resource allocation alongside organizational policy and accreditation requirements. Always verify what your accreditation body and internal policies require. Note that this case is not a sentinel event, yet it still scores at SAC 3 based on severity and probability alone. The SAC Matrix operates as an independent prioritization tool: sentinel event status and SAC score together determine the full scope of the organizational response.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 7 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 5</div><p>Moderate Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
+<tr><td>Taxonomy Event Type</td><td>PR3 &mdash; Wrong Procedure / Universal Protocol Failure (Procedural); Inpatient OR</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; time-out not conducted as required; antibiotic prophylaxis not confirmed or administered; time-out documented as complete despite not meeting Universal Protocol requirements</td></tr><tr><td>Contributing system factor</td><td>Production pressure as a latent condition (Reason's organizational accident model); schedule running behind created incentive to compress the time-out</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; time-out did not catch the antibiotic omission; surgical site infection resulted</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full recovery confirmed; no permanent complications; four of seven time-outs that week were documented as complete but conducted incompletely":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm (readmission, IV antibiotics, wound debridement; full recovery)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was moderate and temporary; event type is not on JC type-based sentinel event list</td></tr><tr><td>SAC Matrix score</td><td>3 (Major severity, Occasional probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request reveals that four of seven time-outs that week were documented as complete but conducted incompletely. That finding transforms this from a single-case review into evidence of a systemic practice pattern in this OR. A CSA that investigates only this event will miss the larger condition. Requesting the manager update in cases involving process failures is particularly important when the failure may reflect how a process is being practiced across a team or unit rather than in a single encounter.</div>`:''}<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A key teaching point on documentation and safety.</span> A documented time-out that did not occur is not evidence of a safe procedure. It is evidence of a documentation practice that has become disconnected from the safety practice it is supposed to reflect. In your role as a healthcare administrator, the gap between documented performance and actual performance is one of the most important system vulnerabilities to monitor, because documented safety is invisible safety: it protects the record, not the patient.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; JC Universal Protocol; Reason (1990) organizational accident model</p><button class="restart-btn" id="rb">Restart Case 7</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
