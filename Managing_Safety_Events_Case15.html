@@ -182,8 +182,48 @@ const VIGNETTE = "A 32-year-old woman, Gravida 2 Para 1, presents at 40 weeks ge
 
 let step="intro", kctIndex=0;
 const app=document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'Not a Safety Event',
+    taxonomyEventType: 'N/A — Not a Safety Event',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
 function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
 function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+
 
 function renderIntro(){
   app.innerHTML=`<div class="card"><span class="step-label">Case 15</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the final event in your queue. A maternal death has been reported from Labor and Delivery.</p><p>This case is structurally different from every case you have worked through so far. Read the event carefully and bring everything you have learned about how to evaluate whether a safety event has occurred.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
@@ -235,11 +275,14 @@ function renderKctStep(){
 
 function handleKct(btn,val,q){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val===q.answer;
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
   fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?q.correct_note:q.incorrect_note}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{kctIndex++;renderKctStep();};
 }
@@ -267,8 +310,41 @@ function renderReflection(){
 }
 
 function renderSummary(){
-  app.innerHTML=`<div class="card" style="text-align:center;"><span class="step-label">Case 15 Complete</span><h3 class="case-title">Known Complication Test Result</h3><div class="not-a-safety-event">Not a Safety Event</div><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>N/A &mdash; Not a Safety Event</td></tr><tr><td>Known Complication Test</td><td>All four answers YES: procedure appropriate; complication known and unpreventable; team identified emergency immediately; team treated according to standard of care</td></tr><tr><td>Was this a safety event?</td><td>No &mdash; amniotic fluid embolism is an extremely rare, unpredictable complication with no known preventive intervention; mortality rate 80% or greater even with optimal treatment</td></tr><tr><td>SEC Classification</td><td>Not applicable &mdash; event does not meet the threshold for safety event classification</td></tr><tr><td>Sentinel event per JC?</td><td>Not applicable &mdash; not a safety event</td></tr><tr><td>SAC Matrix</td><td>Not applicable &mdash; not a safety event</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Why this case is here.</span> You have now worked through 15 cases. In 14 of them, there was a safety event: a deviation from GAPS, a harm that reached a patient, a systemic failure that needed analysis and response. This case is here because your ability to recognize what is NOT a safety event is as important as your ability to classify what is.<br><br>A healthcare administrator who treats every bad outcome as a preventable error will exhaust resources on events that cannot be improved through system change, erode the psychological safety of care teams who are held accountable for unpreventable outcomes, and dilute the attention and energy that should be focused on genuinely preventable harm. Knowing where the boundary is, and being able to explain it to a family, a medical staff committee, an accreditation reviewer, and your own leadership team, is a core competency for the work you are entering.<br><br>The distinction between tragedy and preventable harm is not a legal defense. It is a clinical and ethical commitment to honesty about what healthcare can and cannot do, and to directing improvement efforts where they can actually make a difference.</div><p class="small-note">References: HPI SEC &amp; SSER Patient Safety Measurement System; Known Complication Test; Medical Staff Peer Review framework</p><button class="restart-btn" id="rb">Restart Case 15</button></div>`;
-  document.getElementById('rb').onclick=()=>{kctIndex=0;step="intro";render();};
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
+  app.innerHTML=`<div class="card" style="text-align:center;"><span class="step-label">Case 15 Complete</span><h3 class="case-title">Known Complication Test Result</h3><div class="not-a-safety-event">Not a Safety Event</div><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>N/A &mdash; Not a Safety Event</td></tr><tr><td>Known Complication Test</td><td>All four answers YES: procedure appropriate; complication known and unpreventable; team identified emergency immediately; team treated according to standard of care</td></tr><tr><td>Was this a safety event?</td><td>No &mdash; amniotic fluid embolism is an extremely rare, unpredictable complication with no known preventive intervention; mortality rate 80% or greater even with optimal treatment</td></tr><tr><td>SEC Classification</td><td>Not applicable &mdash; event does not meet the threshold for safety event classification</td></tr><tr><td>Sentinel event per JC?</td><td>Not applicable &mdash; not a safety event</td></tr><tr><td>SAC Matrix</td><td>Not applicable &mdash; not a safety event</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Why this case is here.</span> You have now worked through 15 cases. In 14 of them, there was a safety event: a deviation from GAPS, a harm that reached a patient, a systemic failure that needed analysis and response. This case is here because your ability to recognize what is NOT a safety event is as important as your ability to classify what is.<br><br>A healthcare administrator who treats every bad outcome as a preventable error will exhaust resources on events that cannot be improved through system change, erode the psychological safety of care teams who are held accountable for unpreventable outcomes, and dilute the attention and energy that should be focused on genuinely preventable harm. Knowing where the boundary is, and being able to explain it to a family, a medical staff committee, an accreditation reviewer, and your own leadership team, is a core competency for the work you are entering.<br><br>The distinction between tragedy and preventable harm is not a legal defense. It is a clinical and ethical commitment to honesty about what healthcare can and cannot do, and to directing improvement efforts where they can actually make a difference.</div><button class="restart-btn" id="rb">Restart Case 15</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 15,
+      log: {
+        finalClassification: 'Not a Safety Event',
+        taxonomyEventType: 'N/A — Not a Safety Event',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick=()=>{kctIndex=0;
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step="intro";render();};
 }
 
 function render(){
@@ -279,10 +355,5 @@ function render(){
   else if(step==="summary")renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
