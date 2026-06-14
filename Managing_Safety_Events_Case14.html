@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 14</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 14: Central Line Infection</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A patient receiving outpatient hemodialysis through a central venous catheter develops fever, chills, and localized catheter site inflammation consistent with a central line-associated bloodstream infection (CLABSI). The infection meets NHSN criteria for CLABSI. The staff at the dialysis center report that they follow the central line infection prevention protocol, including the 'scrub the hub' requirement, at every treatment session. No specific deviation from the protocol is identified on the day the patient developed symptoms, and no single staff member can be identified as having deviated. The patient requires a two-week course of oral antibiotics. The infection resolves fully with no further complications.";
+const MANAGER_UPDATE = "The infection prevention specialist conducted a post-event review. Because no deviation could be identified through documentation review, she asked each nurse individually to demonstrate how they perform the 'scrub the hub' step. She did not disclose that she was timing them. The average demonstrated time was 8 seconds. The required protocol time is 15 seconds. No nurse demonstrated the full 15-second scrub. Staff reported believing they were performing the step correctly. The gap between perceived and actual practice had not been identified or addressed prior to this event.";
+
+let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
+const app=document.getElementById('app');
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 14</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a central line-associated bloodstream infection reported from an outpatient hemodialysis center. This case introduces one of the most challenging questions in safety event classification: what do you do when you cannot identify a specific deviation from GAPS?</p><p>Read the event carefully. The path through this case requires thinking about how organizations define and respond to events when direct causation cannot be proven.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>A note on events where the deviation is unclear:</strong> Not all safety events arrive with a clearly identified deviation. In healthcare-associated infections and similar events, the specific deviation may not be directly observable, and no single individual can be identified as having made an error. This case asks you to work through the GAPS question when direct identification of the deviation is impossible from the documentation alone.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"yes",label:"Yes, even though the specific deviation cannot be identified from documentation, the CLABSI itself indicates that the prevention protocol was not performed correctly",type:"main"},
+    {key:"no",label:"No, because no specific deviation from GAPS can be identified, this cannot be classified as a safety event",type:"incorrect"},
+    {key:"unclear",label:"It is unclear, and additional investigation would help determine whether a deviation occurred",type:"main2"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"||opt.type==="main2"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">${opt.type==="main"?"That reflects sound reasoning about this type of event.":"That is the right instinct. Additional investigation is exactly what this event requires."}</span> This case introduces an important concept in patient safety practice: <strong>organizational case law</strong>. Some organizations have made a deliberate decision that certain types of events, particularly healthcare-associated infections that meet established surveillance criteria like NHSN definitions for CLABSI, are considered universally preventable safety events even when a specific deviation cannot be identified in documentation.<br><br>The reasoning behind this approach is that if an organization did everything possible to protect the patient from infection, and a CLABSI still occurred, the question is whether that is plausible given what is known about prevention science. When evidence shows that CLABSIs are preventable with consistent adherence to protocol, the occurrence of one is treated as evidence that something in the prevention process was not fully effective, even if that something cannot be named precisely.<br><br>This approach requires two organizational commitments: clarity in how and when such events are defined as safety events, and a separate determination of harm level that is not automatic. Let's see what additional investigation reveals about this specific event.`;
+    nb.classList.add('show');nb.textContent="Apply Organizational Case Law Framework";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The absence of a documented deviation is not the same as the absence of a deviation.</span> Consider: the patient developed a CLABSI that meets NHSN criteria. That outcome suggests that the prevention protocol was not fully effective. Some organizations have established policies that define certain healthcare-associated infections as universally preventable safety events, even when the specific deviation cannot be named. Have you thought about what it would mean for patient safety if we only classified events where the deviation was directly observable and attributed to a named individual?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion before settling on it.</span> The Known Complication Test can help us evaluate this event. Let's work through those four questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Revealing the Deviation</span><h3 class="case-title">Finding the Deviation Through Investigation</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The organizational case law framework points toward this being a safety event.</span> Now let's see what investigation reveals about the specific deviation.</div><div class="reference-box"><strong>The Infection Prevention Specialist's Investigation</strong><br><br>When no deviation could be identified through documentation, the infection prevention specialist asked each nurse to demonstrate the "scrub the hub" step without disclosing she was timing them.<br><br>The result: the average demonstrated time was <strong>8 seconds</strong>. The required protocol time is <strong>15 seconds</strong>. No nurse demonstrated the full 15-second scrub. All staff believed they were performing the step correctly.</div><div class="question">What does this investigation finding tell us about whether a GAPS deviation occurred?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"gap",label:"The 8-second average versus the 15-second requirement reveals a unit-wide gap between actual practice and the required protocol, even though no individual can be identified as the cause",type:"main"},
+    {key:"individual",label:"The investigation identifies individual nurses who failed to perform the step correctly and each should be addressed separately",type:"incorrect"},
+    {key:"training",label:"The gap means staff need retraining on how long 15 seconds feels, which would fix the problem",type:"partial"},
+    {key:"inconclusive",label:"The demonstration is after the fact and may not reflect what actually occurred on the day of the infection",type:"partial"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right reading of this finding.</span><br><br>The investigation reveals a systemic gap: every nurse on this unit, when asked to demonstrate the protocol, performed it in approximately half the required time, and none of them knew it. This is not a case of individual negligence. It is a case of a practice standard that has drifted from the written protocol across the entire team, without any mechanism to detect or correct that drift.<br><br>The review team agreed: there was a deviation from GAPS. The deviation was not attributable to a single individual on a specific day. It was a unit-wide practice gap that made the prevention protocol less effective than designed. The CLABSI was the visible result of that gap.<br><br>This case illustrates why the organizational case law approach to HAIs is valuable: without it, this event would have been dismissed as unclassifiable because no individual deviation could be named. With it, the investigation was prompted, the deviation was identified at the system level, and the practice gap can now be addressed.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what the finding actually shows.</span> Every nurse demonstrated the step in approximately 8 seconds. None performed it correctly. When the deviation is universal across a team, assigning individual accountability to each person misses the more important finding: this is a system-level practice gap, not a collection of individual failures. Have you thought about what it means that no one on this unit was performing the step correctly, and that no one knew it?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="training"
+      ?"Retraining on the time requirement may be one action that comes out of a CSA. However, the more significant finding is that the gap between actual and required practice went undetected. Retraining addresses the knowledge gap, but it does not address the monitoring and verification gap that allowed the drift to persist. Have you thought about what system change would ensure the protocol is being performed correctly going forward, not just that staff understand what is required?"
+      :"That is a fair methodological question, and it is worth noting as a limitation of demonstration-based evidence. However, the demonstration revealed a consistent and universal gap: no nurse, when asked to demonstrate, performed the step for 15 seconds. That consistency across all staff suggests this reflects their actual practice pattern rather than an artifact of the demonstration context. Have you thought about what it means for causation when the gap is this consistent and universal?";
+    fb.innerHTML=`<span style="font-weight:700;">That is worth examining, and here is how to think about it.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the treatment (hemodialysis via central venous catheter) appropriate or warranted for this patient?",answer:"YES"},
+  {text:"Was the central line infection a known risk of central venous catheter use, and was the standard of care employed to mitigate that risk?",answer:"NO"},
+  {text:"Was the complication identified in a timely manner?",answer:"YES"},
+  {text:"Was the complication treated according to the standard of care, in a timely manner?",answer:"YES"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["Hemodialysis via central venous catheter is appropriate and necessary for this patient's condition.","Hemodialysis through a central venous catheter is the indicated treatment. This points toward YES."],
+    ["CLABSI is a known risk of central venous catheter use. The standard of care mitigation is the central line infection prevention protocol, including scrub the hub at the required duration. The investigation revealed that the protocol was not being performed correctly: 8 seconds instead of 15. The mitigation was not fully employed. This points to NO.","Consider both parts: was the risk known, and was the standard of care employed? The protocol exists to mitigate this risk. The investigation revealed it was not being performed at the required time. This points to NO."],
+    ["The patient's symptoms were recognized and the infection was identified and treated. The identification was timely in the clinical context.","The infection was identified when the patient developed symptoms and was treated promptly. This points toward YES."],
+    ["The patient received a two-week course of oral antibiotics and the infection resolved fully. That is consistent with standard treatment for this type of infection.","Oral antibiotics with full resolution is the appropriate treatment response. This points toward YES."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">One of the four answers came back NO.</span> This is a safety event. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The prevention protocol gap, scrubbing for 8 seconds instead of 15, allowed the catheter site to remain insufficiently disinfected, and the patient developed a CLABSI. The deviation reached the patient in the form of an infection that required antibiotic treatment.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A catch would have required the protocol to be performed correctly, preventing the infection. The protocol was not performed at the required duration. The infection occurred. There was no barrier that intercepted the deviation before it reached the patient.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information is sound practice.</span> You reach out to the infection prevention specialist for the full post-event review.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is reasonable.</span> The vignette tells us the patient required a two-week course of oral antibiotics and the infection resolved fully. Let's score based on what is documented.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>PSE 2</strong> &mdash; Minor Temporary Harm: minimal harm, time-limited, requires little or no intervention beyond oral treatment</li><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring meaningful escalation of care</li></ul>Assign based on actual patient outcome.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [{key:"pse2",label:"Minor Temporary Harm (PSE 2)"},{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},{key:"sse4",label:"Severe Temporary Harm (SSE 4)"}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.key==='pse2'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is the right classification.</span> The patient required a two-week course of oral antibiotics. The infection resolved fully with no further complications. Oral antibiotic treatment represents a minimal intervention: it does not require hospitalization, IV therapy, or significant escalation in the level of care. The harm was real and required treatment, but it falls within the minor temporary category given the limited scope of the intervention and the full resolution.`;
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='sse5'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the intervention level more carefully.</span> SSE 5 captures significant harm requiring meaningful escalation of care. A two-week course of oral antibiotics, while a real treatment burden, is on the lower end of the intervention spectrum compared to what SSE 5 typically captures: IV antibiotics, hospitalization, or procedural intervention. The infection resolved fully without those escalations. Have you thought about which category better reflects minor harm resolved with oral treatment?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical or life-threatening harm. A CLABSI treated with oral antibiotics with full resolution was a real complication, but it did not meet the critical or life-threatening threshold. Have you thought about which category better captures harm that was real but resolved with minimal intervention?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='no'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy requires death, severe harm, or permanent harm. This patient experienced minor temporary harm: a CLABSI resolved with oral antibiotics and no lasting effects. The harm does not meet the sentinel event threshold. Let's use the SAC Matrix to determine the appropriate level of response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>The patient's CLABSI was treated with oral antibiotics and resolved fully. The harm was real but minor and temporary. It does not meet the death, severe, or permanent harm threshold. Have you thought about how that compares to the sentinel event criteria?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a sentinel event.</span> The SAC Matrix will help determine the appropriate level of organizational response.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant medical intervention required; increased LOS or level of care for 3 or more patients</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent / Occasional / Uncommon / Remote</strong></ul><em>Scenario context: CLABSIs at this outpatient dialysis center occur occasionally.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='moderate'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Moderate is the right severity classification.</span> The patient required a two-week course of oral antibiotics beyond what would have been expected for routine dialysis care. That represents an increase in the level of care, consistent with Moderate severity in the SAC Matrix.`;
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const h=val==='catastrophic'
+      ?"Catastrophic requires death, major permanent loss of function, or a JC sentinel event. None of those apply here. The infection resolved with oral antibiotics."
+      :val==='major'
+      ?"Major captures permanent lessening of function, significant surgical or medical intervention, or increased care for 3 or more patients. Oral antibiotics with full resolution does not reach that threshold."
+      :"Minor captures no injury and no increased stay or level of care. The patient required a two-week antibiotic course, which represents an increase in the level of care beyond routine dialysis. Have you thought about which category captures that care addition?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> ${h}`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent'},{val:'occasional',label:'Occasional'},{val:'uncommon',label:'Uncommon'},{val:'remote',label:'Remote'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Moderate + Occasional = SAC 1.":"The scenario context suggests Occasional. Note that Moderate severity at Occasional, Uncommon, or Remote probability produces a SAC score of 1."}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--slate-blue);"><strong>SAC Matrix Result: Score of 1 (Lowest Risk)</strong><br><br>Moderate severity with Occasional probability = SAC 1. Monitor and trend is the indicated response based on the matrix alone.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">An important distinction for this case.</span> The SAC Matrix score of 1 means a full CSA is not indicated by the matrix based on the individual event. However, this case also triggered an investigation that revealed a unit-wide practice gap. The organizational decision to treat this CLABSI as a universally preventable safety event, and the subsequent investigation that revealed the 8-second versus 15-second gap, produced information that is more valuable than what a SAC 1 event would typically generate. The level of response should be proportional to the system finding, not just the individual event score. Always verify what your organizational policy and accreditation body require.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 14 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>CM11 &mdash; Healthcare Associated Infection (Care Management); Outpatient Dialysis Setting</td></tr><tr><td>GAPS determination method</td><td>Organizational case law: CLABSI meeting NHSN criteria treated as a universally preventable safety event; deviation confirmed through IP specialist investigation</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; "scrub the hub" performed for average of 8 seconds vs. required 15 seconds across all unit staff; gap between actual and required practice not previously identified</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; inadequate disinfection time contributed to CLABSI</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; IP specialist demonstration revealed 8-second average; no nurse demonstrated full 15-second scrub; all staff believed they were compliant":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (two-week oral antibiotics; full resolution; no lasting effects)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Moderate severity, Occasional probability) &mdash; monitor and trend; note that system investigation revealed a unit-wide practice gap requiring intervention beyond the SAC score alone</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">The most important concept from this case: organizational case law.</span> This event would have been unclassifiable under a strict documentation-based approach: no specific deviation was identified, no individual could be named. By treating CLABSIs meeting NHSN criteria as universally preventable safety events and triggering an investigation, the organization surfaced a unit-wide practice gap that had likely persisted for an extended period. That gap, 8 seconds instead of 15, is now correctable. Without the classification decision and the investigation it prompted, it would have remained invisible. This is organizational case law in practice: a deliberate decision to treat a category of event as a safety event because the evidence base shows it is preventable, even when individual causation cannot be proven.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; HPI FAQ Case Examples (Press Ganey, 2022)</p><button class="restart-btn" id="rb">Restart Case 14</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
