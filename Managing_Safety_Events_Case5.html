@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 5</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 5: Wrong Patient X-Ray</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "Two patients with similar last names are checked in at an outpatient radiology center during the same appointment window. A radiology technologist calls out a last name from the waiting room doorway. The wrong patient responds and is escorted back for a chest X-ray that had been ordered for the other patient. The technologist does not use two patient identifiers, does not ask for a date of birth, and does not scan a wristband or check a photo ID. The X-ray is performed on the wrong patient, who has a documented history of prior radiation exposure being tracked for cumulative dose monitoring. The error is identified when the correct patient checks in at the front desk and staff realize the appointment has already been marked complete. The wrong patient received an unanticipated X-ray without clinical indication.";
+const MANAGER_UPDATE = "During the post-event review, the manager identifies this as the second wrong-patient imaging event at this facility within the past three days. A pull of event reports over the past month reveals ten wrong-patient scan events at this outpatient center. None of the previous nine events triggered a formal review or resulted in a process change. The patient who received the unanticipated X-ray has a documented history of radiation therapy for a prior malignancy, and the cumulative dose received is now above the threshold that triggers a radiation safety consultation. The radiation oncologist has noted the exposure is clinically significant and warrants monitoring.";
+
+let step="intro", requestedInfo=null, kctIndex=0, sentinelAnswer=null, sacSeverity=null, sacProbability=null;
+const app=document.getElementById('app');
+
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 5</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a patient identification concern reported from an outpatient radiology center. This case takes place in the ambulatory care setting.</p><p>Read the event carefully before working through the discussion points.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="helper-text">Look for the deviation most directly and causally connected to what happened to the patient.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"id",label:"The two-identifier patient identification process was not followed before performing the procedure",type:"main"},
+    {key:"name",label:"The patients had similar last names, which caused the technologist to select the wrong patient",type:"incorrect"},
+    {key:"schedule",label:"The scheduling system allowed two patients with similar names to be booked in the same appointment window",type:"secondary"},
+    {key:"wristband",label:"The outpatient center does not use wristbands, making identification impossible",type:"incorrect"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That identifies the central deviation in this event.</span> The standard of care for patient identification, in every care setting including outpatient radiology, requires verification using at least two patient identifiers before any procedure. Calling a name from a doorway and proceeding when someone responds is not patient identification: it is name recognition. The technologist did not use a date of birth, a photo ID, or any other second identifier. That single deviation from standard practice is what made the wrong-patient scan possible.<br><br>Now let's look at the broader context this event sits within.`;
+    nb.classList.add('show');nb.textContent="Explore the System Context";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="secondary"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Scheduling proximity is worth noting as a contributing system factor.</span> When two patients with similar names share an appointment window, the risk of a name mix-up increases. However, that risk exists precisely to be caught by patient identification procedures. Have you thought about what the standard of care requires at the point of patient contact, regardless of how similar the names are?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else if(opt.type==="incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="name"
+      ?"Similar names are a risk condition, not a GAPS deviation. The deviation is in what the technologist did, not in what the names looked like. Have you thought about what the standard of care requires a clinician to do when name similarity creates ambiguity, rather than treating a name as sufficient identification?"
+      :"Outpatient settings do not always use wristbands, but the absence of wristbands does not eliminate the requirement for two-identifier verification. Date of birth, photo ID, and other identifiers are available in outpatient settings. Have you thought about what two-identifier verification looks like when wristbands are not part of the workflow?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at this from a different angle.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Exploring the System Context</span><h3 class="case-title">What Does the Pattern Tell Us?</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The proximate deviation is identified.</span> Two-identifier verification was not performed. Now consider what the broader context tells us about whether this is an isolated individual failure or a system condition.</div><div class="question">Which of the following best describes the system-level factor most relevant to understanding how this event occurred?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"training",label:"The technologist had not received training on patient identification procedures",type:"incorrect"},
+    {key:"pattern",label:"The two-identifier requirement had not been consistently enforced at this facility, and the pattern of ten events in one month suggests identification verification had broken down as a routine practice",type:"main"},
+    {key:"volume",label:"High patient volume in the outpatient setting made it impractical to verify two identifiers for every patient",type:"partial"},
+    {key:"policy",label:"The facility did not have a patient identification policy for the outpatient setting",type:"partial"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">The pattern is the signal.</span> Ten wrong-patient scan events in one month at a single outpatient facility is not a series of ten individual errors. It is evidence that the patient identification process has broken down at the system level. The fact that none of the previous nine events triggered a formal review or process change tells us something important about the organization's surveillance and response systems as well: the signals were present, and nothing happened.<br><br>This is a case where the individual event in front of you is the visible tip of a larger system failure. A single-event review might identify what went wrong in this encounter. But the pattern calls for a broader analysis that looks at the identification process across all ten events, the conditions that allowed the breakdown to persist unaddressed, and what it would take to close the gap between the stated policy and the actual practice across this facility.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="volume"
+      ?"Volume is a real operational pressure in outpatient settings, and it is worth noting as a contributing factor. However, ten events in one month across what may be dozens or hundreds of encounters suggests something more than just a busy schedule. Have you thought about what ten events in one month tells us about whether identification verification was happening at all, regardless of volume?"
+      :"Policy gaps are worth investigating. However, two-identifier patient identification is a national standard that applies across all care settings, including outpatient imaging, regardless of whether a facility has documented its own specific policy. Have you thought about what ten wrong-patient events in one month tells us about whether this was a policy knowledge issue or a practice issue?";
+    fb.innerHTML=`<span style="font-weight:700;">That is one dimension worth examining.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what the event tells us directly.</span> The technologist performed the identification step of calling a name from the doorway, which suggests awareness that some form of identification is expected. The issue is not that the technologist did not know identification was required: it is that the practice in place did not meet the two-identifier standard. Have you thought about what ten events in one month tells us about whether this was an individual knowledge gap or a practice pattern across the facility?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the procedure (chest X-ray) appropriate or warranted for the patient who received it, based on nationally recognized standards of care?",answer:"NO"},
+  {text:"Was the outcome (unanticipated radiation exposure) a known risk of the procedure, and was the standard of care employed to mitigate that risk?",answer:"NO"},
+  {text:"Was the outcome identified in a timely manner?",answer:"YES"},
+  {text:"Was the outcome addressed according to the standard of care, in a timely manner?",answer:"YES"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["The chest X-ray was not ordered for the patient who received it. For the patient who was actually scanned, the procedure had no clinical indication. That immediately points to NO.","Think about this from the perspective of the patient who received the scan: was this X-ray ordered for them? Was it clinically indicated for them? The answer is no, which points to NO for this question."],
+    ["Because the procedure was not indicated for this patient, there is no framework for discussing whether known risks were mitigated. The exposure itself was the unintended outcome, and it occurred because the identification process failed, not as a risk of an appropriate procedure. This points to NO.","Consider the logic of this question: it asks whether the complication was a known risk of the procedure AND whether standard of care steps were taken to mitigate it. When the procedure itself should not have occurred, the entire risk-mitigation framework is disrupted. This points to NO."],
+    ["The error was identified when the correct patient arrived at the front desk and staff noticed the appointment had already been marked complete. While not immediate, the identification was made in time to prevent further action based on incorrect patient data.","Based on the event, the error was caught when the correct patient checked in. That is a timely identification in the context of this type of event, pointing toward YES."],
+    ["The event was identified and the situation was documented. A radiation safety follow-up would be the appropriate next step, which the event process would initiate.","Once identified, the appropriate response is to document the exposure and initiate a radiation safety consultation, which the event record would support. That points toward YES for this question."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">Here is what working through those four questions tells us.</span> Two of the four answers came back NO. The Known Complication Test is clear: if the answer to any one question is NO, the event is a safety event.<br><br>Our earlier conclusion that there was no deviation in GAPS does not hold up. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="reference-box"><strong>Defining "reaching the patient":</strong> A deviation reaches the patient when no detection barrier intercepts it before it causes harm or an unintended consequence. If nothing intervenes, the deviation reaches the patient.</div><div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> No barrier intervened between the failure to verify identity and the X-ray being performed. The procedure was completed before the error was detected. The deviation reached the patient in the form of an unanticipated X-ray without clinical indication.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A barrier would have intercepted the error before the X-ray was performed, for example a technologist asking for a date of birth at the doorway, or a check-in process that confirmed identity before the patient entered the procedure room. None of those interventions occurred. The scan was completed, and the error was only discovered after the fact. The deviation reached the patient.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="helper-text">You may request additional information from the facility manager or their designee before finalizing your classification.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information before classifying is sound practice here.</span> The vignette tells us an unanticipated X-ray was performed, but not whether there are clinically significant consequences. You reach out to the facility manager.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>This information changes the harm classification picture. Keep it in mind as you score.`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a starting point.</span> The vignette tells us an X-ray was performed on the wrong patient, who has a documented history of cumulative radiation exposure being tracked. No immediate physical harm is documented. Let's score based on what is known.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm (Precursor range):</strong><ul><li><strong>PSE 3</strong> &mdash; No Detectable Harm: deviation reached the patient but harm cannot be determined or may occur later</li><li><strong>PSE 2</strong> &mdash; Minor Temporary Harm: minimal harm, limited in time, little or no intervention required</li><li><strong>PSE 1</strong> &mdash; Minor Permanent Harm: minimal harm with no expected change in clinical status</li><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring monitoring or minor procedure to resolve</li></ul>Assign based on actual patient outcome, not on what could have happened.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [
+    {key:"pse3",label:"No Detectable Harm (PSE 3)"},
+    {key:"pse2",label:"Minor Temporary Harm (PSE 2)"},
+    {key:"pse1",label:"Minor Permanent Harm (PSE 1)"},
+    {key:"sse5",label:"Moderate Temporary Harm (SSE 5)"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  const correctKey=requestedInfo?'pse2':'pse3';
+  if(opt.key===correctKey){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    if(requestedInfo){
+      fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is where the evidence points with the manager's update in hand.</span> The manager's update tells us the patient's cumulative radiation dose has crossed the threshold that triggers a radiation safety consultation, and the radiation oncologist has noted the exposure is clinically significant and warrants monitoring. That moves this beyond no detectable harm: there is a documented clinical consequence, even if the harm is characterized as minor and manageable. PSE 2 captures minimal harm that is time-limited and requires little or modest intervention, which aligns with a radiation safety consultation and monitoring follow-up.`;
+    } else {
+      fb.innerHTML=`<span style="font-weight:700;">PSE 3: No Detectable Harm is a defensible classification based on the information available in the vignette.</span> The patient received an unanticipated X-ray and no immediate physical harm is documented. The SEC definition of PSE 3 includes events where harm cannot be determined or may occur later, which fits a situation involving radiation exposure with unknown long-term consequence. Note that if you had requested the manager update, you would know the cumulative dose concern is clinically significant, which would shift this to PSE 2.`;
+    }
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='pse3'&&requestedInfo){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit what the manager's update tells us.</span> PSE 3 applies when harm cannot be determined. However, the manager's update documents that the patient's cumulative dose has crossed a clinical threshold requiring a radiation safety consultation, and the radiation oncologist has characterized the exposure as clinically significant. That is a detectable consequence, even if it is minor. Have you thought about which category captures documented, clinically acknowledged harm that is minor in scope?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const hint=opt.key==='pse1'
+      ?"PSE 1 captures minor permanent harm. The radiation exposure from a single chest X-ray is unlikely to result in a permanent condition. Have you thought about whether the harm from this event is better characterized as temporary or as permanent in nature?"
+      :opt.key==='sse5'
+      ?`SSE 5 captures moderate temporary harm requiring significant monitoring or a minor procedure to resolve. ${requestedInfo?"While the manager's update documents a radiation safety consultation, that is a consultative step, not a significant clinical intervention. Have you thought about whether the level of intervention required aligns more with a minor or a moderate harm classification?":"Have you thought about whether requesting more information might help you determine whether the radiation exposure consequences are minor or more significant in this specific patient's history?"}`
+      :"Have you thought about which category best captures an unanticipated radiation exposure with documented but minor clinical consequences?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the harm categories more carefully.</span> ${hint}`;
+    if(!requestedInfo&&opt.key==='sse5'){
+      nb.classList.add('show');nb.textContent="Request Information from Manager/Designee";
+      nb.onclick=()=>{requestedInfo=true;renderHarmLevelStep();};
+    } else {
+      nb.classList.add('show');nb.textContent="Try Again";
+      nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+    }
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="reference-box"><strong>Why this matters:</strong> The Joint Commission Sentinel Event Policy (July 2026) defines specific event types that independently require a CSA for accredited organizations.</div><div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [
+    {val:'yes',label:'Yes, this is a sentinel event'},
+    {val:'no',label:'No, this is not a sentinel event'},
+    {val:'unsure',label:'Unsure, I need to think through it'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  sentinelAnswer=val;
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='no'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination for this event.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient experienced minor harm from an unanticipated radiation exposure, with no documented death or severe or permanent harm. This event does not meet the sentinel event threshold. That does not reduce the seriousness of this situation, particularly given the ten-event pattern. Let's use the SAC Matrix to think through the appropriate response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC definition carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Death</li><li>Severe harm, regardless of duration</li><li>Permanent harm, regardless of severity</li></ul></div>The harm in this event was documented as clinically significant but minor: a radiation safety consultation and monitoring were indicated, but no severe or permanent harm is documented. Have you thought about how that compares to the sentinel event threshold?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a JC sentinel event.</span> However, the context of ten events in one month significantly shapes what the SAC Matrix will show and what the appropriate organizational response looks like.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br>Score 3 = highest risk, 2 = intermediate, 1 = lowest.<br><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant medical intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Wrong-patient imaging events at this outpatient facility have occurred ten times in the past month.</em></div><div class="question">How would you classify the <strong>severity</strong> of this event?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacSeverity=val;
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='moderate'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Moderate is the right category for the individual event.</span> The SAC Matrix defines Moderate as including increased LOS or level of care for one to two patients. In this outpatient event, the patient received an unanticipated procedure and required a radiation safety consultation and monitoring follow-up, representing an increase in the level of care beyond what was originally planned. This places the individual event at Moderate severity.`;
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const hint=val==='catastrophic'
+      ?"Catastrophic is reserved for death, major permanent loss of function, or a JC sentinel event. We established that this event does not meet the sentinel event threshold, and no permanent or severe harm is documented. Have you thought about which category captures a documented but minor clinical consequence requiring follow-up?"
+      :val==='major'
+      ?"Major captures permanent lessening of function or events requiring significant surgical or medical intervention. The harm here was minor and the intervention was consultative. Have you thought about which category better reflects a minor clinical consequence requiring monitoring?"
+      :"Minor captures events with no injury and no increased stay or level of care. The manager's update tells us the patient requires a radiation safety consultation and monitoring, which represents an increase in the level of care beyond the original visit. Have you thought about which category captures that additional care need?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> ${hint}`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent (several times per year)'},{val:'occasional',label:'Occasional (several times in 1 to 2 years)'},{val:'uncommon',label:'Uncommon (sometime in 2 to 5 years)'},{val:'remote',label:'Remote (sometime in 5 to 30 years)'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProb(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProb(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='frequent'?"Frequent is the right read given the scenario context: ten wrong-patient events in one month means this type of event is occurring several times per week at this facility. That is clearly Frequent. Note that Moderate + Frequent = SAC 2, which still warrants consideration of a CSA.":"The scenario context describes ten events in one month, which clearly places this in the Frequent category rather than Occasional or lower. Ten events in thirty days means this type of error is occurring several times per week at this facility."}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 2 (Intermediate Risk)</strong><br><br>Moderate severity paired with Frequent probability produces a SAC score of 2. A score of 2 indicates intermediate risk and that a CSA should be considered.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">3</td><td style="background:#fdeaea;font-weight:700;text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">An important consideration before closing this discussion.</span> A SAC score of 2 indicates a CSA should be considered. In this case, the pattern of ten events in one month adds important context: this is not an isolated event that happened to score at an intermediate level. It is one of ten, none of which triggered a formal review. The volume and recurrence of similar events may indicate that a broader analysis looking across all ten events together would be more informative than a single-event review. When a pattern of similar events exists, organizations often conduct a common cause analysis to examine the shared system conditions across the group. That is beyond what you are being asked to determine here, but it is worth keeping in mind as a concept you will encounter in practice.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  const harmRow=requestedInfo?"PSE 2 &mdash; Minor Temporary Harm (cumulative radiation dose crossed clinical threshold; radiation safety consultation indicated)":"PSE 3 &mdash; No Detectable Harm (based on information available without manager update)";
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 5 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">${requestedInfo?"PSE 2":"PSE 3"}</div><p>${requestedInfo?"Minor Temporary Harm":"No Detectable Harm"}</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
+<tr><td>Taxonomy Event Type</td><td>PR2 &mdash; Wrong Patient (Procedural); Outpatient Radiology</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; two-identifier patient identification not performed before procedure</td></tr><tr><td>Contributing system factor</td><td>Identification verification had broken down as a routine practice; ten events in one month with no prior formal review or process change</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; wrong-patient X-ray completed before error was detected</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; cumulative dose above clinical threshold; radiation oncologist noted clinically significant exposure requiring monitoring":"No"}</td></tr><tr><td>Level of harm</td><td>${harmRow}</td></tr><tr><td>SEC Classification</td><td>${requestedInfo?"Precursor Safety Event":"Precursor Safety Event"}</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was minor; death, severe harm, and permanent harm criteria not met</td></tr><tr><td>SAC Matrix score</td><td>2 (Moderate severity, Frequent probability) &mdash; CSA should be considered</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request reveals that the cumulative radiation dose has crossed a clinical threshold requiring a radiation safety consultation. Without that information, the harm appeared undetectable. With it, there is a documented clinical consequence that shifts the classification to PSE 2. In an outpatient setting where immediate follow-up is less structured than in an inpatient environment, the harm from wrong-patient events may not be immediately apparent from the event report alone.</div>`:''}<p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 5</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
