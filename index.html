@@ -18,11 +18,7 @@
             --eu-white: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Source Sans 3', Georgia, serif;
@@ -44,110 +40,60 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 6px;
-            background: linear-gradient(90deg, var(--eu-red) 0%, var(--eu-red) 33%, var(--eu-gold) 33%, var(--eu-gold) 66%, var(--eu-slate) 66%, var(--eu-slate) 100%);
+            background: linear-gradient(90deg,
+                var(--eu-red) 0%, var(--eu-red) 33%,
+                var(--eu-gold) 33%, var(--eu-gold) 66%,
+                var(--eu-slate) 66%, var(--eu-slate) 100%);
         }
 
-        .hero-logo {
-            width: 160px;
-            height: auto;
-            margin-bottom: 1.4rem;
-            border-radius: 8px;
-        }
-
+        .hero-logo { width: 160px; height: auto; margin-bottom: 1.4rem; border-radius: 8px; }
         .hero-college {
             font-family: 'Source Sans 3', sans-serif;
-            font-weight: 400;
-            font-size: 0.8rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--eu-gold);
-            margin-bottom: 1.8rem;
+            font-weight: 400; font-size: 0.8rem;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--eu-gold); margin-bottom: 1.8rem;
         }
-
         .hero h1 {
             font-family: 'Playfair Display', Georgia, serif;
             font-size: clamp(1.8rem, 4vw, 2.6rem);
-            font-weight: 700;
-            line-height: 1.25;
-            margin-bottom: 0.4rem;
+            font-weight: 700; line-height: 1.25; margin-bottom: 0.4rem;
         }
-
         .hero h1 .course-number {
             display: block;
             font-family: 'Source Sans 3', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 500;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: var(--eu-gold);
-            margin-bottom: 0.5rem;
+            font-size: 0.85rem; font-weight: 500;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--eu-gold); margin-bottom: 0.5rem;
         }
-
-        .hero-meta {
-            font-size: 0.9rem;
-            color: var(--eu-light-gray);
-            margin-top: 1rem;
-            font-weight: 300;
-        }
-
-        .hero-meta span {
-            display: inline-block;
-            margin: 0 0.5rem;
-        }
-
-        .hero-meta .divider {
-            color: var(--eu-gold);
-        }
+        .hero-meta { font-size: 0.9rem; color: var(--eu-light-gray); margin-top: 1rem; font-weight: 300; }
+        .hero-meta span { display: inline-block; margin: 0 0.5rem; }
+        .hero-meta .divider { color: var(--eu-gold); }
 
         /* ── Main Content ── */
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 2.5rem 1.5rem 4rem;
-        }
+        .container { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
 
-        /* ── Section Styling ── */
-        section {
-            margin-bottom: 2.8rem;
-        }
+        section { margin-bottom: 2.8rem; }
 
         .section-label {
             font-family: 'Source Sans 3', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: var(--eu-slate);
-            margin-bottom: 0.5rem;
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--eu-slate); margin-bottom: 0.5rem;
         }
 
         h2 {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.55rem;
-            font-weight: 600;
-            color: var(--eu-black);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--eu-red);
+            font-size: 1.55rem; font-weight: 600;
+            color: var(--eu-black); margin-bottom: 1rem;
+            padding-bottom: 0.5rem; border-bottom: 2px solid var(--eu-red);
         }
 
-        p {
-            font-size: 1rem;
-            color: #3a3a3a;
-            margin-bottom: 1rem;
-        }
+        p { font-size: 1rem; color: #3a3a3a; margin-bottom: 1rem; }
 
         /* ── Objectives ── */
-        .objectives-list {
-            list-style: none;
-            padding: 0;
-            counter-reset: objective;
-        }
-
+        .objectives-list { list-style: none; padding: 0; counter-reset: objective; }
         .objectives-list li {
             counter-increment: objective;
             padding: 1rem 1rem 1rem 3.2rem;
@@ -156,54 +102,34 @@
             border-left: 3px solid var(--eu-slate);
             border-radius: 0 6px 6px 0;
             position: relative;
-            font-size: 0.95rem;
-            color: #3a3a3a;
+            font-size: 0.95rem; color: #3a3a3a;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             transition: border-left-color 0.2s ease, box-shadow 0.2s ease;
         }
-
         .objectives-list li:hover {
             border-left-color: var(--eu-red);
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-
         .objectives-list li::before {
             content: counter(objective);
-            position: absolute;
-            left: 0.9rem;
-            top: 1rem;
+            position: absolute; left: 0.9rem; top: 1rem;
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--eu-slate);
+            font-size: 1.1rem; font-weight: 700; color: var(--eu-slate);
         }
-
-        .objectives-list li strong {
-            color: var(--eu-black);
-            font-weight: 600;
-        }
+        .objectives-list li strong { color: var(--eu-black); font-weight: 600; }
 
         /* ── Resources / TOC ── */
-        .resource-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
+        .resource-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
 
         .resource-card {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            display: flex; align-items: center; gap: 1rem;
             padding: 1.1rem 1.3rem;
-            background: var(--eu-white);
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--eu-black);
+            background: var(--eu-white); border-radius: 8px;
+            text-decoration: none; color: var(--eu-black);
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             border: 1px solid transparent;
         }
-
         .resource-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
@@ -211,118 +137,61 @@
         }
 
         .resource-icon {
-            flex-shrink: 0;
-            width: 46px;
-            height: 46px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
+            flex-shrink: 0; width: 46px; height: 46px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
         }
-
-        .resource-icon.map {
-            background: linear-gradient(135deg, #e8f0f4, #d0e3ed);
-            color: var(--eu-slate);
-        }
-
-        .resource-icon.timeline {
-            background: linear-gradient(135deg, #fdf2e0, #f5e0b8);
-            color: var(--eu-gold);
-        }
-
-        .resource-icon.candor {
-            background: linear-gradient(135deg, #f4e4e4, #edc8c8);
-            color: var(--eu-red);
-        }
-
-        .resource-icon.hro {
-            background: linear-gradient(135deg, #e8eef4, #d0dced);
-            color: #2a4a6a;
-        }
+        .resource-icon.map    { background: linear-gradient(135deg, #e8f0f4, #d0e3ed); color: var(--eu-slate); }
+        .resource-icon.timeline { background: linear-gradient(135deg, #fdf2e0, #f5e0b8); color: var(--eu-gold); }
+        .resource-icon.candor { background: linear-gradient(135deg, #f4e4e4, #edc8c8); color: var(--eu-red); }
+        .resource-icon.hro    { background: linear-gradient(135deg, #e8eef4, #d0dced); color: #2a4a6a; }
+        .resource-icon.safety { background: linear-gradient(135deg, #fdeaea, #f5c8c8); color: var(--eu-red); }
 
         .resource-info h3 {
             font-family: 'Source Sans 3', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.15rem;
+            font-size: 1rem; font-weight: 600; margin-bottom: 0.15rem;
         }
-
-        .resource-info p {
-            font-size: 0.82rem;
-            color: var(--eu-dark-gray);
-            margin: 0;
-            line-height: 1.4;
-        }
+        .resource-info p { font-size: 0.82rem; color: var(--eu-dark-gray); margin: 0; line-height: 1.4; }
 
         .resource-week {
             font-family: 'Source Sans 3', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 600;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--eu-slate);
-            background: #eef4f7;
-            padding: 0.15rem 0.5rem;
-            border-radius: 3px;
-            margin-bottom: 0.25rem;
-            display: inline-block;
+            font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--eu-slate); background: #eef4f7;
+            padding: 0.15rem 0.5rem; border-radius: 3px;
+            margin-bottom: 0.25rem; display: inline-block;
+        }
+        .resource-week.red {
+            color: var(--eu-red); background: #fdeaea;
         }
 
         /* ── MHA CTA ── */
         .mha-banner {
             background: linear-gradient(135deg, var(--eu-slate), #3d7a94);
-            color: var(--eu-white);
-            padding: 2rem 2rem;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 1rem;
+            color: var(--eu-white); padding: 2rem; border-radius: 10px;
+            text-align: center; margin-top: 1rem;
         }
-
         .mha-banner h3 {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;
         }
-
-        .mha-banner p {
-            color: rgba(255,255,255,0.88);
-            font-size: 0.92rem;
-            margin-bottom: 1.2rem;
-        }
-
+        .mha-banner p { color: rgba(255,255,255,0.88); font-size: 0.92rem; margin-bottom: 1.2rem; }
         .mha-link {
-            display: inline-block;
-            padding: 0.65rem 2rem;
-            background: var(--eu-white);
-            color: var(--eu-slate);
+            display: inline-block; padding: 0.65rem 2rem;
+            background: var(--eu-white); color: var(--eu-slate);
             font-family: 'Source Sans 3', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            border-radius: 6px;
+            font-weight: 600; font-size: 0.9rem;
+            text-decoration: none; border-radius: 6px;
             transition: background 0.2s ease, transform 0.2s ease;
         }
-
-        .mha-link:hover {
-            background: var(--eu-warm-gray);
-            transform: translateY(-1px);
-        }
+        .mha-link:hover { background: var(--eu-warm-gray); transform: translateY(-1px); }
 
         /* ── Footer ── */
         footer {
-            text-align: center;
-            padding: 2rem 1.5rem;
-            font-size: 0.78rem;
-            color: var(--eu-dark-gray);
+            text-align: center; padding: 2rem 1.5rem;
+            font-size: 0.78rem; color: var(--eu-dark-gray);
             border-top: 1px solid var(--eu-light-gray);
         }
-
-        footer a {
-            color: var(--eu-slate);
-            text-decoration: none;
-        }
+        footer a { color: var(--eu-slate); text-decoration: none; }
 
         /* ── Responsive ── */
         @media (max-width: 600px) {
@@ -339,12 +208,10 @@
     <header class="hero">
         <img class="hero-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
         <div class="hero-college">Henry Predolin College of Health Sciences</div>
-
         <h1>
             <span class="course-number">HCA 680</span>
             Integrity of Care:<br>Patient Safety and Risk
         </h1>
-
         <div class="hero-meta">
             <span>2026</span>
             <span class="divider">|</span>
@@ -440,7 +307,7 @@
             </ol>
         </section>
 
-        <!-- Course Resources / TOC -->
+        <!-- Course Resources -->
         <section>
             <div class="section-label">Interactive Tools</div>
             <h2>Course Resources</h2>
@@ -449,6 +316,7 @@
                 to open it in a new tab.
             </p>
             <div class="resource-grid">
+
                 <a class="resource-card" href="accreditation-map.html" target="_blank" rel="noopener">
                     <div class="resource-icon map">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16"/><path d="M16 6v16"/></svg>
@@ -478,7 +346,7 @@
                     <div class="resource-info">
                         <span class="resource-week">Week 2</span>
                         <h3>HRO Principles in Practice</h3>
-                        <p>The five principles of High Reliability Organizing with practical "when you do this" action examples.</p>
+                        <p>The five principles of High Reliability Organizing with practical action examples.</p>
                     </div>
                 </a>
 
@@ -492,6 +360,18 @@
                         <p>Communication and Optimal Resolution framework for responding to adverse events.</p>
                     </div>
                 </a>
+
+                <a class="resource-card" href="Managing_Safety_Events_Shell.html" target="_blank" rel="noopener">
+                    <div class="resource-icon safety">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>
+                    <div class="resource-info">
+                        <span class="resource-week red">Weeks 5&ndash;7</span>
+                        <h3>Managing Safety Events: Case Discussion Series</h3>
+                        <p>15 guided case discussions applying the Safety Event Classification (SEC) framework, Known Complication Test, SAC Matrix, and JC Sentinel Event Policy across the full continuum of care.</p>
+                    </div>
+                </a>
+
             </div>
         </section>
 
@@ -520,5 +400,4 @@
     </footer>
 
 </body>
-</html>
 </html>
