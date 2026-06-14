@@ -182,6 +182,45 @@ const MANAGER_UPDATE = "Per the neonatology attending's documentation following 
 
 let step = "intro", requestedInfo = null, kctIndex = 0, sentinelAnswer = null, sacSeverity = null, sacProbability = null;
 const app = document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'SSE 3 or SSE 4 (path-dependent on manager update)',
+    taxonomyEventType: 'CM1 — Medication Error (Care Management); Neonatal ICU',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
+
 
 function vign() { return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`; }
 function pb(n,t,l) { return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`; }
@@ -209,16 +248,19 @@ function renderDeviationStep() {
 
 function handleDev(btn, opt) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (opt.type === "main") {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That captures the central GAPS deviation in this event.</span> Two failures converged: the nurse selected the wrong concentration without verifying, and the independent double-check that policy required for exactly this situation did not occur. The double-check policy exists because ISMP classifies heparin as a high-alert medication: one with a heightened risk of causing significant patient harm when used in error. High-alert medications require additional safeguards precisely because the consequences of error are severe. Both the concentration selection error and the absent double-check are deviations from GAPS.<br><br>Now let's look at what made the double-check failure possible at a system level.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Explore the System Factor";
     nb.onclick = () => { step = "deviation-round2"; render(); };
   } else if (opt.type === "secondary") {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Storage proximity is a real system hazard and worth identifying.</span> Storing two concentrations of the same high-alert medication side by side with similar labeling is a known risk condition. However, a safety barrier existed specifically to catch errors that slip past the storage step: the independent double-check. Have you thought about what happened at that barrier and why it was not in place?`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => renderDeviationStep();
   } else if (opt.type === "incorrect") {
@@ -227,11 +269,13 @@ function handleDev(btn, opt) {
       ? "The facility did have a high-alert medication policy that required an independent double-check before NICU heparin administration. The policy existed. The question is what happened at the point of practice."
       : "The PICC line was already in place. This event concerns a routine flush of an existing line, not the insertion procedure itself.";
     fb.innerHTML = `<span style="font-weight:700;">Let's go back to the event together.</span> ${d}<br><br>Consider what was in place and what did not function as designed between the medication room and the patient's bedside.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Apply the Known Complication Test";
     nb.onclick = () => { kctIndex = 0; step = "kct"; render(); };
   }
@@ -254,11 +298,13 @@ function renderDeviationRound2() {
 
 function handleCulture(btn, opt) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (opt.type === "main") {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That is the system-level condition at the root of this failure.</span><br><br>A double-check policy that is followed 40% of the time is not a functioning safety barrier. It is a policy on paper with a 60% gap between what is written and what is practiced. That gap did not emerge overnight. It developed because the deviation from policy was not being monitored, not being corrected, and not generating consequences. Over time, skipping the check became the de facto standard of practice on this unit, even though it violated the written standard.<br><br>This is what safety scientists call <em>normalization of deviance</em>: a process by which departures from expected practice are gradually accepted as normal because nothing visibly bad happens most of the time. The written standard still exists, but the practiced standard has drifted far from it. When that drift collides with a high-alert medication and a vulnerable patient, the consequences can be catastrophic.<br><br>ISMP's high-alert medication framework identifies independent double-checks as a critical safeguard for medications like heparin, particularly in neonatal populations where dosing margins are extremely narrow. A safeguard that exists on paper but not in practice offers no protection.`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show');
     nb.onclick = () => { step = "reach"; render(); };
   } else if (opt.type === "partial") {
@@ -267,11 +313,13 @@ function handleCulture(btn, opt) {
       ? "Workload is a real contributing factor and worth noting. However, the manager update tells us the double-check compliance rate was 40% over the past quarter, not just on one busy shift. Have you thought about what happens to a safety requirement when it is not followed consistently and that pattern goes unaddressed? What does 60% non-compliance over an entire quarter tell us about the relationship between the written policy and actual practice?"
       : "Staffing availability is worth examining. However, a 40% compliance rate over a full quarter suggests this is not simply a matter of no one being available in the moment. Have you thought about what it means when a required safety step is skipped routinely and without consequence? What does that pattern do to how staff perceive the requirement?";
     fb.innerHTML = `<span style="font-weight:700;">That is one dimension of this.</span> ${d}`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => { fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show'); document.querySelectorAll('#opts .opt-btn').forEach(b => { b.disabled = false; b.className = 'opt-btn'; }); };
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's go back to what the event tells us.</span> The facility had a policy specifically requiring an independent double-check for high-alert NICU medications. The policy named the requirement. Staff in this unit were working with that policy in place. The issue is not that the requirement was unclear. Have you thought about what happens between a clear written policy and a 40% compliance rate? What explains that gap?`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => { fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show'); document.querySelectorAll('#opts .opt-btn').forEach(b => { b.disabled = false; b.className = 'opt-btn'; }); };
   }
@@ -298,9 +346,11 @@ function renderKctStep() {
 
 function handleKct(btn, val, q) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const isCorrect = val === q.answer;
   btn.classList.add(isCorrect ? 'selected-correct' : 'selected-redirect');
   if (!isCorrect) document.querySelectorAll('#opts .opt-btn').forEach(b => { if (b.textContent === q.answer) b.classList.add('selected-correct'); });
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show', isCorrect ? 'correct' : 'neutral');
   const notes = [
     ["Routine PICC line maintenance with a heparin flush is standard care for a neonate with a central line. The procedure itself was indicated and appropriate.","Think about the clinical picture: this is a standard, expected part of PICC line maintenance for a neonate. The procedure was appropriate, which points toward YES."],
@@ -310,6 +360,7 @@ function handleKct(btn, val, q) {
   ];
   const [c,i] = notes[kctIndex];
   fb.innerHTML = `<span style="font-weight:700;">${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</span> ${isCorrect ? c : i}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb = document.getElementById('nb'); nb.classList.add('show');
   nb.onclick = () => { kctIndex++; renderKctStep(); };
 }
@@ -331,12 +382,16 @@ function renderReachStep() {
 
 function handleReach(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const isCorrect = val === 'Yes, it reached the patient';
   btn.classList.add(isCorrect ? 'selected-correct' : 'selected-redirect');
   if (!isCorrect) document.querySelectorAll('#opts .opt-btn').forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
-  if (isCorrect) { fb.classList.add('correct'); fb.innerHTML = `<span style="font-weight:700;">That is a sound read of this situation.</span> The last barrier, the independent double-check, was never performed. The wrong concentration was drawn up and administered without any verification step catching it. The deviation reached the neonate directly.`; }
-  else { fb.classList.add('neutral'); fb.innerHTML = `<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> The independent double-check was the designed barrier for exactly this scenario. It did not occur. The medication went directly from the vial to the patient without any verification. The infant received 100 times the intended dose. Nothing intercepted the deviation before it reached the patient.`; }
+  if (isCorrect) { fb.classList.add('correct'); fb.innerHTML = `<span style="font-weight:700;">That is a sound read of this situation.</span> The last barrier, the independent double-check, was never performed. The wrong concentration was drawn up and administered without any verification step catching it. The deviation reached the neonate directly.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML); }
+  else { fb.classList.add('neutral'); fb.innerHTML = `<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> The independent double-check was the designed barrier for exactly this scenario. It did not occur. The medication went directly from the vial to the patient without any verification. The infant received 100 times the intended dose. Nothing intercepted the deviation before it reached the patient.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML); }
   const nb = document.getElementById('nb'); nb.classList.add('show');
   nb.onclick = () => { step = "harm-info"; render(); };
 }
@@ -353,14 +408,17 @@ function renderHarmInfoStep() {
 
 function handleHarmInfo(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   btn.classList.add('selected-correct');
   requestedInfo = val.startsWith('Yes');
   const fb = document.getElementById('fb'); fb.classList.add('show','neutral');
   const nb = document.getElementById('nb'); nb.classList.add('show');
   if (requestedInfo) {
     fb.innerHTML = `<span style="font-weight:700;">Reaching out for more information is the right instinct for this event.</span> The vignette tells us an intracranial hemorrhage occurred, but not whether the neurological effects will be permanent. You contact the unit manager for a follow-up.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>This information changes how you will classify the harm. Keep it in mind as you score.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   } else {
     fb.innerHTML = `<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the infant sustained an intracranial hemorrhage and was stabilized. The permanence of any neurological effects is not yet documented. Let's score based on what is known.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   }
   nb.onclick = () => { step = "harm-level"; render(); };
 }
@@ -433,16 +491,19 @@ function renderCsaSentinelStep() {
 
 function handleSentinel(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sentinelAnswer = val;
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (val === 'yes') {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as those resulting in death, severe harm, or permanent harm. ${requestedInfo ? "The manager's update documents likely permanent neurological effects, which meets the permanent harm criterion directly." : "The intracranial hemorrhage with neurological sequelae in a neonate meets the severe harm threshold regardless of the permanence question."} For Joint Commission-accredited organizations, a CSA is required. Let's use the SAC Matrix to think through the appropriate scope of response.`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show'); nb.onclick = () => renderCsaMatrixStep();
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's work through the JC definition together.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Death</li><li>Severe harm, regardless of duration</li><li>Permanent harm, regardless of severity</li></ul></div>A neonate who sustained an intracranial hemorrhage from a 100-fold heparin overdose, with neurological sequelae noted on follow-up, has experienced harm that meets at least one of those criteria. Have you thought about how the severity and the potential permanence of the neurological effects compare to the sentinel event definition?`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Reconsider My Answer";
     nb.onclick = () => { fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';}); };
   }
@@ -465,15 +526,18 @@ function renderCsaMatrixStep() {
 
 function handleSev(btn, val) {
   document.querySelectorAll('#sev-opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sacSeverity = val;
   const fb = document.getElementById('sev-fb'); fb.classList.add('show');
   if (val === 'catastrophic') {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">Catastrophic is the right category.</span> The SAC Matrix defines Catastrophic as including any JC sentinel event, and also events resulting in major permanent loss of function. This event meets both criteria: it is a confirmed sentinel event, and the manager's update documents likely permanent neurological effects in the infant.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     showProb();
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's revisit the Catastrophic definition.</span> Catastrophic includes any JC sentinel event and events with major permanent loss of function. We confirmed a moment ago that this is a sentinel event. That alone places it in the Catastrophic category, independent of the severity discussion.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b => b.disabled = false); btn.disabled = true;
   }
 }
@@ -495,9 +559,11 @@ function showProb() {
 
 function handleProbFn(btn, val) {
   document.querySelectorAll('#prob-opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sacProbability = val; btn.classList.add('selected-correct');
   const fb = document.getElementById('prob-fb'); fb.classList.add('show','neutral');
   fb.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${val === 'occasional' ? "Occasional aligns with the scenario context. Note that at Catastrophic severity, the SAC score is 3 regardless of probability." : "The scenario context suggests Occasional. Importantly, at Catastrophic severity, any probability category produces a SAC score of 3."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatRes();
 }
 
@@ -509,10 +575,43 @@ function showMatRes() {
 }
 
 function renderSummary() {
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
   const harmRow = requestedInfo ? "SSE 3 &mdash; Moderate Permanent Harm (likely permanent motor developmental delays)" : "SSE 4 &mdash; Severe Temporary Harm (based on information available without manager update)";
   app.innerHTML = `${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 4 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">${requestedInfo ? "SSE 3" : "SSE 4"}</div><p>${requestedInfo ? "Moderate Permanent Harm" : "Severe Temporary Harm"}</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
-<tr><td>Taxonomy Event Type</td><td>CM1 &mdash; Medication Error (Care Management); Neonatal ICU</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; wrong heparin concentration selected; independent double-check not performed despite policy requirement</td></tr><tr><td>Contributing system factor</td><td>Normalization of deviance: double-check compliance at 40%, policy non-adherence unmonitored and uncorrected (ISMP high-alert medication framework)</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; no barrier intercepted the error; infant received 100x intended dose</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes &mdash; neurologist confirmed likely permanent motor developmental delays" : "No"}</td></tr><tr><td>Level of harm</td><td>${harmRow}</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>Yes &mdash; permanent harm to a patient meets JC sentinel event criteria (July 2026)</td></tr><tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo ? `<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update reveals that the neurological effects are likely permanent, which shifts the classification from SSE 4 to SSE 3. In this case, the stakes of not requesting additional information are significant: the difference between a temporary and permanent harm classification has direct implications for the scope of the CSA, the disclosure conversation with the family, and the organizational response the accreditation body will expect.</div>` : ''}<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on second victim syndrome.</span> The nurse who administered this medication will likely carry the weight of this event for a long time. A medication error resulting in permanent neurological harm to a four-day-old infant is among the most traumatic experiences a NICU nurse can face. The organizational response to this event must include attending to that nurse's wellbeing alongside the system analysis. A culture that supports second victims is one that also maintains the psychological safety needed to prevent future events.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; ISMP High-Alert Medications</p><button class="restart-btn" id="rb">Restart Case 4</button></div>`;
-  document.getElementById('rb').onclick = () => { requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render(); };
+<tr><td>Taxonomy Event Type</td><td>CM1 &mdash; Medication Error (Care Management); Neonatal ICU</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; wrong heparin concentration selected; independent double-check not performed despite policy requirement</td></tr><tr><td>Contributing system factor</td><td>Normalization of deviance: double-check compliance at 40%, policy non-adherence unmonitored and uncorrected (ISMP high-alert medication framework)</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; no barrier intercepted the error; infant received 100x intended dose</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes &mdash; neurologist confirmed likely permanent motor developmental delays" : "No"}</td></tr><tr><td>Level of harm</td><td>${harmRow}</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>Yes &mdash; permanent harm to a patient meets JC sentinel event criteria (July 2026)</td></tr><tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo ? `<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update reveals that the neurological effects are likely permanent, which shifts the classification from SSE 4 to SSE 3. In this case, the stakes of not requesting additional information are significant: the difference between a temporary and permanent harm classification has direct implications for the scope of the CSA, the disclosure conversation with the family, and the organizational response the accreditation body will expect.</div>` : ''}<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on second victim syndrome.</span> The nurse who administered this medication will likely carry the weight of this event for a long time. A medication error resulting in permanent neurological harm to a four-day-old infant is among the most traumatic experiences a NICU nurse can face. The organizational response to this event must include attending to that nurse's wellbeing alongside the system analysis. A culture that supports second victims is one that also maintains the psychological safety needed to prevent future events.</div><button class="restart-btn" id="rb">Restart Case 4</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 4,
+      log: {
+        finalClassification: 'SSE 3 or SSE 4 (path-dependent on manager update)',
+        taxonomyEventType: 'CM1 — Medication Error (Care Management)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick = () => { requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step="intro";render(); };
 }
 
 function render() {
@@ -527,10 +626,5 @@ function render() {
   else if (step==="summary") renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
