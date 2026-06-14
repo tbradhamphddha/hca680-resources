@@ -469,6 +469,23 @@ let sacProbability = null;
 
 const app = document.getElementById('app');
 const _caseStartTime = new Date();
+let _attemptLog = [];       // responses for current attempt
+let _allAttempts = [];      // completed attempts (pushed on restart)
+let _attemptStartTime = new Date(); // resets on each restart
+
+// Helper: log a step response
+function _logStep(stepName, selected, feedbackEl) {
+  var fbText = '';
+  if (feedbackEl) {
+    var el = document.getElementById(feedbackEl);
+    if (el) fbText = el.innerText || el.textContent || '';
+  }
+  // Only log if this step not already recorded in current attempt
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (!alreadyLogged) {
+    _attemptLog.push({ step: stepName, selected: selected, feedback: fbText.trim() });
+  }
+}
 
 // -----------------------------------------------------------------
 // INTRO
@@ -580,6 +597,7 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <br><br>
       Now let's think about causation for a moment. Is there a clear relationship between this deviation and the harm the patient experienced? The patient had been identified as high fall risk, and the bed alarm was a specifically prescribed safeguard in the fall prevention plan. When that alarm was off and the family left, the system had no way to alert staff that a high-risk patient was attempting to get up unassisted. That gap came immediately before the fall, which makes it causal, not just coincidental.
     `;
+  _logStep('Discussion Point 1: Deviation', btn.textContent.trim(), 'feedback');
     nextBtn.classList.add('show');
     nextBtn.textContent = "Continue to Discussion Point 2";
     nextBtn.onclick = () => { step = "reach"; render(); };
@@ -720,6 +738,7 @@ function handleKctAnswer(btn, selected, q, optionsDiv) {
       : "The event tells us the patient received surgical repair and rehabilitation therapy, which reflects the standard of care for a hip fracture. That supports a YES for this question.";
   }
   feedbackDiv.innerHTML = `<strong>${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</strong> ${note}`;
+  _logStep('KCT Question ' + (kctIndex + 1), btn.textContent.trim(), 'feedback');
 
   const nextBtn = document.getElementById('next-btn');
   nextBtn.classList.add('show');
@@ -796,6 +815,7 @@ function handleReachAnswer(btn, selected, optionsDiv) {
       <strong>That is a sound read of this situation.</strong>
       No barrier intervened between the deviation and the patient. The alarm was off, no one was alerted, and the patient got up, fell, and sustained an injury. When nothing catches the error before it affects the patient, the deviation has reached the patient.
     `;
+  _logStep('Discussion Point 2: Did It Reach the Patient?', btn.textContent.trim(), 'feedback');
   } else {
     btn.classList.add('selected-redirect');
     allBtns.forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
@@ -860,6 +880,7 @@ function handleHarmInfoAnswer(btn, selected, optionsDiv) {
       </div>
       With that information in hand, let's think about how it affects the level of harm.
     `;
+  _logStep('Discussion Point 3: Request More Info?', btn.textContent.trim(), 'feedback');
   } else {
     requestedInfo = false;
     feedbackDiv.innerHTML = `
@@ -940,6 +961,7 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
       feedbackDiv.innerHTML = `
         <strong>SSE 2: Severe Permanent Harm is where the evidence points.</strong> A hip fracture requiring surgical repair is serious on its own, but the manager's update adds a critical dimension: the patient will not regain knee flexion and will require a mobility device going forward. That describes a lasting change from the patient's baseline function, not a temporary setback. When a deviation results in a permanent loss of function, the SEC framework distinguishes that from harm the patient is expected to recover from. Combined with the severity of the injury and the surgical intervention, SSE 2 is the appropriate classification.
       `;
+  _logStep('Discussion Point 3: Harm Level', btn.textContent.trim(), 'feedback');
     } else {
       feedbackDiv.innerHTML = `
         <strong>SSE 4: Severe Temporary Harm is a supportable classification based on the information available.</strong> A hip fracture requiring surgical repair and rehabilitation is a serious injury, and without additional information about the patient's expected recovery, this is a reasonable score at this point in the review.
@@ -1043,6 +1065,7 @@ function handleSentinelAnswer(btn, val, optionsDiv) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">That is well-reasoned.</span> The Joint Commission Sentinel Event Policy (July 2026) includes falls in a staffed-around-the-clock care setting that result in any fracture or that require surgery. This patient sustained a hip fracture and underwent surgical repair, which meets both criteria simultaneously. A CSA is required for Joint Commission-accredited organizations when a sentinel event occurs, independent of any other prioritization tool. Let's now look at the SAC Matrix to think through resource allocation.
     `;
+  _logStep('Discussion Point 4: Sentinel Event', btn.textContent.trim(), 'feedback');
     nextBtn.classList.add('show');
     nextBtn.onclick = () => renderCsaMatrixStep();
 
@@ -1172,6 +1195,7 @@ function handleSeverityAnswer(btn, val, sevOptions) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">Catastrophic is where this event lands.</span> The SAC Matrix defines Catastrophic as including major permanent loss of function not related to the natural course of illness, and also explicitly includes any event meeting The Joint Commission's sentinel event criteria. This patient will not regain knee flexion and requires permanent device assistance, which is a permanent loss of function. The event also meets JC sentinel event criteria. Either consideration alone places this in the Catastrophic category.
     `;
+  _logStep('Discussion Point 4: SAC Severity', btn.textContent.trim(), 'feedback');
     showProbabilitySection();
 
   } else if (val === 'major') {
@@ -1233,6 +1257,7 @@ function handleProbabilityAnswer(btn, val, probOptions) {
   }
 
   feedbackDiv.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${probNote}`;
+  _logStep('Discussion Point 4: SAC Probability', btn.textContent.trim(), 'feedback');
 
   // Show matrix result
   showMatrixResult();
@@ -1304,28 +1329,20 @@ function renderSummary() {
   
   // Send completion data to parent shell
   setTimeout(function(){
-    var endTime = new Date();
-    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
-    var mins = Math.floor(elapsed / 60);
-    var secs = elapsed % 60;
-    var timeStr = mins + ' min ' + secs + ' sec';
+    var attempt = _buildAttemptLog();
+    var allToSend = _allAttempts.concat([attempt]);
     window.parent.postMessage({
       type: 'case-complete',
       caseNum: 1,
-      log: {
-        finalClassification: 'SSE 2 or SSE 4 (path-dependent on manager update)',
-        taxonomyEventType: 'EE3 — Fall (Environmental)',
-        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
-        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
-        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
-        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
-        startTime: _caseStartTime.toLocaleString(),
-        endTime: endTime.toLocaleString(),
-        timeOnTask: timeStr
-      }
+      log: attempt,
+      attempts: allToSend
     }, '*');
   }, 100);
   document.getElementById('restart-btn').onclick = () => {
+    // Save completed attempt before resetting
+    _allAttempts.push(_buildAttemptLog());
+    _attemptLog = [];
+    _attemptStartTime = new Date();
     requestedInfo = null;
     kctVisited = false;
     kctIndex = 0;
@@ -1335,6 +1352,26 @@ function renderSummary() {
     sacProbability = null;
     step = "intro";
     render();
+  };
+}
+
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'SSE 2 or SSE 4 (path-dependent on manager update)',
+    taxonomyEventType: 'EE3 — Fall (Environmental)',
+    managerUpdateRequested: requestedInfo ? 'Yes' : 'No',
+    sentinelEvent: sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+    sacSeverity: sacSeverity || 'Not applicable',
+    sacProbability: sacProbability || 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
   };
 }
 
@@ -1354,10 +1391,5 @@ function render() {
 
 render();
 </script>
-
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
 </body>
 </html>
