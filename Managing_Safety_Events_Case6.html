@@ -433,6 +433,7 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
@@ -440,10 +441,12 @@ function handleHarmLevel(btn,opt){
   if(opt.key==='sse5'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is where the evidence points.</span> The patient underwent an unnecessary arthroscopic procedure on the wrong knee and then required a second arthroscopic surgery on the correct knee. The SEC definition of SSE 5 includes events where significant harm requires an additional invasive procedure or treatment to resolve. The second surgery is that additional invasive procedure. ${requestedInfo?"The manager's update confirms no permanent harm is expected and the patient is on track for full recovery, placing this firmly in the temporary category. The emotional distress documented is also a component of harm, even without permanent physical sequelae.":"Without the manager update, the expected recovery trajectory is not confirmed, but the intervention required, a second surgery, is clear from the vignette and points toward SSE 5."}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='sse4'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical, potentially life-threatening harm that requires major surgery to resolve. Arthroscopic knee surgery is a significant procedure, but it does not typically carry the life-threatening risk profile associated with SSE 4. ${requestedInfo?"The manager's update confirms full recovery is expected, which supports a moderate rather than severe temporary classification.":"Have you thought about whether the level of clinical risk from an arthroscopic procedure aligns more with moderate or severe temporary harm?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
     nb.onclick=requestedInfo
       ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
@@ -451,6 +454,7 @@ function handleHarmLevel(btn,opt){
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit the harm categories.</span> ${requestedInfo?"The manager's update confirms no permanent harm is expected. Permanent harm categories (SSE 2 and SSE 3) require that the harm has no expected change in the patient's clinical status or persists indefinitely. Full recovery is anticipated here, which places this event in the temporary rather than permanent range.":"The vignette does not confirm permanent harm. Have you thought about whether requesting more information from the manager would help clarify the expected recovery before classifying at a permanent harm level?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
     nb.onclick=requestedInfo
       ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
