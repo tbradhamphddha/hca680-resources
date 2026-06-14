@@ -470,6 +470,7 @@ let sacProbability = null;
 const app = document.getElementById('app');
 const _caseStartTime = new Date();
 let _attemptLog = [];       // responses for current attempt
+let _lastAttemptSnapshot = null; // captured on summary render
 let _allAttempts = [];      // completed attempts (pushed on restart)
 let _attemptStartTime = new Date(); // resets on each restart
 
@@ -583,6 +584,7 @@ function renderDeviationStep() {
 function handleDeviationAnswer(btn, opt, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
+  _logStep('Discussion Point 1: Deviation', btn.textContent.trim(), 'feedback');
 
   const feedbackDiv = document.getElementById('feedback');
   feedbackDiv.classList.add('show');
@@ -597,7 +599,6 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <br><br>
       Now let's think about causation for a moment. Is there a clear relationship between this deviation and the harm the patient experienced? The patient had been identified as high fall risk, and the bed alarm was a specifically prescribed safeguard in the fall prevention plan. When that alarm was off and the family left, the system had no way to alert staff that a high-risk patient was attempting to get up unassisted. That gap came immediately before the fall, which makes it causal, not just coincidental.
     `;
-  _logStep('Discussion Point 1: Deviation', btn.textContent.trim(), 'feedback');
     nextBtn.classList.add('show');
     nextBtn.textContent = "Continue to Discussion Point 2";
     nextBtn.onclick = () => { step = "reach"; render(); };
@@ -706,6 +707,7 @@ function renderKctStep() {
 function handleKctAnswer(btn, selected, q, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
+  _logStep('KCT Question ' + (kctIndex + 1), btn.textContent.trim(), 'feedback');
 
   const isCorrect = selected === q.answer;
   if (isCorrect) {
@@ -738,7 +740,6 @@ function handleKctAnswer(btn, selected, q, optionsDiv) {
       : "The event tells us the patient received surgical repair and rehabilitation therapy, which reflects the standard of care for a hip fracture. That supports a YES for this question.";
   }
   feedbackDiv.innerHTML = `<strong>${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</strong> ${note}`;
-  _logStep('KCT Question ' + (kctIndex + 1), btn.textContent.trim(), 'feedback');
 
   const nextBtn = document.getElementById('next-btn');
   nextBtn.classList.add('show');
@@ -803,6 +804,7 @@ function renderReachStep() {
 function handleReachAnswer(btn, selected, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
+  _logStep('Discussion Point 2: Reach', btn.textContent.trim(), 'feedback');
 
   const isCorrect = selected === 'Yes, it reached the patient';
   const feedbackDiv = document.getElementById('feedback');
@@ -815,7 +817,6 @@ function handleReachAnswer(btn, selected, optionsDiv) {
       <strong>That is a sound read of this situation.</strong>
       No barrier intervened between the deviation and the patient. The alarm was off, no one was alerted, and the patient got up, fell, and sustained an injury. When nothing catches the error before it affects the patient, the deviation has reached the patient.
     `;
-  _logStep('Discussion Point 2: Did It Reach the Patient?', btn.textContent.trim(), 'feedback');
   } else {
     btn.classList.add('selected-redirect');
     allBtns.forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
@@ -860,6 +861,7 @@ function renderHarmInfoStep() {
 function handleHarmInfoAnswer(btn, selected, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
+  _logStep('Discussion Point 3: Request More Info?', btn.textContent.trim(), 'feedback');
   btn.classList.add('selected-correct');
 
   const feedbackDiv = document.getElementById('feedback');
@@ -880,7 +882,6 @@ function handleHarmInfoAnswer(btn, selected, optionsDiv) {
       </div>
       With that information in hand, let's think about how it affects the level of harm.
     `;
-  _logStep('Discussion Point 3: Request More Info?', btn.textContent.trim(), 'feedback');
   } else {
     requestedInfo = false;
     feedbackDiv.innerHTML = `
@@ -954,6 +955,7 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
 
   if (opt.key === correctKey) {
     allBtns.forEach(b => b.disabled = true);
+  _logStep('Discussion Point 3: Harm Level', btn.textContent.trim(), 'feedback');
     btn.classList.add('selected-correct');
     feedbackDiv.classList.add('correct');
 
@@ -961,7 +963,6 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
       feedbackDiv.innerHTML = `
         <strong>SSE 2: Severe Permanent Harm is where the evidence points.</strong> A hip fracture requiring surgical repair is serious on its own, but the manager's update adds a critical dimension: the patient will not regain knee flexion and will require a mobility device going forward. That describes a lasting change from the patient's baseline function, not a temporary setback. When a deviation results in a permanent loss of function, the SEC framework distinguishes that from harm the patient is expected to recover from. Combined with the severity of the injury and the surgical intervention, SSE 2 is the appropriate classification.
       `;
-  _logStep('Discussion Point 3: Harm Level', btn.textContent.trim(), 'feedback');
     } else {
       feedbackDiv.innerHTML = `
         <strong>SSE 4: Severe Temporary Harm is a supportable classification based on the information available.</strong> A hip fracture requiring surgical repair and rehabilitation is a serious injury, and without additional information about the patient's expected recovery, this is a reasonable score at this point in the review.
@@ -1053,6 +1054,7 @@ function renderCsaSentinelStep() {
 function handleSentinelAnswer(btn, val, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
+  _logStep('Discussion Point 4: Sentinel Event', btn.textContent.trim(), 'feedback');
   sentinelAnswer = val;
 
   const feedbackDiv = document.getElementById('feedback');
@@ -1065,7 +1067,6 @@ function handleSentinelAnswer(btn, val, optionsDiv) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">That is well-reasoned.</span> The Joint Commission Sentinel Event Policy (July 2026) includes falls in a staffed-around-the-clock care setting that result in any fracture or that require surgery. This patient sustained a hip fracture and underwent surgical repair, which meets both criteria simultaneously. A CSA is required for Joint Commission-accredited organizations when a sentinel event occurs, independent of any other prioritization tool. Let's now look at the SAC Matrix to think through resource allocation.
     `;
-  _logStep('Discussion Point 4: Sentinel Event', btn.textContent.trim(), 'feedback');
     nextBtn.classList.add('show');
     nextBtn.onclick = () => renderCsaMatrixStep();
 
@@ -1184,6 +1185,7 @@ function renderCsaMatrixStep() {
 function handleSeverityAnswer(btn, val, sevOptions) {
   const allBtns = sevOptions.querySelectorAll('button');
   allBtns.forEach(b => { b.disabled = true; b.classList.remove('selected-correct', 'selected-redirect'); });
+  _logStep('Discussion Point 4: SAC Severity', btn.textContent.trim(), 'feedback');
   sacSeverity = val;
 
   const feedbackDiv = document.getElementById('severity-feedback');
@@ -1195,7 +1197,6 @@ function handleSeverityAnswer(btn, val, sevOptions) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">Catastrophic is where this event lands.</span> The SAC Matrix defines Catastrophic as including major permanent loss of function not related to the natural course of illness, and also explicitly includes any event meeting The Joint Commission's sentinel event criteria. This patient will not regain knee flexion and requires permanent device assistance, which is a permanent loss of function. The event also meets JC sentinel event criteria. Either consideration alone places this in the Catastrophic category.
     `;
-  _logStep('Discussion Point 4: SAC Severity', btn.textContent.trim(), 'feedback');
     showProbabilitySection();
 
   } else if (val === 'major') {
@@ -1241,6 +1242,7 @@ function showProbabilitySection() {
 function handleProbabilityAnswer(btn, val, probOptions) {
   const allBtns = probOptions.querySelectorAll('button');
   allBtns.forEach(b => { b.disabled = true; });
+  _logStep('Discussion Point 4: SAC Probability', btn.textContent.trim(), 'feedback');
   sacProbability = val;
   btn.classList.add('selected-correct');
 
@@ -1257,7 +1259,6 @@ function handleProbabilityAnswer(btn, val, probOptions) {
   }
 
   feedbackDiv.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${probNote}`;
-  _logStep('Discussion Point 4: SAC Probability', btn.textContent.trim(), 'feedback');
 
   // Show matrix result
   showMatrixResult();
@@ -1297,6 +1298,9 @@ function showMatrixResult() {
 // FINAL SUMMARY
 // -----------------------------------------------------------------
 function renderSummary() {
+  // Snapshot attempt data NOW before any UI changes or restarts can clear it
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
   const finalScore = requestedInfo ? "SSE 2 &mdash; Severe Permanent Harm" : "SSE 4 &mdash; Severe Temporary Harm";
   const scoreShort = requestedInfo ? "SSE 2" : "SSE 4";
 
@@ -1328,19 +1332,21 @@ function renderSummary() {
   `;
   
   // Send completion data to parent shell
+  // Use pre-captured snapshot so restart cannot clear the data before this fires
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
   setTimeout(function(){
-    var attempt = _buildAttemptLog();
-    var allToSend = _allAttempts.concat([attempt]);
     window.parent.postMessage({
       type: 'case-complete',
       caseNum: 1,
-      log: attempt,
-      attempts: allToSend
+      log: _snapshotToSend,
+      attempts: _allToSend
     }, '*');
   }, 100);
   document.getElementById('restart-btn').onclick = () => {
     // Save completed attempt before resetting
-    _allAttempts.push(_buildAttemptLog());
+    // Use the pre-captured snapshot (safe even if _attemptLog already reset)
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
     _attemptLog = [];
     _attemptStartTime = new Date();
     requestedInfo = null;
