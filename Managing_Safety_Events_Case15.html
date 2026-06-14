@@ -210,10 +210,10 @@ function _buildAttemptLog() {
   return {
     finalClassification: 'Not a Safety Event',
     taxonomyEventType: 'N/A — Not a Safety Event',
-    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
-    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
-    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
-    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    managerUpdateRequested: 'Not applicable',
+    sentinelEvent: 'Not applicable',
+    sacSeverity: 'Not applicable',
+    sacProbability: 'Not applicable',
     startTime: _attemptStartTime.toLocaleString(),
     endTime: endTime.toLocaleString(),
     timeOnTask: mins + ' min ' + secs + ' sec',
@@ -304,7 +304,11 @@ function renderReflection(){
     } else {
       fb.innerHTML=`<span style="font-weight:700;">Your reflection has been recorded.</span> There are several dimensions many healthcare leaders identify when they encounter this question.<br><br><strong>Transparent, compassionate communication:</strong> The family deserves to know what happened, how the team responded, and that everything that could be done was done. Even when there is no error to disclose, there is an obligation to explain, to sit with the family, and to not let them wonder in silence about whether something went wrong.<br><br><strong>Support for the care team:</strong> The nurses, physicians, and staff who worked to save this mother will carry this experience. They did everything correctly and still watched a healthy young woman die. That is a profound psychological burden. The organization owes them acknowledgment, support, and a space to process what happened without being left to carry it alone.<br><br><strong>Institutional acknowledgment:</strong> A death that is not a safety event is still a death. Organizations that treat "not preventable" as the end of their responsibility miss the human dimension of care. A letter to the family, a debriefing for the team, and a transparent conversation about what happened are not admissions of fault: they are expressions of the organization's commitment to the people it serves, even when the outcome was beyond its control.<br><br><strong>Connection to disclosure policy:</strong> Your organization's disclosure policy likely addresses how to communicate with families after unexpected outcomes, including those that are not classified as safety events. Knowing that policy, and knowing how to activate it with compassion and clarity, is part of your leadership responsibility.`;
       document.getElementById('submit-reflection').disabled=true;
-      document.getElementById('nb').classList.add('show');
+      // Log the reflection text
+      _logResponse('Reflection: What does your organization owe this family?', fb.innerHTML);
+      var nb = document.getElementById('nb');
+      nb.classList.add('show');
+      nb.onclick = () => { step='summary'; render(); };
     }
   };
 }
@@ -319,25 +323,11 @@ function renderSummary(){
   
   // Send completion data to parent shell
   setTimeout(function(){
-    var endTime = new Date();
-    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
-    var mins = Math.floor(elapsed / 60);
-    var secs = elapsed % 60;
-    var timeStr = mins + ' min ' + secs + ' sec';
     window.parent.postMessage({
       type: 'case-complete',
       caseNum: 15,
-      log: {
-        finalClassification: 'Not a Safety Event',
-        taxonomyEventType: 'N/A — Not a Safety Event',
-        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
-        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
-        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
-        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
-        startTime: _caseStartTime.toLocaleString(),
-        endTime: endTime.toLocaleString(),
-        timeOnTask: timeStr
-      }
+      log: _snapshotToSend,
+      attempts: _allToSend
     }, '*');
   }, 100);
   document.getElementById('rb').onclick=()=>{kctIndex=0;
