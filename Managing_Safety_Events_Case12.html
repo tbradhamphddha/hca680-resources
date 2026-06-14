@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 12</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 12: Unnecessary Chest Tube</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A 61-year-old patient presents to the emergency department with acute onset chest pain and shortness of breath. The ED attending orders a chest X-ray and arterial blood gas while the patient is assessed. While awaiting the imaging results, the attending reassesses the patient and makes a clinical judgment that the presentation is consistent with a pneumothorax likely requiring immediate intervention. Before the imaging results are returned, the attending inserts a chest tube. The imaging results are received 18 minutes after the procedure. They show no pneumothorax. The chest tube was not clinically indicated. The patient experiences the pain, procedural risk, and recovery associated with an unnecessary invasive procedure. A follow-up chest X-ray is required to confirm safe removal of the tube. The patient is discharged without further complication.";
+const MANAGER_UPDATE_SSE5 = "Per the ED medical director's follow-up, the patient was discharged without further complication and experienced no lasting effects beyond the immediate discomfort and the procedural scar at the chest tube insertion site. The scar is a small but permanent physical change at the site of the unnecessary procedure.";
+const MANAGER_UPDATE_SCAR = MANAGER_UPDATE_SSE5;
+
+let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null,taskAnalysisComplete=false;
+const app=document.getElementById('app');
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 12</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a procedure concern reported from the emergency department. This case introduces a tool you have not yet used: <strong>Task Analysis</strong>.</p><p>Read the event carefully. The question of whether there is a GAPS deviation here is genuinely ambiguous, and working through it requires a structured approach.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>A note on clinical judgment events:</strong> Not every adverse or unexpected outcome involves a clear deviation from GAPS. When the question of whether a deviation occurred is genuinely ambiguous, particularly when the event involves a clinical judgment call rather than a clear protocol violation, a tool called <strong>Task Analysis</strong> can help the team work through the question systematically. Task Analysis compares what was expected practice with what actually occurred to identify deviations in key decision points.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"yes",label:"Yes, the physician should have waited for imaging results before inserting the chest tube",type:"partial"},
+    {key:"no",label:"No, this was a reasonable clinical judgment call in an emergency setting",type:"partial"},
+    {key:"unclear",label:"It is unclear, and a more structured analysis would help determine whether a deviation occurred",type:"main"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is exactly the right recognition.</span> This case sits in a genuinely ambiguous space. The physician made a clinical judgment call. Whether that call deviated from GAPS depends on what the facts actually were at the time and what the standard of care requires. When a case involves an action or inaction during a key clinical decision process rather than a clear protocol violation, Task Analysis is the appropriate tool. Let's work through it.`;
+    nb.classList.add('show');nb.textContent="Apply Task Analysis";
+    nb.onclick=()=>{step="task-analysis";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="yes"
+      ?"That may turn out to be the conclusion, but arriving at it requires more than an intuitive read of the event. The physician was in a busy emergency department making a real-time decision. Whether the decision to proceed without imaging results was a deviation from GAPS depends on the specific facts: was the condition life-threatening? What did the standard of care require? A tool called Task Analysis can help the team answer those questions systematically rather than assuming the answer."
+      :"That may also be the conclusion, but it requires the same structured examination. Emergency medicine does allow for clinical judgment to precede confirmatory testing in true life-threatening situations. Whether this situation met that threshold is exactly the question. Have you thought about using a structured tool to examine the specific decision points rather than settling on a conclusion before examining the facts?";
+    fb.innerHTML=`<span style="font-weight:700;">That is one reasonable reading, and it is worth examining more carefully.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Apply Task Analysis";
+    nb.onclick=()=>{step="task-analysis";render();};
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that before settling on it.</span> This case involves a clinical judgment call made in an emergency setting. The question of whether a GAPS deviation occurred is genuinely ambiguous. Task Analysis is a structured tool designed exactly for this kind of situation. Let's work through it.`;
+    nb.classList.add('show');nb.textContent="Apply Task Analysis";
+    nb.onclick=()=>{step="task-analysis";render();};
+  }
+}
+
+let taAnswers={q1:null,q2:null,q3:null};
+
+function renderTaskAnalysis(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Task Analysis")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Task Analysis</span><h3 class="case-title">Was There a Deviation from GAPS? Applying Task Analysis</h3>${vign()}<div class="reference-box"><strong>Task Analysis</strong> is an effective tool when a safety event is more about what action was or was not taken during a key clinical process, rather than a clear protocol violation. It compares expected practice with what actually occurred across specific decision points. The SEC team working this case focused on three questions.</div>
+<div style="margin-bottom:20px;">
+  <div class="question">Question 1: Did the patient's physical assessment or other clinical parameters justify immediate intervention at the time the chest tube was inserted (for example, did the patient appear to be in a life-threatening condition)?</div>
+  <div class="options" id="ta1-opts"></div>
+  <div class="feedback" id="ta1-fb" style="margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--warm-grey);border-left:3px solid var(--slate-blue);font-size:.93rem;display:none;"></div>
+</div>
+<div style="margin-bottom:20px;" id="ta2-section" style="display:none;">
+  <div class="question">Question 2: What was the clinical rationale for the physician's decision to proceed before imaging results were received?</div>
+  <div class="options" id="ta2-opts"></div>
+  <div class="feedback" id="ta2-fb" style="margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--warm-grey);border-left:3px solid var(--slate-blue);font-size:.93rem;display:none;"></div>
+</div>
+<div style="margin-bottom:20px;" id="ta3-section" style="display:none;">
+  <div class="question">Question 3: What standards or protocols exist for chest tube insertion in this emergency department?</div>
+  <div class="options" id="ta3-opts"></div>
+  <div class="feedback" id="ta3-fb" style="margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--warm-grey);border-left:3px solid var(--slate-blue);font-size:.93rem;display:none;"></div>
+</div>
+<div id="ta-conclusion" style="display:none;margin-top:20px;"></div>
+<div class="feedback" id="fb"></div>
+<div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+
+  document.getElementById('ta2-section').style.display='none';
+  document.getElementById('ta3-section').style.display='none';
+
+  ['Yes, the condition appeared life-threatening','No, the patient was not in a life-threatening state'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 180px";btn.textContent=val;
+    btn.onclick=()=>handleTA1(btn,val);
+    document.getElementById('ta1-opts').appendChild(btn);
+  });
+}
+
+function handleTA1(btn,val){
+  document.querySelectorAll('#ta1-opts .opt-btn').forEach(b=>b.disabled=true);
+  taAnswers.q1=val;
+  const fb=document.getElementById('ta1-fb');fb.style.display='block';
+  if(val.startsWith('No')){
+    btn.classList.add('selected-correct');
+    fb.innerHTML=`<strong>Task Analysis Finding 1:</strong> No. The patient's condition, while presenting with concerning symptoms, was not documented as life-threatening at the time of the procedure. This matters because the clinical justification for proceeding before confirmatory imaging is strongest when the condition is immediately life-threatening and waiting would increase risk to the patient.`;
+  } else {
+    btn.classList.add('selected-redirect');
+    fb.innerHTML=`<strong>Task Analysis Finding 1:</strong> The event does not indicate the patient's condition was life-threatening at the time of the procedure. The patient was presenting with chest pain and shortness of breath, which the ED attending was evaluating. Imaging was ordered, suggesting the attending was not treating this as an immediately life-threatening emergency requiring action before any assessment. This finding points toward: No, the condition did not justify immediate intervention without imaging.`;
+  }
+  document.getElementById('ta2-section').style.display='block';
+  ['The ED was busy; the physician decided to proceed in case it was a pneumothorax','The patient appeared in distress and the physician wanted to act quickly','The chest tube insertion protocols did not specify when to wait for imaging'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleTA2(btn,val);
+    document.getElementById('ta2-opts').appendChild(btn);
+  });
+}
+
+function handleTA2(btn,val){
+  document.querySelectorAll('#ta2-opts .opt-btn').forEach(b=>b.disabled=true);
+  taAnswers.q2=val;
+  const fb=document.getElementById('ta2-fb');fb.style.display='block';
+  fb.innerHTML=`<strong>Task Analysis Finding 2:</strong> The clinical rationale was that the presentation was consistent with a possible pneumothorax and the physician decided to proceed, describing it as not likely to hurt to treat in advance. This is a recognizable reasoning pattern in busy emergency departments: when time pressure is high and treatment is seen as low-risk, providers may choose to treat empirically rather than wait. However, chest tube insertion is an invasive procedure with real risk, pain, and recovery burden. A clinical rationale of "it wouldn't hurt to treat just in case" when the condition is not life-threatening warrants examination against the standard of care.`;
+  document.getElementById('ta3-section').style.display='block';
+  ['The protocols were clear and required imaging confirmation before chest tube insertion','The protocols did not clearly specify when imaging confirmation was required before intervention','No written protocol existed for chest tube insertion decisions in this ED'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleTA3(btn,val);
+    document.getElementById('ta3-opts').appendChild(btn);
+  });
+}
+
+function handleTA3(btn,val){
+  document.querySelectorAll('#ta3-opts .opt-btn').forEach(b=>b.disabled=true);
+  taAnswers.q3=val;
+  const fb=document.getElementById('ta3-fb');fb.style.display='block';
+  fb.innerHTML=`<strong>Task Analysis Finding 3:</strong> The review team agreed that chest tube insertion protocols needed to be clearer. Whether the protocol required imaging confirmation before a non-life-threatening intervention was not explicitly defined, which contributed to the physician's ability to make a judgment call in a gray area. This is itself a system-level finding: ambiguous protocols create conditions where clinical judgment fills the gap, and that judgment may not always align with best practice.`;
+  showTAConclusion();
+}
+
+function showTAConclusion(){
+  const c=document.getElementById('ta-conclusion');c.style.display='block';
+  c.innerHTML=`<div class="feedback show correct"><span style="font-weight:700;">Task Analysis Conclusion: Yes, there was a deviation from GAPS.</span><br><br>Working through the three questions together, the SEC team concluded:<ul style="margin:10px 0 0 18px;"><li>The condition was not documented as life-threatening, which is the primary clinical justification for proceeding before imaging.</li><li>The rationale was time pressure and clinical intuition, not an acute emergency requiring immediate action.</li><li>The protocols were insufficiently clear to either support or prevent the physician's decision, which is itself a system gap.</li></ul><br>The deviation: an invasive procedure was performed before diagnostic confirmation was available, in a non-life-threatening situation, without protocol clarity requiring or prohibiting that choice. The Task Analysis surfaces both the individual decision and the system condition that enabled it.</div>`;
+  taskAnalysisComplete=true;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="reach";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The chest tube was inserted before the imaging confirmed a clinical indication for it. The imaging came back negative. The patient experienced an unnecessary invasive procedure. The deviation reached the patient directly.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A catch would have prevented the unnecessary procedure before it occurred, for example a charge nurse or second physician reviewing the decision before the tube was inserted. No such intervention occurred. The procedure was performed, the imaging returned negative, and the patient had undergone an unnecessary invasive procedure. The deviation reached the patient.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="helper-text">This is a case where the manager update may significantly change your classification. Consider carefully.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information is important here.</span> The vignette tells us the patient was discharged without complication, which suggests temporary harm. But the specifics matter. You reach out to the ED medical director.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE_SSE5}</div>The scar is a critical detail. Keep this in mind as you score the level of harm.`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a starting point.</span> The vignette tells us the patient experienced the pain, risk, and recovery of an unnecessary procedure and was discharged without further complication. Let's score based on what is documented. Note that if you had requested the manager update, you would learn something that changes the classification significantly.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE_SSE5}</div>`:"";
+  const scarNote=requestedInfo?`<div class="reference-box" style="border-left:3px solid var(--edgewood-red);"><strong>Key consideration:</strong> The manager's update reveals a procedural scar at the chest tube insertion site. The SEC definition of SSE 3 includes disfigurement as a form of Moderate Permanent Harm. A scar from an unnecessary procedure is a permanent physical change that would not exist if the deviation had not occurred. This detail changes the classification from temporary to permanent harm.</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}${scarNote}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring meaningful treatment; resolves fully</li><li><strong>SSE 3</strong> &mdash; Moderate Permanent Harm: significant permanent harm impacting daily living or functioning; includes disfigurement</li><li><strong>SSE 4</strong> &mdash; Severe Temporary Harm: critical or life-threatening harm; no permanent residual</li></ul></div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  const opts=requestedInfo
+    ?[{key:"sse3",label:"Moderate Permanent Harm (SSE 3)"},{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},{key:"sse4",label:"Severe Temporary Harm (SSE 4)"}]
+    :[{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},{key:"sse4",label:"Severe Temporary Harm (SSE 4)"},{key:"sse3",label:"Moderate Permanent Harm (SSE 3)"}];
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  const correctKey=requestedInfo?'sse3':'sse5';
+  if(opt.key===correctKey){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    if(requestedInfo){
+      fb.innerHTML=`<span style="font-weight:700;">SSE 3: Moderate Permanent Harm is where the evidence points with the manager's update in hand.</span> The procedural scar at the chest tube insertion site is a permanent physical change that would not exist if the procedure had not been performed unnecessarily. The SEC definition of SSE 3 explicitly includes disfigurement as a form of Moderate Permanent Harm. A scar from an unnecessary invasive procedure meets that definition. This is a meaningful shift from SSE 5: the harm is not temporary. It is a permanent mark from an unnecessary procedure.`;
+    } else {
+      fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is a defensible classification based on the information available in the vignette.</span> The patient experienced the pain, risk, and recovery of an unnecessary procedure and was discharged without further complication. Without the manager update, the harm appears temporary. However, if you had requested the manager update, you would learn that the procedure left a scar: a permanent physical change from an unnecessary intervention. That detail shifts the classification from SSE 5 (temporary) to SSE 3 (moderate permanent). This case illustrates how the decision to request more information can materially change both the classification and the organizational response.`;
+    }
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='sse3'&&!requestedInfo){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Your instinct toward permanent harm may be correct, but let's look at what the vignette tells us.</span> The patient was discharged without further complication. Without the manager update, the evidence for permanent harm is not established from the vignette alone. Have you thought about whether requesting more information from the manager might clarify whether any permanent effects resulted from the unnecessary procedure?`;
+    nb.classList.add('show');nb.textContent="Request Information from Manager/Designee";
+    nb.onclick=()=>{requestedInfo=true;renderHarmLevelStep();};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the intervention level more carefully.</span> ${opt.key==='sse4'?"SSE 4 is reserved for critical or life-threatening harm requiring major surgery. The patient was stable enough to be discharged after the tube removal and follow-up X-ray. The harm, while meaningful, was not critical or life-threatening.":"Have you thought about which category best captures the level of harm from an unnecessary invasive procedure for a patient who was discharged without further complication?"}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  sentinelAnswer=val;
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  const isSentinel=requestedInfo;
+  if(val==='yes'&&isSentinel){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination given what the manager update revealed.</span> With the scar confirmed as a permanent physical change, this event now involves permanent harm. The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. A permanent scar from an unnecessary invasive procedure meets the permanent harm criterion. A CSA is required.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else if(val==='no'&&!isSentinel){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination based on the information available without the manager update.</span> Without knowing about the scar, the harm appears temporary: an unnecessary procedure from which the patient recovered. The harm does not meet the sentinel event threshold based on what the vignette alone tells us. However, note that if you had requested the manager update, the scar would shift this to a sentinel event. Let's use the SAC Matrix to think through the appropriate response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC definition in the context of what you know.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>${isSentinel?"The manager update confirmed a permanent scar from the unnecessary procedure. Permanent harm, even minor permanent harm, meets the sentinel event criterion.":"Based on the vignette alone, the patient recovered fully and was discharged. Have you thought about whether the harm documented in the vignette meets the sentinel event threshold?"}`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  const sentNote=requestedInfo
+    ?`<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">Sentinel event confirmed.</span> Permanent harm from the unnecessary procedure. A CSA is required.</div>`
+    :`<div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a sentinel event based on the information available.</span> The SAC Matrix will help determine the appropriate level of response.</div>`;
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3>${sentNote}<div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay</li></ul><strong>Probability:</strong><ul><li><strong>Frequent / Occasional / Uncommon / Remote</strong></ul><em>Scenario context: Unnecessary procedures in your ED occur occasionally.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  const correctVal=requestedInfo?'catastrophic':'major';
+  if(val===correctVal){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    if(requestedInfo){
+      fb.innerHTML=`<span style="font-weight:700;">Catastrophic is the right category.</span> The SAC Matrix defines Catastrophic as including any JC sentinel event. With the scar confirmed, this is a sentinel event, placing it at Catastrophic severity regardless of the level of physical harm.`;
+    } else {
+      fb.innerHTML=`<span style="font-weight:700;">Major is the right severity classification without the manager update.</span> An unnecessary invasive procedure requiring monitoring, follow-up imaging, and clinical recovery aligns with Major: significant intervention required.`;
+    }
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> ${requestedInfo?"Catastrophic includes any JC sentinel event. We confirmed this is a sentinel event. That classification alone places this at Catastrophic.":"Major captures events requiring significant medical intervention. An unnecessary chest tube insertion, follow-up X-ray, and recovery period represents that level of care escalation."}`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent'},{val:'occasional',label:'Occasional'},{val:'uncommon',label:'Uncommon'},{val:'remote',label:'Remote'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${requestedInfo?"At Catastrophic severity, any probability produces a SAC score of 3.":"Major + Occasional = SAC 3."}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>${requestedInfo?"Catastrophic severity with any probability = SAC 3.":"Major + Occasional = SAC 3."} A CSA is warranted.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="${!requestedInfo?'background:#fdeaea;font-weight:700;':''}text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="${requestedInfo?'background:#fdeaea;font-weight:700;':''}text-align:center;">3</td><td style="${!requestedInfo?'background:#fdeaea;font-weight:700;':''}text-align:center;">${!requestedInfo?'3':'2'}</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="${requestedInfo?'background:#fdeaea;font-weight:700;':''}text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="${requestedInfo?'background:#fdeaea;font-weight:700;':''}text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  const finalScore=requestedInfo?"SSE 3":"SSE 5";
+  const finalLabel=requestedInfo?"Moderate Permanent Harm":"Moderate Temporary Harm";
+  const sentinelRow=requestedInfo?"Yes &mdash; permanent harm (procedural scar) meets JC sentinel event criteria":"No &mdash; temporary harm; patient discharged without further complication";
+  const sacRow=requestedInfo?"3 (Catastrophic, any probability) &mdash; CSA warranted":"3 (Major, Occasional) &mdash; CSA warranted";
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 12 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">${finalScore}</div><p>${finalLabel}</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>CM8.4 &mdash; Wrong Treatment / Unnecessary Procedure (Care Management); Emergency Department</td></tr><tr><td>GAPS analysis method</td><td>Task Analysis (three questions: life-threatening status, clinical rationale, protocol clarity)</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; invasive procedure performed before diagnostic confirmation in a non-life-threatening situation; protocols were insufficiently clear</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; unnecessary chest tube inserted; imaging returned negative</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; procedural scar confirmed; permanent physical change from unnecessary procedure":"No"}</td></tr><tr><td>Level of harm</td><td>${finalScore} &mdash; ${finalLabel}${requestedInfo?" (permanent scar from unnecessary procedure)":""}</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>${sentinelRow}</td></tr><tr><td>SAC Matrix score</td><td>${sacRow}</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">The most important teaching point from this case.</span> Without the manager update, this event scores as SSE 5 with no sentinel event trigger and a SAC 3. With the manager update, it becomes SSE 3, a sentinel event, and still SAC 3. Both paths lead to a CSA, but the sentinel event designation changes the accreditation reporting obligation significantly. The scar, a small but permanent physical mark from an unnecessary procedure, is the difference. In real-world event review, requesting follow-up information is not a procedural step. It is the difference between knowing what happened and knowing what it means.</div>`:''}${requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on Task Analysis as a GAPS determination tool.</span> This case is one you could not have classified with confidence using the standard GAPS yes/no question alone. The clinical judgment made in the moment had legitimate characteristics: a patient in apparent distress, a busy department, a concerning presentation. Task Analysis allowed the review team to evaluate the decision across specific dimensions without simply labeling it as right or wrong. That nuance is important in patient safety work. The goal is to understand what happened and why, not to assign blame. Task Analysis is a tool that supports that goal in cases where the deviation is embedded in a process rather than obvious from a single action.`:''}  <p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 12</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;taskAnalysisComplete=false;taAnswers={q1:null,q2:null,q3:null};step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="task-analysis")renderTaskAnalysis();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
