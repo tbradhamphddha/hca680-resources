@@ -181,6 +181,45 @@ const MANAGER_UPDATE = "Per the perioperative services manager's follow-up, the 
 
 let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
 const app=document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'SSE 5 — Moderate Temporary Harm',
+    taxonomyEventType: 'PR3 — Wrong Procedure / Universal Protocol Failure (Procedural); Inpatient OR',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
+
 
 function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
 function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
@@ -207,16 +246,19 @@ function renderDeviationStep(){
 
 function handleDev(btn,opt){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.type==="main"){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">That captures all of the GAPS deviations in this event.</span> There are two distinct but related failures here.<br><br>The first is the time-out itself. A valid time-out requires all team members to be present, all activity to pause, and each checklist element to be actively confirmed. The surgeon was still positioning the patient and talking through the time-out rather than engaging with it. Two team members were absent. Nothing was actually confirmed, including antibiotic prophylaxis. That is not a time-out: it is a recitation that was never received or verified by the team.<br><br>The second is the documentation. The time-out was documented as complete. That documentation is itself a GAPS deviation because it created a false record, one that would make the failure invisible to anyone reviewing the case retrospectively. A documented time-out that did not occur is not evidence of safety. It is evidence of a documentation process that has become disconnected from the safety process it is meant to reflect.<br><br>Now let's look at what made this pattern possible.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Explore the System Factor";
     nb.onclick=()=>{step="deviation-round2";render();};
   } else if(opt.type==="secondary"){
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Schedule pressure is a real contributing factor and worth identifying as a system condition.</span> However, a busy schedule does not change what Universal Protocol requires, and it does not explain why the time-out was documented as complete when it was not conducted as required. Have you thought about the two distinct failures in this event: what happened during the time-out, and what happened in the documentation of it?`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else if(opt.type==="factually-incorrect"){
@@ -225,11 +267,13 @@ function handleDev(btn,opt){
       ?"The event does not say antibiotics were not ordered. It says they had not been administered at the time the procedure began. Antibiotic prophylaxis administration is one of the elements that should be confirmed during the time-out. The absence of that confirmation is part of the time-out failure, not an independent ordering issue."
       :"Let's look at what a valid time-out requires. An attempt to conduct a time-out is not the same as conducting one. The Universal Protocol specifies that all team members must be present, all activity must pause, and each element must be actively confirmed. None of those requirements were met here. Have you thought about whether a time-out that was not conducted as required can be accurately documented as complete?";
     fb.innerHTML=`<span style="font-weight:700;">Let's look at this more carefully.</span> ${d}`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
     nb.onclick=()=>{kctIndex=0;step="kct";render();};
   }
@@ -251,11 +295,13 @@ function renderDeviationRound2(){
 
 function handleCulture(btn,opt){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.type==="main"){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">Production pressure is the system-level condition at the root of this event.</span><br><br>James Reason's organizational accident model, the framework underlying the Swiss Cheese Model, distinguishes between <em>active failures</em>, the immediate unsafe acts that lead to an event, and <em>latent conditions</em>, the pre-existing organizational factors that create the environment in which active failures become likely. Production pressure is one of the most commonly identified latent conditions in healthcare safety events.<br><br>When an OR is running behind schedule, the organizational pressure to catch up creates a silent but powerful incentive to compress or skip steps that are perceived as consuming time. The time-out, which should take two minutes, can feel like an obstacle when the team is already 45 minutes behind. Over time, if that pressure is consistent and unaddressed, the time-out shifts from a genuine safety practice to a documentation ritual: something that gets recorded as done because everyone understands that recording it as done is what moves the case forward.<br><br>This is the latent condition: not the surgeon's behavior on this particular day, but the organizational environment in which production pressure is a persistent, unaddressed background condition that gradually erodes the integrity of the safety processes designed to protect patients. The manager's update tells us this happened in four of seven cases that week. That is not an individual deviation. That is a system operating under pressure without adequate countermeasures.`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show');
     nb.onclick=()=>{step="reach";render();};
   } else if(opt.type==="partial"){
@@ -264,11 +310,13 @@ function handleCulture(btn,opt){
       ?"Psychological safety and a culture of speaking up are essential components of a safe OR environment, and their absence may have contributed here. However, consider what was driving the behavior in the first place. Have you thought about why the time-out was rushed, why two team members were absent, and why no one stopped the case? What organizational condition created the pressure behind those individual behaviors?"
       :"EHR design that makes it easy to document without performing is a legitimate system vulnerability and worth examining. However, consider what motivated the documentation in the first place. Have you thought about why someone chose to document the time-out as complete when it was not? What pressure or incentive was in play that made that choice feel reasonable?";
     fb.innerHTML=`<span style="font-weight:700;">That is one dimension of this, and it is worth examining.</span> ${d}`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at what the event tells us.</span> The circulating nurse initiated the time-out, and the surgeon was actively working in the room. These are not signs of unfamiliarity with the process. Have you thought about what was different about this situation that led to the time-out being conducted the way it was? Consider the schedule context described in the vignette and what pressure that might have created for the team.`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
@@ -294,9 +342,11 @@ function renderKctStep(){
 
 function handleKct(btn,val,q){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val===q.answer;
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
   const notes=[
     ["A laparoscopic cholecystectomy was the indicated procedure for this patient. The surgery itself was appropriate and clinically warranted.","Think about the clinical picture: the patient had a condition requiring surgical removal of the gallbladder. The procedure was indicated, pointing toward YES."],
@@ -306,6 +356,7 @@ function handleKct(btn,val,q){
   ];
   const[c,i]=notes[kctIndex];
   fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{kctIndex++;renderKctStep();};
 }
@@ -326,12 +377,16 @@ function renderReachStep(){
 
 function handleReach(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val==='Yes, it reached the patient';
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
-  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The time-out was the designed barrier to catch omissions including antibiotic prophylaxis before the procedure began. It did not function. The patient underwent surgery without antibiotics and subsequently developed a surgical site infection requiring readmission. The deviation reached the patient.`;}
-  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what the barrier was and whether it functioned.</span> The time-out is the designed safety check that should confirm antibiotic prophylaxis administration before any surgical procedure begins. It was documented as complete but was not conducted as required. The patient underwent surgery without antibiotics. A surgical site infection developed. The deviation was not caught before it reached the patient.`;}
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The time-out was the designed barrier to catch omissions including antibiotic prophylaxis before the procedure began. It did not function. The patient underwent surgery without antibiotics and subsequently developed a surgical site infection requiring readmission. The deviation reached the patient.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what the barrier was and whether it functioned.</span> The time-out is the designed safety check that should confirm antibiotic prophylaxis administration before any surgical procedure begins. It was documented as complete but was not conducted as required. The patient underwent surgery without antibiotics. A surgical site infection developed. The deviation was not caught before it reached the patient.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{step="harm-info";render();};
 }
@@ -347,14 +402,17 @@ function renderHarmInfoStep(){
 
 function handleHarmInfo(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   btn.classList.add('selected-correct');
   requestedInfo=val.startsWith('Yes');
   const fb=document.getElementById('fb');fb.classList.add('show','neutral');
   const nb=document.getElementById('nb');nb.classList.add('show');
   if(requestedInfo){
     fb.innerHTML=`<span style="font-weight:700;">Requesting more information before classifying is sound practice.</span> A surgical site infection requiring readmission raises questions about the severity and expected recovery. You reach out to the perioperative services manager.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>With this information in hand, let's score the level of harm.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   } else {
     fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the patient developed a surgical site infection requiring readmission, IV antibiotics, and wound debridement. The patient recovered fully. Let's score based on what is documented.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   }
   nb.onclick=()=>{step="harm-level";render();};
 }
@@ -415,16 +473,19 @@ function renderCsaSentinelStep(){
 
 function handleSentinel(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   sentinelAnswer=val;
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(val==='no'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">That is the right determination for this event.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient experienced moderate temporary harm and recovered fully. SSE 5 does not meet the sentinel event threshold. This is an important distinction from Case 6, where wrong-site surgery is a sentinel event regardless of the level of harm because of the type of event it is. Here, the event type (time-out failure leading to a surgical site infection) is not on the JC sentinel event list based on type alone, and the harm level does not reach the threshold independently. That does not reduce the seriousness of this event. Let's use the SAC Matrix to think through the appropriate response.`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC definition carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Death</li><li>Severe harm, regardless of duration</li><li>Permanent harm, regardless of severity</li></ul>Some event types are sentinel events based on their nature regardless of outcome (for example, wrong-site surgery). A time-out failure leading to a surgical site infection is not one of those type-based sentinel events. And the harm level, moderate temporary with full recovery, does not meet the death, severe, or permanent threshold. Have you thought about how this compares to the sentinel event criteria?`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Reconsider My Answer";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
@@ -441,15 +502,18 @@ function renderCsaMatrixStep(){
 
 function handleSev(btn,val){
   document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   sacSeverity=val;
   const fb=document.getElementById('sev-fb');fb.classList.add('show');
   if(val==='major'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">Major is the right severity classification.</span> The SAC Matrix defines Major as including events requiring surgical or significant medical intervention, and events resulting in increased LOS or level of care. This patient was readmitted, received IV antibiotics, and underwent wound debridement: a meaningful escalation in the level of care, with a surgical debridement procedure required to resolve the complication. That aligns with Major severity.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     showProb();
   } else if(val==='catastrophic'){
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the Catastrophic definition again.</span> Catastrophic is reserved for death, major permanent loss of function, or any JC sentinel event. We confirmed this event is not a sentinel event, and the patient recovered fully without permanent harm. Have you thought about which category captures significant harm requiring readmission and debridement without reaching the catastrophic threshold?`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
@@ -457,6 +521,7 @@ function handleSev(btn,val){
       ?"Moderate captures increased LOS or level of care for one to two patients. This patient was readmitted to the hospital, received IV antibiotics, and underwent wound debridement. That level of intervention goes beyond what Moderate typically captures. Have you thought about which category better reflects the need for a surgical procedure and hospital readmission?"
       :"Minor captures events with no injury and no increased stay or level of care. A hospital readmission with IV antibiotics and wound debridement represents a significant escalation in care. Have you thought about which category better reflects what happened to this patient?";
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity categories.</span> ${h}`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
   }
 }
@@ -472,9 +537,11 @@ function showProb(){
 
 function handleProbFn(btn,val){
   document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   sacProbability=val;btn.classList.add('selected-correct');
   const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
   fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Major + Occasional = SAC 3, the highest priority level.":"The scenario context suggests Occasional. Note that Major + Occasional produces a SAC score of 3, and Major + Frequent also produces a SAC score of 3. The manager's update showing four incomplete time-outs in one week is worth keeping in mind when thinking about the frequency dimension."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatRes();
 }
 
@@ -486,9 +553,42 @@ function showMatRes(){
 }
 
 function renderSummary(){
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
   app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 7 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 5</div><p>Moderate Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
-<tr><td>Taxonomy Event Type</td><td>PR3 &mdash; Wrong Procedure / Universal Protocol Failure (Procedural); Inpatient OR</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; time-out not conducted as required; antibiotic prophylaxis not confirmed or administered; time-out documented as complete despite not meeting Universal Protocol requirements</td></tr><tr><td>Contributing system factor</td><td>Production pressure as a latent condition (Reason's organizational accident model); schedule running behind created incentive to compress the time-out</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; time-out did not catch the antibiotic omission; surgical site infection resulted</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full recovery confirmed; no permanent complications; four of seven time-outs that week were documented as complete but conducted incompletely":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm (readmission, IV antibiotics, wound debridement; full recovery)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was moderate and temporary; event type is not on JC type-based sentinel event list</td></tr><tr><td>SAC Matrix score</td><td>3 (Major severity, Occasional probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request reveals that four of seven time-outs that week were documented as complete but conducted incompletely. That finding transforms this from a single-case review into evidence of a systemic practice pattern in this OR. A CSA that investigates only this event will miss the larger condition. Requesting the manager update in cases involving process failures is particularly important when the failure may reflect how a process is being practiced across a team or unit rather than in a single encounter.</div>`:''}<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A key teaching point on documentation and safety.</span> A documented time-out that did not occur is not evidence of a safe procedure. It is evidence of a documentation practice that has become disconnected from the safety practice it is supposed to reflect. In your role as a healthcare administrator, the gap between documented performance and actual performance is one of the most important system vulnerabilities to monitor, because documented safety is invisible safety: it protects the record, not the patient.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; JC Universal Protocol; Reason (1990) organizational accident model</p><button class="restart-btn" id="rb">Restart Case 7</button></div>`;
-  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+<tr><td>Taxonomy Event Type</td><td>PR3 &mdash; Wrong Procedure / Universal Protocol Failure (Procedural); Inpatient OR</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; time-out not conducted as required; antibiotic prophylaxis not confirmed or administered; time-out documented as complete despite not meeting Universal Protocol requirements</td></tr><tr><td>Contributing system factor</td><td>Production pressure as a latent condition (Reason's organizational accident model); schedule running behind created incentive to compress the time-out</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; time-out did not catch the antibiotic omission; surgical site infection resulted</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full recovery confirmed; no permanent complications; four of seven time-outs that week were documented as complete but conducted incompletely":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm (readmission, IV antibiotics, wound debridement; full recovery)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was moderate and temporary; event type is not on JC type-based sentinel event list</td></tr><tr><td>SAC Matrix score</td><td>3 (Major severity, Occasional probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request reveals that four of seven time-outs that week were documented as complete but conducted incompletely. That finding transforms this from a single-case review into evidence of a systemic practice pattern in this OR. A CSA that investigates only this event will miss the larger condition. Requesting the manager update in cases involving process failures is particularly important when the failure may reflect how a process is being practiced across a team or unit rather than in a single encounter.</div>`:''}<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A key teaching point on documentation and safety.</span> A documented time-out that did not occur is not evidence of a safe procedure. It is evidence of a documentation practice that has become disconnected from the safety practice it is supposed to reflect. In your role as a healthcare administrator, the gap between documented performance and actual performance is one of the most important system vulnerabilities to monitor, because documented safety is invisible safety: it protects the record, not the patient.</div><button class="restart-btn" id="rb">Restart Case 7</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 7,
+      log: {
+        finalClassification: 'SSE 5 — Moderate Temporary Harm',
+        taxonomyEventType: 'PR3 — Wrong Procedure / Universal Protocol Failure (Procedural)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step="intro";render();};
 }
 
 function render(){
@@ -503,10 +603,5 @@ function render(){
   else if(step==="summary")renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
