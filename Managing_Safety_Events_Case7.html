@@ -433,16 +433,19 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.key==='sse5'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is the right classification.</span> The patient developed a surgical site infection requiring hospital readmission, intravenous antibiotics, and wound debridement. That represents a significant escalation in the level of care and a meaningful clinical intervention beyond the original procedure. ${requestedInfo?"The manager's update confirms full recovery with no permanent complications, placing this firmly in the temporary category.":"The vignette indicates the patient recovered fully, supporting the temporary classification."} The readmission and debridement are the defining features of SSE 5: significant harm that required meaningful treatment to resolve, without reaching the critical or life-threatening threshold of SSE 4.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='sse4'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical, potentially life-threatening harm requiring major surgery to resolve. A surgical site infection treated with IV antibiotics and wound debridement is a significant clinical complication, but it does not typically carry the life-threatening risk profile associated with SSE 4. ${requestedInfo?"The manager's update confirms full recovery, which supports a moderate rather than severe classification.":"Have you thought about whether the interventions required, IV antibiotics and wound debridement, align with the moderate or severe temporary harm categories?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
     nb.onclick=requestedInfo
       ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
@@ -450,6 +453,7 @@ function handleHarmLevel(btn,opt){
   } else if(opt.key==='sse3'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit the permanent harm criteria.</span> ${requestedInfo?"The manager's update confirms no permanent complications are documented and the patient has returned to baseline. Permanent harm categories require that the harm has no expected change in the patient's status or persists indefinitely. That is not the case here.":"The vignette indicates the patient recovered fully. Have you thought about whether the evidence supports a permanent harm classification?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
     nb.onclick=requestedInfo
       ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
@@ -457,6 +461,7 @@ function handleHarmLevel(btn,opt){
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit what happened to this patient.</span> Minor temporary harm captures events requiring little or no intervention. This patient was readmitted to the hospital, received intravenous antibiotics, and underwent wound debridement. That level of care and intervention goes well beyond the minor harm threshold. Have you thought about which category captures significant harm that required meaningful clinical intervention but resolved fully?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
