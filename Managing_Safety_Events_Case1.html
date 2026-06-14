@@ -468,6 +468,7 @@ let sacSeverity = null;
 let sacProbability = null;
 
 const app = document.getElementById('app');
+const _caseStartTime = new Date();
 
 // -----------------------------------------------------------------
 // INTRO
@@ -1297,10 +1298,33 @@ function renderSummary() {
         <strong>Something worth reflecting on as you close this case.</strong>
         Because no additional information was requested, this event was scored as SSE 4 based on what was documented at the time. In practice, the manager's update, that the patient will not regain knee flexion and will require permanent device assistance, would shift this classification to SSE 2: Severe Permanent Harm. This is a good illustration of why gathering complete information before finalizing a score matters. The same event can land in a different category depending on what the reviewer knows, and that difference has real implications for the response the organization is obligated to provide.
       </div>` : ''}
-      <p class="small-note">References: HPI SEC &amp; SSER Patient Safety Measurement System for Healthcare; RCA2 SAC Matrix (Appendix A); The Joint Commission Sentinel Event Policy, July 2026</p>
       <button class="restart-btn" id="restart-btn">Restart Case 1</button>
     </div>
   `;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 1,
+      log: {
+        finalClassification: 'SSE 2 or SSE 4 (path-dependent on manager update)',
+        taxonomyEventType: 'EE3 — Fall (Environmental)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
   document.getElementById('restart-btn').onclick = () => {
     requestedInfo = null;
     kctVisited = false;
