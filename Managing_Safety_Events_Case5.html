@@ -433,6 +433,7 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
@@ -441,13 +442,16 @@ function handleHarmLevel(btn,opt){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     if(requestedInfo){
       fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is where the evidence points with the manager's update in hand.</span> The manager's update tells us the patient's cumulative radiation dose has crossed the threshold that triggers a radiation safety consultation, and the radiation oncologist has noted the exposure is clinically significant and warrants monitoring. That moves this beyond no detectable harm: there is a documented clinical consequence, even if the harm is characterized as minor and manageable. PSE 2 captures minimal harm that is time-limited and requires little or modest intervention, which aligns with a radiation safety consultation and monitoring follow-up.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     } else {
       fb.innerHTML=`<span style="font-weight:700;">PSE 3: No Detectable Harm is a defensible classification based on the information available in the vignette.</span> The patient received an unanticipated X-ray and no immediate physical harm is documented. The SEC definition of PSE 3 includes events where harm cannot be determined or may occur later, which fits a situation involving radiation exposure with unknown long-term consequence. Note that if you had requested the manager update, you would know the cumulative dose concern is clinically significant, which would shift this to PSE 2.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     }
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='pse3'&&requestedInfo){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's revisit what the manager's update tells us.</span> PSE 3 applies when harm cannot be determined. However, the manager's update documents that the patient's cumulative dose has crossed a clinical threshold requiring a radiation safety consultation, and the radiation oncologist has characterized the exposure as clinically significant. That is a detectable consequence, even if it is minor. Have you thought about which category captures documented, clinically acknowledged harm that is minor in scope?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
@@ -458,6 +462,7 @@ function handleHarmLevel(btn,opt){
       ?`SSE 5 captures moderate temporary harm requiring significant monitoring or a minor procedure to resolve. ${requestedInfo?"While the manager's update documents a radiation safety consultation, that is a consultative step, not a significant clinical intervention. Have you thought about whether the level of intervention required aligns more with a minor or a moderate harm classification?":"Have you thought about whether requesting more information might help you determine whether the radiation exposure consequences are minor or more significant in this specific patient's history?"}`
       :"Have you thought about which category best captures an unanticipated radiation exposure with documented but minor clinical consequences?";
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the harm categories more carefully.</span> ${hint}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     if(!requestedInfo&&opt.key==='sse5'){
       nb.classList.add('show');nb.textContent="Request Information from Manager/Designee";
       nb.onclick=()=>{requestedInfo=true;renderHarmLevelStep();};
@@ -548,6 +553,7 @@ function handleProb(btn,val){
   sacProbability=val;btn.classList.add('selected-correct');
   const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
   fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='frequent'?"Frequent is the right read given the scenario context: ten wrong-patient events in one month means this type of event is occurring several times per week at this facility. That is clearly Frequent. Note that Moderate + Frequent = SAC 2, which still warrants consideration of a CSA.":"The scenario context describes ten events in one month, which clearly places this in the Frequent category rather than Occasional or lower. Ten events in thirty days means this type of error is occurring several times per week at this facility."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatRes();
 }
 
