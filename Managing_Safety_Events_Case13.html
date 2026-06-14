@@ -423,12 +423,14 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.key==='sse1'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">SSE 1: Death is the right classification, and the reasoning is essential to understand.</span><br><br>The patient was expected to die. That fact does not change what happened. A medication error caused his respiratory status to decline rapidly, and he died within an hour of the overdose. He was expected to live for another two to three weeks. Those weeks were taken from him by a preventable error, not by his cancer.<br><br>The principle that governs this classification is clear and intentional: if an error or omission shortened a patient's life by even one minute, the death is considered a preventable patient death and is classified as SSE 1. This principle exists for important reasons. First, every patient's remaining life has value regardless of its expected duration. Second, allowing organizations to classify hastened deaths of terminal patients as "expected outcomes" would create a category of patients whose safety events go unexamined, which is both ethically wrong and practically dangerous for the quality of end-of-life care.<br><br>${requestedInfo?"The manager's update confirms that the palliative care and ICU teams determined the morphine overdose accelerated the patient's death. The family's grief includes not only the loss but the loss of the opportunity to be present, which was a documented goal. Both are harm dimensions of this event.":"Even without the manager update, the principle applies: the morphine overdose is what caused the patient to die within the hour rather than within weeks."}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
@@ -437,6 +439,7 @@ function handleHarmLevel(btn,opt){
     else if(opt.key==='sse5') detail="The harm is not the shortened time. The harm is the death itself, which was hastened by the error. The SEC principle is unambiguous: if an error shortened a patient's life by even one minute, the outcome is classified as SSE 1. Have you thought about how that principle applies regardless of how much time was shortened?";
     else detail="The patient's death was the expected eventual outcome of his cancer, but the immediate cause of his death within the hour was the morphine overdose. The SEC framework draws a clear distinction between death from illness progression and death hastened by a preventable error. Have you thought about which caused this patient to die at this moment?";
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the guiding principle for this case.</span> ${detail}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
