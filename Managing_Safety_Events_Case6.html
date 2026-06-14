@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 6</title>
+<style>
+  :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
+  *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
+  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
+  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
+  .accent-bar{height:6px;background:var(--edgewood-red);}
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
+  .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
+  .progress-bar-fill{background:var(--edgewood-red);height:100%;transition:width .3s ease;}
+  .step-label{display:inline-block;background:var(--dark-gold);color:var(--white);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+  .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
+  .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
+  .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
+  .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
+  .reference-box strong{color:var(--black);}
+  .reference-box ul{margin:8px 0 0;padding-left:18px;}
+  .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
+  .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+  .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
+  .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
+  .opt-btn.selected-correct{background:#2e7d32;border-color:#2e7d32;color:var(--white);}
+  .opt-btn.selected-redirect{background:var(--edgewood-red);border-color:var(--edgewood-red);color:var(--white);}
+  .opt-btn:disabled{cursor:default;opacity:1;}
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect){opacity:.45;}
+  .feedback{margin-top:18px;padding:16px 18px;border-radius:5px;font-size:.97rem;display:none;}
+  .feedback.show{display:block;animation:fadein .25s ease;}
+  .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
+  .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
+  .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
+  .nav-btn.show{display:inline-block;}
+  .nav-btn:hover{background:#930000;}
+  .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
+  .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
+  .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
+  .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .score-badge{display:inline-block;background:var(--edgewood-red);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.6rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
+  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
+  .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
+  .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 6: Wrong Site Surgery</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+<div class="accent-bar"></div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const VIGNETTE = "A 55-year-old patient is scheduled for arthroscopic surgery on the right knee. Per The Joint Commission's Universal Protocol and facility policy, the surgeon is required to mark the surgical site with the patient awake and participating in confirmation during the pre-procedure verification process, before the patient enters the operating room. The surgeon does not complete the site marking during the pre-procedure verification. The patient is brought into the OR and sedated. The surgeon then marks the left knee, which is inconsistent with the surgical consent documenting the right knee. The pre-operative nurse compares the consent to the surgeon's mark and notes the discrepancy in the electronic chart as a question, but does not raise the concern verbally when the time-out is initiated. The circulating nurse conducts the time-out, but no team member raises the documented concern. The surgeon operates on the left knee. The error is identified post-operatively when the surgeon's operative note documents the left knee and the patient's post-operative pain assessment does not correlate with the expected recovery from a right knee procedure. The patient requires a second surgery on the correct right knee.";
+const MANAGER_UPDATE = "Per the surgical services manager's follow-up, the patient underwent the second surgery on the correct right knee without complications and is expected to make a full recovery. The additional operative exposure, recovery time from two surgeries, and the emotional distress of learning a wrong-site surgery occurred are documented. No permanent physical harm is expected. The pre-operative nurse who noted the discrepancy reported during the post-event interview that she was concerned about raising the issue in front of the surgeon, who had a known pattern of dismissing concerns raised during time-outs. This had not been formally reported or addressed prior to this event.";
+
+let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
+const app=document.getElementById('app');
+
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
+
+function renderIntro(){
+  app.innerHTML=`<div class="card"><span class="step-label">Case 6</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a surgical event reported from the operating room. This case involves Universal Protocol and the dynamics of speaking up in a high-hierarchy clinical environment.</p><p>Read the event carefully before working through the discussion points.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>Universal Protocol: Three Required Components</strong><ul><li><strong>Part 1: Pre-procedure verification</strong> &mdash; Conducted before the patient enters the OR while the patient is awake and able to participate. Confirms correct patient, correct procedure, and correct site. Surgical site marking by the surgeon occurs here, with the patient actively confirming.</li><li><strong>Part 2: Surgical site marking</strong> &mdash; The surgeon marks the site using an unambiguous mark agreed upon by the organization. Must occur before the patient enters the OR and while the patient is awake and able to confirm. Marks placed after sedation do not meet this requirement.</li><li><strong>Part 3: Time-out</strong> &mdash; Immediately before the procedure begins. All team members pause. The circulating nurse initiates. The team verbally confirms patient identity, procedure, site, and relevant critical elements. All team members are expected to raise concerns at this step.</li></ul>Source: The Joint Commission Universal Protocol, National Performance Goals</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="helper-text">Consider which element of Universal Protocol represents the primary point of failure.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:"marking",label:"Surgical site marking did not occur during pre-procedure verification while the patient was awake and able to confirm the correct site",type:"main"},
+    {key:"consent",label:"The surgical consent form contained an error identifying the wrong side",type:"factually-incorrect"},
+    {key:"timeout",label:"The time-out was not conducted",type:"factually-incorrect"},
+    {key:"surgeon",label:"The surgeon marked the wrong side in the operating room",type:"secondary"},
+    {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleDev(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleDev(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That identifies the primary GAPS deviation: the failure at Universal Protocol Part 1.</span> The requirement to mark the surgical site before the patient enters the OR, with the patient awake and participating, is not procedural formality. It is the most important verification in the chain. The patient is the last and most authoritative source of confirmation of the correct site. When that step is skipped and marking is done after the patient is sedated, the entire patient-as-participant layer of verification is eliminated.<br><br>Marking a sedated patient does not fulfill the Universal Protocol requirement. The mark placed in the OR on the left knee was not only inconsistent with the consent, but it was placed in a way that bypassed the fundamental safety intent of the pre-procedure verification step.<br><br>Now let's look at the second dimension of this event: what happened when someone noticed the discrepancy.`;
+    nb.classList.add('show');nb.textContent="Explore the Speaking Up Failure";
+    nb.onclick=()=>{step="deviation-round2";render();};
+  } else if(opt.type==="secondary"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The incorrect mark in the OR is a consequence of an earlier failure, not the primary deviation.</span> The surgeon marking the wrong side in the OR happened because the pre-procedure verification step, including site marking with the patient awake, did not occur. If Part 1 of Universal Protocol had been completed as required, the mark would have been placed with the patient's active confirmation of the correct side. Have you thought about where in the Universal Protocol sequence the primary failure occurred that made the wrong-side mark possible?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else if(opt.type==="factually-incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="consent"
+      ?"Looking back at the event: the surgical consent documented the right knee, which was the correct site. The consent was accurate. The deviation occurred in how the site was verified and marked before the procedure."
+      :"Looking back at the event: the circulating nurse did conduct a time-out. The issue is not whether the time-out occurred, but whether it functioned as designed. A time-out that does not surface a documented discrepancy is a time-out that has failed its purpose, but it is a different kind of failure than no time-out at all.";
+    fb.innerHTML=`<span style="font-weight:700;">Let's go back to the event together.</span> ${d}<br><br>Consider which step in the Universal Protocol process was the primary point of failure.`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>renderDeviationStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+    nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
+    nb.onclick=()=>{kctIndex=0;step="kct";render();};
+  }
+}
+
+function renderDeviationRound2(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5 &middot; Speaking Up in the OR</span><h3 class="case-title">Why Did the Discrepancy Not Surface During the Time-Out?</h3>${vign()}<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">The primary GAPS deviation is identified.</span> Site marking did not occur during pre-procedure verification while the patient was awake. Now consider what happened when the discrepancy was detected and why it was not raised.</div><div class="question">Which of the following best describes the system or culture factor that contributed to the discrepancy not being raised during the time-out?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  [
+    {key:"unaware",label:"The team members who conducted the time-out were unaware of the discrepancy in the chart",type:"factually-incorrect"},
+    {key:"hierarchy",label:"The pre-operative nurse identified the discrepancy but did not speak up during the time-out due to fear of the surgeon's known pattern of dismissing concerns",type:"main"},
+    {key:"process",label:"The time-out process did not include a step for reviewing the surgical site marking against the consent",type:"partial"},
+    {key:"training",label:"Team members were not trained on how to raise concerns during a time-out",type:"incorrect"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleCulture(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCulture(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==="main"){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">This is the culture-level failure that allowed the discrepancy to persist through the time-out.</span><br><br>The pre-operative nurse knew. She had compared the consent to the surgeon's mark, found the inconsistency, and documented it. The information needed to prevent the wrong-site surgery was present and in the record. What was absent was the psychological safety needed to voice that concern in a room where the surgeon was the dominant authority.<br><br>This pattern echoes what we examined in Case 2: <strong>hierarchical deference</strong>, the tendency of staff to defer to authority rather than act on clinical judgment when doing so might invite criticism or repercussion. The operating room is one of the most hierarchically structured environments in healthcare. The power differential between a surgeon and a pre-operative nurse is significant, and when that surgeon has a known history of dismissing concerns raised during time-outs, the message to the team is clear: speak up at your own risk.<br><br>Westrum's cultural typology would describe this as a <em>pathological</em> culture characteristic: one where messengers are shot and failure is punished. Edmondson's psychological safety framework identifies the OR as a high-stakes, high-hierarchy environment where psychological safety is especially difficult to establish and especially critical to maintain. The nurse's decision to document the concern rather than voice it was not negligence. It was a rational response to a culture that had signaled, repeatedly and without consequence, that speaking up was not safe.<br><br>A CSA for this event must examine not only why the pre-procedure verification failed, but also why the safety culture in this OR allowed a documented discrepancy to go unreported in real time. Addressing only the process failure without addressing the culture condition will not prevent recurrence.`;
+    nb.classList.add('show');
+    nb.onclick=()=>{step="reach";render();};
+  } else if(opt.type==="partial"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The time-out process design is worth examining, and it may be a contributing factor.</span> If the time-out checklist does not explicitly prompt comparison of the site mark against the consent, that is a process gap worth addressing. However, the event tells us the pre-operative nurse had already made that comparison and documented a concern. The process gap did not prevent the discrepancy from being identified: it was identified. Have you thought about what prevented the identified discrepancy from being raised verbally during the time-out?`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  } else if(opt.type==="factually-incorrect"){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    const d=opt.key==="unaware"
+      ?"Looking at the event: the pre-operative nurse was aware of the discrepancy. She had documented it in the chart. The question is not whether the discrepancy was known, but why knowing about it was not enough to surface it during the time-out."
+      :"The Universal Protocol is a nationally standardized process that is part of surgical team training. Have you thought about what the event tells us about the difference between knowing how to raise a concern and feeling safe doing so?";
+    fb.innerHTML=`<span style="font-weight:700;">Let's go back to what the event tells us.</span> ${d}`;
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+const KCT_QS=[
+  {text:"Was the procedure (arthroscopic knee surgery) appropriate or warranted for this patient based on nationally recognized standards of care?",answer:"YES"},
+  {text:"Was the complication (surgery performed on the wrong knee) a known risk of arthroscopic knee surgery, and was the standard of care employed to mitigate that risk?",answer:"NO"},
+  {text:"Was the complication identified in a timely manner?",answer:"YES"},
+  {text:"Was the complication treated according to the standard of care, in a timely manner?",answer:"YES"}
+];
+
+function renderKctStep(){
+  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  const q=KCT_QS[kctIndex];
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication. ANY NO = safety event.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['YES','NO'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    btn.onclick=()=>handleKct(btn,val,q);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleKct(btn,val,q){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val===q.answer;
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
+  const notes=[
+    ["The patient was scheduled for arthroscopic knee surgery and that procedure was clinically indicated. The procedure itself was appropriate.","Think about the patient's clinical picture: they were scheduled for arthroscopic knee surgery, which was the indicated treatment. That points toward YES for this question."],
+    ["Wrong-site surgery is not a known complication of arthroscopic knee surgery. It is a preventable error. The Universal Protocol exists specifically to eliminate this risk. The standard of care, completing pre-procedure verification with the patient awake and marking the site at that time, was not employed. This points to NO.","Consider whether wrong-site surgery is something that patients accept as a known risk when they consent to arthroscopic knee surgery. It is not. The Universal Protocol was designed to prevent exactly this outcome. Its non-completion means the standard of care mitigation was absent, pointing to NO."],
+    ["The error was identified post-operatively when the operative note and pain assessment did not align. While not immediate, it was identified before the patient was discharged and before significant additional harm occurred.","The error was caught post-operatively through clinical observation. That is timely in the context of a surgical event, pointing toward YES."],
+    ["A second surgery was performed on the correct knee, the appropriate corrective action for a wrong-site surgery. The patient is expected to make a full recovery.","The correct knee was subsequently treated, which is the appropriate standard of care response to a wrong-site surgery. That points toward YES."]
+  ];
+  const[c,i]=notes[kctIndex];
+  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{kctIndex++;renderKctStep();};
+}
+
+function renderKctResult(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">Here is what working through those four questions tells us.</span> One of the four answers came back NO. The Known Complication Test is clear: if the answer to any one question is NO, the event is a safety event.<br><br>Our earlier conclusion that there was no deviation in GAPS does not hold up. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{step="deviation";render();};
+}
+
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="reference-box"><strong>Defining "reaching the patient":</strong> A deviation reaches the patient when no detection barrier intercepts it before it causes harm. If nothing intervenes, the deviation reaches the patient.</div><div class="question">Did the deviation reach the patient in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  ['Yes, it reached the patient','No, a barrier caught it first'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleReach(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleReach(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  const isC=val==='Yes, it reached the patient';
+  btn.classList.add(isC?'selected-correct':'selected-redirect');
+  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The time-out was the last opportunity to catch the discrepancy before the procedure began. The discrepancy was known and documented. But the time-out, which should have been the final barrier, did not surface it. The wrong-site surgery was performed. The deviation reached the patient.`;}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what the barriers were and whether they functioned.</span> The Universal Protocol has three parts, each designed as a verification checkpoint. Part 1 failed when the site marking was skipped. Part 3 (the time-out) existed as a safety net, but a documented discrepancy went unvoiced. The surgery was performed on the wrong knee. Both barriers failed to prevent the deviation from reaching the patient.`;}
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  nb.onclick=()=>{step="harm-info";render();};
+}
+
+function renderHarmInfoStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="question">Before scoring the level of harm, do you need more information?</div><div class="helper-text">You may request additional information from the surgical services manager or their designee before finalizing your classification.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  ['Yes, request more information from the manager/designee','No, proceed with the information available'].forEach(val=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=val;
+    btn.onclick=()=>handleHarmInfo(btn,val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmInfo(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('selected-correct');
+  requestedInfo=val.startsWith('Yes');
+  const fb=document.getElementById('fb');fb.classList.add('show','neutral');
+  const nb=document.getElementById('nb');nb.classList.add('show');
+  if(requestedInfo){
+    fb.innerHTML=`<span style="font-weight:700;">Requesting more information before classifying is sound practice.</span> A second surgery raises questions about the extent of harm and the expected recovery trajectory. You reach out to the surgical services manager.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>With this information in hand, let's score the level of harm.`;
+  } else {
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the patient underwent surgery on the wrong knee and required a second surgery on the correct knee. The permanence of any harm and the expected recovery are not yet documented. Let's score based on what is known.`;
+  }
+  nb.onclick=()=>{step="harm-level";render();};
+}
+
+function renderHarmLevelStep(){
+  const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm limited in time; requires additional invasive procedure or treatment to resolve</li><li><strong>SSE 4</strong> &mdash; Severe Temporary Harm: critical, potentially life-threatening harm; requires major surgery to resolve; no permanent residual</li><li><strong>SSE 3</strong> &mdash; Moderate Permanent Harm: significant permanent harm impacting daily living or functioning</li><li><strong>SSE 2</strong> &mdash; Severe Permanent Harm: life-changing permanent loss of function</li></ul>Assign based on actual patient outcome.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [
+    {key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},
+    {key:"sse4",label:"Severe Temporary Harm (SSE 4)"},
+    {key:"sse3",label:"Moderate Permanent Harm (SSE 3)"},
+    {key:"sse2",label:"Severe Permanent Harm (SSE 2)"}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleHarmLevel(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarmLevel(btn,opt){
+  const allBtns=document.querySelectorAll('#opts .opt-btn');
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  const correctKey=requestedInfo?'sse5':'sse5';
+  if(opt.key==='sse5'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is where the evidence points.</span> The patient underwent an unnecessary arthroscopic procedure on the wrong knee and then required a second arthroscopic surgery on the correct knee. The SEC definition of SSE 5 includes events where significant harm requires an additional invasive procedure or treatment to resolve. The second surgery is that additional invasive procedure. ${requestedInfo?"The manager's update confirms no permanent harm is expected and the patient is on track for full recovery, placing this firmly in the temporary category. The emotional distress documented is also a component of harm, even without permanent physical sequelae.":"Without the manager update, the expected recovery trajectory is not confirmed, but the intervention required, a second surgery, is clear from the vignette and points toward SSE 5."}`;
+    nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
+  } else if(opt.key==='sse4'){
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical, potentially life-threatening harm that requires major surgery to resolve. Arthroscopic knee surgery is a significant procedure, but it does not typically carry the life-threatening risk profile associated with SSE 4. ${requestedInfo?"The manager's update confirms full recovery is expected, which supports a moderate rather than severe temporary classification.":"Have you thought about whether the level of clinical risk from an arthroscopic procedure aligns more with moderate or severe temporary harm?"}`;
+    nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
+    nb.onclick=requestedInfo
+      ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
+      :()=>{requestedInfo=true;renderHarmLevelStep();};
+  } else {
+    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the harm categories.</span> ${requestedInfo?"The manager's update confirms no permanent harm is expected. Permanent harm categories (SSE 2 and SSE 3) require that the harm has no expected change in the patient's clinical status or persists indefinitely. Full recovery is anticipated here, which places this event in the temporary rather than permanent range.":"The vignette does not confirm permanent harm. Have you thought about whether requesting more information from the manager would help clarify the expected recovery before classifying at a permanent harm level?"}`;
+    nb.classList.add('show');nb.textContent=requestedInfo?"Try Again":"Request Information from Manager/Designee";
+    nb.onclick=requestedInfo
+      ?()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});}
+      :()=>{requestedInfo=true;renderHarmLevelStep();};
+  }
+}
+
+function renderCsaSentinelStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="reference-box"><strong>Why this matters:</strong> The Joint Commission Sentinel Event Policy (July 2026) includes specific event types that require a CSA regardless of the level of harm that resulted.</div><div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSentinel(btn,opt.val);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleSentinel(btn,val){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  sentinelAnswer=val;
+  const fb=document.getElementById('fb');fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(val==='yes'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination, and the reasoning matters here.</span> Wrong-site surgery is explicitly listed in The Joint Commission's Sentinel Event Policy regardless of the outcome or level of harm. An invasive procedure performed at the wrong site is a sentinel event whether the patient recovers fully or not. This is an important distinction: JC sentinel event status is not always outcome-dependent. Some event types are defined as sentinel events based on the nature of the event itself, because they represent fundamental failures of systems that should be foolproof. Universal Protocol exists specifically to make wrong-site surgery a never event. When it occurs, a CSA is required. Let's use the SAC Matrix to think through the scope of response.`;
+    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC Sentinel Event list carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026): Surgical Events</strong>The following are sentinel events regardless of outcome:<ul style="margin:8px 0 0 18px;padding:0;"><li>Surgery or other invasive procedure performed at the wrong site, on the wrong patient, or that is the wrong (unintended) procedure, regardless of the type of procedure or the magnitude of the outcome</li></ul>Note the phrase "regardless of the magnitude of the outcome." This event qualifies as a sentinel event not because of the severity of what happened to the patient, but because of the type of event that occurred. Have you thought about how that changes your determination?`;
+    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
+  }
+}
+
+function renderCsaMatrixStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">Sentinel event confirmed.</span> Wrong-site surgery is a sentinel event regardless of outcome. A CSA is required. The SAC Matrix helps think through the scope and urgency of that analysis.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br>Score 3 = highest risk, 2 = intermediate, 1 = lowest.<br><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Wrong-site surgical events at your organization occur occasionally.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleSev(btn,opt.val);
+    document.getElementById('sev-opts').appendChild(btn);
+  });
+}
+
+function handleSev(btn,val){
+  document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacSeverity=val;
+  const fb=document.getElementById('sev-fb');fb.classList.add('show');
+  if(val==='catastrophic'){
+    btn.classList.add('selected-correct');fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">Catastrophic is the right category.</span> The SAC Matrix explicitly includes any JC sentinel event in the Catastrophic severity category. Wrong-site surgery is a JC sentinel event. That alone places this event at Catastrophic regardless of the patient outcome.`;
+    showProb();
+  } else {
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the Catastrophic definition.</span> The SAC Matrix defines Catastrophic as including any JC sentinel event. We confirmed a moment ago that wrong-site surgery is a sentinel event regardless of outcome. That definition alone places this in the Catastrophic category.`;
+    document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
+  }
+}
+
+function showProb(){
+  document.getElementById('prob-section').style.display='block';
+  [{val:'frequent',label:'Frequent (several times per year)'},{val:'occasional',label:'Occasional (several times in 1 to 2 years)'},{val:'uncommon',label:'Uncommon (sometime in 2 to 5 years)'},{val:'remote',label:'Remote (sometime in 5 to 30 years)'}].forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>handleProbFn(btn,opt.val);
+    document.getElementById('prob-opts').appendChild(btn);
+  });
+}
+
+function handleProbFn(btn,val){
+  document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  sacProbability=val;btn.classList.add('selected-correct');
+  const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. At Catastrophic severity, the SAC score is 3 regardless of probability.":"The scenario context suggests Occasional. At Catastrophic severity, any probability category produces a SAC score of 3."}`;
+  showMatRes();
+}
+
+function showMatRes(){
+  const r=document.getElementById('matrix-result');r.style.display='block';
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--edgewood-red);"><strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>Catastrophic severity with any probability = SAC 3. A CSA is warranted.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="background:#fdeaea;font-weight:700;text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">Before moving on.</span> The SAC Matrix guides resource allocation alongside organizational policy and accreditation requirements. Always verify what your accreditation body and internal policies require.</div>`;
+  const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
+  nb.onclick=()=>{step="summary";render();};
+}
+
+function renderSummary(){
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 6 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 5</div><p>Moderate Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
+<tr><td>Taxonomy Event Type</td><td>PR1 &mdash; Wrong Body Part / Wrong Site Surgery (Procedural); Inpatient OR</td></tr><tr><td>Primary GAPS deviation</td><td>Surgical site marking did not occur during pre-procedure verification while the patient was awake (Universal Protocol Part 1)</td></tr><tr><td>Contributing culture factor</td><td>Pre-operative nurse identified discrepancy but did not speak up during time-out due to surgeon's known pattern of dismissing concerns (hierarchical deference; Westrum; Edmondson)</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; both Universal Protocol checkpoints failed to prevent the wrong-site surgery</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full recovery expected; no permanent harm; emotional distress documented; nurse reported fear of surgeon's response":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm (second surgery required; full recovery expected)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>Yes &mdash; wrong-site surgery is a sentinel event regardless of outcome (JC July 2026)</td></tr><tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo?`<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update reveals that the pre-operative nurse did not speak up because of the surgeon's known pattern of dismissing concerns during time-outs. Without that information, the culture condition in this OR remains invisible. A CSA that does not know to investigate the psychological safety environment cannot address the root of why the last safety barrier failed. Requesting the manager update in this case was not just a classification step: it was the step that made a complete organizational response possible.</div>`:''}  <p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; JC Universal Protocol / National Performance Goals; Westrum (1984); Edmondson (1999)</p><button class="restart-btn" id="rb">Restart Case 6</button></div>`;
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+}
+
+function render(){
+  if(step==="intro")renderIntro();
+  else if(step==="deviation")renderDeviationStep();
+  else if(step==="deviation-round2")renderDeviationRound2();
+  else if(step==="kct")renderKctStep();
+  else if(step==="reach")renderReachStep();
+  else if(step==="harm-info")renderHarmInfoStep();
+  else if(step==="harm-level")renderHarmLevelStep();
+  else if(step==="csa")renderCsaSentinelStep();
+  else if(step==="summary")renderSummary();
+}
+render();
+</script>
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
