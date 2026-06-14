@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Safety Events: Case 2</title>
+<style>
+  :root {
+    --edgewood-red: #BB0000;
+    --black: #000000;
+    --white: #FFFFFF;
+    --dark-gold: #C8932B;
+    --warm-grey: #F0EEEB;
+    --dark-web-grey: #58595B;
+    --slate-blue: #5794AD;
+    --light-grey: #C2C6C8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    background: var(--warm-grey);
+    color: var(--black);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 20px 60px; }
+  header {
+    background: var(--black);
+    color: var(--white);
+    padding: 28px 20px;
+    text-align: center;
+  }
+  header h1 {
+    font-family: 'Spectral', Georgia, serif;
+    margin: 0 0 6px;
+    font-size: 1.7rem;
+    letter-spacing: 0.5px;
+  }
+  header p { margin: 0; color: var(--light-grey); font-size: 0.95rem; }
+  .accent-bar { height: 6px; background: var(--edgewood-red); }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--light-grey);
+    border-radius: 6px;
+    padding: 24px;
+    margin-top: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: var(--dark-web-grey);
+  }
+  .progress-bar-bg { background: var(--light-grey); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px; }
+  .progress-bar-fill { background: var(--edgewood-red); height: 100%; transition: width 0.3s ease; }
+
+  .step-label {
+    display: inline-block;
+    background: var(--dark-gold);
+    color: var(--white);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .case-title {
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 1.4rem;
+    margin: 0 0 14px;
+    color: var(--black);
+  }
+
+  .vignette {
+    background: var(--warm-grey);
+    border-left: 4px solid var(--slate-blue);
+    padding: 16px 18px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+  }
+
+  .intro-text { font-size: 1.05rem; margin-bottom: 16px; }
+  .intro-text p { margin: 0 0 12px; }
+
+  .question { font-weight: 700; margin-bottom: 4px; font-size: 1.05rem; }
+  .helper-text { font-size: 0.92rem; color: var(--dark-web-grey); margin: 6px 0 14px; }
+
+  .reference-box {
+    background: var(--warm-grey);
+    border: 1px solid var(--light-grey);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    color: var(--dark-web-grey);
+  }
+  .reference-box strong { color: var(--black); }
+  .reference-box ul { margin: 8px 0 0; padding-left: 18px; }
+  .reference-box li { margin-bottom: 4px; }
+
+  .info-box {
+    background: #fff8e6;
+    border: 1px solid var(--dark-gold);
+    border-left: 4px solid var(--dark-gold);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+  }
+  .info-box strong { display: block; margin-bottom: 4px; color: var(--dark-gold); }
+
+  .options { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .opt-btn {
+    flex: 1 1 220px;
+    background: var(--white);
+    border: 2px solid var(--slate-blue);
+    color: var(--black);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 600;
+    padding: 14px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+  .opt-btn:hover { background: var(--slate-blue); color: var(--white); }
+  .opt-btn.selected-correct { background: #2e7d32; border-color: #2e7d32; color: var(--white); }
+  .opt-btn.selected-redirect { background: var(--edgewood-red); border-color: var(--edgewood-red); color: var(--white); }
+  .opt-btn:disabled { cursor: default; opacity: 1; }
+  .opt-btn:disabled:not(.selected-correct):not(.selected-redirect) { opacity: 0.45; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 5px;
+    font-size: 0.97rem;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadein 0.25s ease; }
+  .feedback.correct { background: #eaf5ea; border-left: 4px solid #2e7d32; }
+  .feedback.redirect { background: #fdeaea; border-left: 4px solid var(--edgewood-red); }
+  .feedback.neutral { background: var(--warm-grey); border-left: 4px solid var(--slate-blue); }
+
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 22px; }
+  .nav-btn {
+    background: var(--edgewood-red);
+    color: var(--white);
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+  }
+  .nav-btn.show { display: inline-block; }
+  .nav-btn:hover { background: #930000; }
+
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.92rem; }
+  .summary-table th, .summary-table td { border: 1px solid var(--light-grey); padding: 8px 10px; text-align: left; }
+  .summary-table th { background: var(--black); color: var(--white); font-family: 'Spectral', Georgia, serif; font-weight: 600; }
+  .summary-table tr:nth-child(even) td { background: var(--warm-grey); }
+
+  .score-badge {
+    display: inline-block;
+    background: var(--edgewood-red);
+    color: var(--white);
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 6px;
+    margin: 14px 0;
+  }
+
+  .small-note { font-size: 0.85rem; color: var(--dark-web-grey); margin-top: 18px; text-align: center; }
+
+  .restart-btn {
+    background: transparent;
+    border: 2px solid var(--dark-web-grey);
+    color: var(--dark-web-grey);
+    font-family: inherit;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 18px;
+  }
+  .restart-btn:hover { background: var(--dark-web-grey); color: var(--white); }
+
+/* ── Resource Page Header ── */
+.resource-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.resource-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
+}
+.resource-header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.resource-header-text {
+    flex: 1;
+    min-width: 0;
+}
+.resource-header-course {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #C8932B;
+    line-height: 1.2;
+}
+.resource-header-title {
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.resource-header-back {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.78rem;
+    color: #C2C6C8;
+    text-decoration: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+.resource-header-back:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
+.resource-header-back svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+/* ── Resource Page Footer ── */
+.resource-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: #6D6E71;
+    border-top: 1px solid #C2C6C8;
+    background: #F8F6F3;
+}
+.resource-footer a {
+    color: #5794AD;
+    text-decoration: none;
+}
+.resource-footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .resource-header {
+        flex-wrap: wrap;
+        padding: 0.7rem 1rem;
+        gap: 0.6rem;
+    }
+    .resource-header-back {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.2rem 0;
+        font-size: 0.72rem;
+    }
+    .resource-header-title {
+        font-size: 0.95rem;
+        white-space: normal;
+    }
+}
+</style>
+</head>
+<body>
+<header class="resource-header">
+    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+    <div class="resource-header-text">
+        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+        <div class="resource-header-title">Case 2: STEMI &mdash; Delayed Escalation</div>
+    </div>
+    <a class="resource-header-back" href="Managing_Safety_Events_Shell.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Safety Event Management Cases
+    </a>
+</header>
+
+
+<div class="accent-bar"></div>
+
+<div class="wrap">
+  <div id="app"></div>
+</div>
+
+<script>
+// =================================================================
+// CASE 2 DATA
+// =================================================================
+const VIGNETTE = "A 71-year-old patient with a history of hypertension and diabetes is admitted to the intensive care unit following an acute exacerbation of congestive heart failure. On the second day of admission, the patient reports new onset chest pressure radiating to the left arm, rated 7 out of 10. The bedside nurse administers acetaminophen per standing orders and reassesses 45 minutes later. The patient's pain has not improved and the nurse documents the complaint in the chart. A second-year resident reviews the chart remotely, orders a basic metabolic panel and cardiac enzymes, and notes the complaint. An EKG is obtained by the telemetry tech and transmitted to the system. The EKG reveals ST-elevation in leads II, III, and aVF, consistent with an acute inferior wall myocardial infarction. The result is available in the electronic health record for 38 minutes before anyone acts on it. The attending cardiologist is paged twice and does not respond. The resident does not attempt additional contact and does not activate the rapid response team or the facility's STEMI protocol. The nurse, aware that the cardiologist has not responded and that the patient's condition is worsening, does not escalate through available channels. The patient progresses to hemodynamic instability, a code blue is called, and the patient expires despite resuscitative efforts.";
+
+const MANAGER_UPDATE = "During the review, the reviewer applied the Substitution Test, a Just Culture tool that asks: would most other nurses and residents in this same situation have made the same decision? The reviewer asked several staff members on this unit and on an adjacent unit what they would have done. Almost all reported that they would not have activated the rapid response team or the STEMI protocol, citing past experiences of negative repercussions from the cardiology attending when nurses or residents escalated past them. This pattern of fear-based deference is not unique to one individual. It reflects a systemic culture condition on this unit.";
+
+// Step state
+let step = "intro";
+let requestedInfo = null;
+let kctIndex = 0;
+
+// CSA step state
+let sentinelAnswer = null;
+let sacSeverity = null;
+let sacProbability = null;
+
+// Deviation step state
+let mainDeviationFound = false;
+
+const app = document.getElementById('app');
+
+// -----------------------------------------------------------------
+// SHARED UTILITIES
+// -----------------------------------------------------------------
+function renderVignette() {
+  return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;
+}
+
+function progressBar(stepNum, totalSteps, label) {
+  const pct = Math.round((stepNum / totalSteps) * 100);
+  return `
+    <div class="progress-row">
+      <span>${label}</span>
+      <span>Step ${stepNum} of ${totalSteps}</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+  `;
+}
+
+// -----------------------------------------------------------------
+// INTRO
+// -----------------------------------------------------------------
+function renderIntro() {
+  app.innerHTML = `
+    <div class="card">
+      <span class="step-label">Case 2</span>
+      <div class="intro-text">
+        <p>You have reviewed your first event and are ready for the next one. You open Case 2 in your queue.</p>
+        <p>Read the event below carefully. You will work through the same decision framework: identifying deviations, tracing whether the deviation reached the patient, scoring the harm, and determining whether a comprehensive systematic analysis is warranted.</p>
+      </div>
+      ${renderVignette()}
+      <div class="nav-row">
+        <button class="nav-btn show" id="next-btn">Begin Discussion</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('next-btn').onclick = () => { step = "deviation"; render(); };
+}
+
+// -----------------------------------------------------------------
+// STEP 1: DEVIATION IDENTIFICATION - ROUND 1
+// -----------------------------------------------------------------
+const DEVIATION_OPTIONS = [
+  { key: "ekg-timing", label: "The EKG was not obtained in a timely manner", type: "factually-incorrect" },
+  { key: "ekg-recognition", label: "The ST-elevation finding was not recognized by the care team", type: "factually-incorrect" },
+  { key: "treatment-delay", label: "Treatment was not initiated despite a confirmed STEMI diagnosis available in the EHR for 38 minutes", type: "main" },
+  { key: "cardiologist", label: "The cardiologist failed to respond to pages", type: "secondary" },
+  { key: "none", label: "There was no deviation in Generally Accepted Performance Standards (GAPS)", type: "no-gaps" }
+];
+
+function renderDeviationStep() {
+  mainDeviationFound = false;
+  app.innerHTML = `
+    ${progressBar(1, 5, "Discussion Point 1: Identifying Deviations")}
+    <div class="card">
+      <span class="step-label">Step 1 of 5</span>
+      <h3 class="case-title">Were There Any Deviations?</h3>
+      ${renderVignette()}
+      <div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? If so, where? Was there more than one?</div>
+      <div class="helper-text">Review the event again and select the option that best represents the <em>main</em> deviation: the one most directly and causally connected to what happened to the patient.</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  DEVIATION_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleDeviationAnswer(btn, opt, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleDeviationAnswer(btn, opt, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (opt.type === "main") {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">That identifies the proximate deviation well.</span> An EKG confirming an acute inferior wall myocardial infarction was available in the EHR for 38 minutes without triggering any intervention. The STEMI protocol was not activated, no escalation occurred, and treatment was not initiated. The standard of care for STEMI is well-established and time-critical: door-to-balloon time targets exist precisely because every minute of delay increases myocardial damage. The gap between what the evidence required and what actually happened is the GAPS deviation.
+      <br><br>
+      Now let's go one level deeper. The deviation is clear: treatment was delayed. But <em>why</em> did no one escalate when the cardiologist did not respond?
+    `;
+    mainDeviationFound = true;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Explore Why Escalation Did Not Occur";
+    nextBtn.onclick = () => { step = "deviation-round2"; render(); };
+
+  } else if (opt.type === "secondary") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">The cardiologist's non-response is worth noting, and it is one part of this picture.</span> However, the attending's failure to respond is a contributing factor rather than the primary correctable system deviation. Have you thought about what happened in the 38 minutes after the EKG result was available? The STEMI diagnosis was confirmed and documented. What was the standard of care at that point, and what did the care team do with that information?
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => renderDeviationStep();
+
+  } else if (opt.type === "factually-incorrect") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    let detail = opt.key === "ekg-timing"
+      ? "Looking back at the event: an EKG was obtained by the telemetry tech after the nurse documented the chest pain complaint. The timing of the EKG itself is not identified as a gap in this event."
+      : "Looking back at the event: the ST-elevation was transmitted to the EHR and the result was available for 38 minutes. The finding was present and accessible in the record. The issue is not whether it was recognized, but what happened after it was.";
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's go back to the event together.</span> ${detail}
+      <br><br>
+      Consider what was in place and functioning, and what was not. What changed between the EKG result being available and the patient going into cardiac arrest?
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => renderDeviationStep();
+
+  } else if (opt.type === "no-gaps") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is considered a known complication rather than a safety event. If the answer to any one of them is NO, we are looking at a safety event. Let's work through those questions and see where this case lands.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Apply the Known Complication Test";
+    nextBtn.onclick = () => { kctIndex = 0; step = "kct"; render(); };
+  }
+}
+
+// -----------------------------------------------------------------
+// STEP 1 ROUND 2: WHY DID ESCALATION NOT OCCUR?
+// -----------------------------------------------------------------
+const CULTURE_OPTIONS = [
+  { key: "staffing", label: "A staffing shortage meant no one was available to escalate", type: "incorrect" },
+  { key: "ehr", label: "Poor EHR design prevented timely notification of the care team", type: "incorrect" },
+  { key: "hierarchy", label: "Hierarchical deference: staff did not feel psychologically safe escalating past an unresponsive attending", type: "main" },
+  { key: "protocol", label: "The resident was unfamiliar with the STEMI protocol", type: "partial" }
+];
+
+function renderDeviationRound2() {
+  app.innerHTML = `
+    ${progressBar(1, 5, "Discussion Point 1: Identifying Deviations")}
+    <div class="card">
+      <span class="step-label">Step 1 of 5 &middot; Exploring the System Factors</span>
+      <h3 class="case-title">Why Did Escalation Not Occur?</h3>
+      ${renderVignette()}
+      <div class="feedback show correct" style="margin-bottom:16px;">
+        <span style="font-weight:700;">The proximate deviation is identified.</span> Treatment was not initiated despite a confirmed STEMI diagnosis in the EHR. Now consider what lies beneath that. When the cardiologist did not respond, what stopped the resident and nurse from activating the rapid response team or the STEMI protocol?
+      </div>
+      <div class="question">Which of the following best describes the system or culture factor that contributed to the failure to escalate?</div>
+      <div class="helper-text">Consider what the care team knew, what options were available to them, and what may have influenced their decision not to use those options.</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Discussion Point 2</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  CULTURE_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleCultureAnswer(btn, opt, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleCultureAnswer(btn, opt, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (opt.type === "main") {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">This is the culture-level factor at the root of this event.</span>
+      <br><br>
+      What you are describing is <strong>hierarchical deference</strong>, a pattern in which staff defer to authority rather than act on their own clinical judgment, particularly when doing so might invite criticism or repercussion from a more senior clinician.
+      <br><br>
+      Two frameworks help explain this:
+      <br><br>
+      <strong>Westrum's Cultural Typology</strong> distinguishes between generative, bureaucratic, and pathological organizational cultures. In a <em>pathological</em> culture, messengers are shot, failure is punished, and new ideas are actively crushed. In a <em>generative</em> culture, failure leads to inquiry, safety is the shared responsibility of everyone, and speaking up is rewarded. A unit where nurses and residents fear repercussions for escalating past an attending is exhibiting pathological culture characteristics. That culture is not a background condition: it is an active patient safety hazard.
+      <br><br>
+      <strong>Amy Edmondson's Psychological Safety framework</strong> defines psychological safety as the shared belief that the team is safe for interpersonal risk-taking, including speaking up, asking questions, and challenging authority. When psychological safety is absent, staff suppress clinical concerns rather than risk social or professional consequences. That suppression, in this case, contributed directly to a patient's death.
+      <br><br>
+      This is not about assigning blame to the resident or nurse. The culture that made escalation feel dangerous is a system condition, and it is a root cause that a CSA will need to address.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.onclick = () => { step = "reach"; render(); };
+
+  } else if (opt.type === "partial") {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Protocol familiarity is worth examining, and it may be a contributing factor.</span> If the resident was uncertain about the STEMI protocol, that could contribute to hesitation. However, the nurse was aware the cardiologist had not responded and that the patient was worsening, and still did not escalate through available channels. Have you thought about what both the resident and the nurse had in common in that moment, beyond protocol knowledge? What might have made calling a rapid response team feel like a risk rather than a routine step?
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => {
+      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+      feedbackDiv.innerHTML = '';
+      nextBtn.classList.remove('show');
+      nextBtn.textContent = "Continue to Discussion Point 2";
+      allBtns.forEach(b => { b.disabled = false; b.classList.remove('selected-correct', 'selected-redirect'); });
+    };
+
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    let detail = opt.key === "staffing"
+      ? "The event does not indicate a staffing shortage, and a rapid response team activation does not require additional staff availability: it is a single call or button press. Have you thought about what the care team knew and what they chose not to do, and why that choice might have felt rational to them in the moment?"
+      : "The EHR was functioning well enough to transmit the EKG result and make it available for review. The result sat untouched for 38 minutes not because no one could see it, but because no one acted on it. Have you thought about what was happening interpersonally in that unit that might explain why two clinicians, both aware of a deteriorating patient, did not escalate?";
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's explore this a bit further.</span> ${detail}
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => {
+      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+      feedbackDiv.innerHTML = '';
+      nextBtn.classList.remove('show');
+      nextBtn.textContent = "Continue to Discussion Point 2";
+      allBtns.forEach(b => { b.disabled = false; b.classList.remove('selected-correct', 'selected-redirect'); });
+    };
+  }
+}
+
+// -----------------------------------------------------------------
+// KCT (full depth, same as Case 1)
+// -----------------------------------------------------------------
+const KCT_QUESTIONS = [
+  {
+    text: "Was the procedure, treatment, or test (in this case, the clinical management of new chest pain in a patient with known cardiac history) appropriate or warranted based on nationally recognized standards of care?",
+    answer: "YES"
+  },
+  {
+    text: "Was the complication (the myocardial infarction progressing to cardiac arrest) a known risk, and was the standard of care employed to mitigate that risk at the time the patient decompensated?",
+    answer: "NO"
+  },
+  {
+    text: "Was the complication identified in a timely manner?",
+    answer: "NO"
+  },
+  {
+    text: "Was the complication treated according to the standard of care, in a timely manner?",
+    answer: "NO"
+  }
+];
+
+function renderKctStep() {
+  if (kctIndex >= KCT_QUESTIONS.length) { renderKctResult(); return; }
+  const q = KCT_QUESTIONS[kctIndex];
+  app.innerHTML = `
+    ${progressBar(1, 5, "Discussion Point 1: Known Complication Test")}
+    <div class="card">
+      <span class="step-label">Known Complication Test &middot; Question ${kctIndex + 1} of 4</span>
+      <h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>Reminder:</strong> If the answer to ALL four questions is YES, the event is a Known Complication, not a safety event. If the answer to ANY question is NO, the event is a safety event.
+      </div>
+      <div class="question">${q.text}</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['YES', 'NO'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.style.flex = "1 1 100px";
+    btn.textContent = val;
+    btn.onclick = () => handleKctAnswer(btn, val, q, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleKctAnswer(btn, val, q, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  const isCorrect = val === q.answer;
+  if (isCorrect) { btn.classList.add('selected-correct'); }
+  else { btn.classList.add('selected-redirect'); allBtns.forEach(b => { if (b.textContent === q.answer) b.classList.add('selected-correct'); }); }
+
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  feedbackDiv.classList.add(isCorrect ? 'correct' : 'neutral');
+
+  let note = "";
+  if (kctIndex === 0) {
+    note = isCorrect
+      ? "Assessment and monitoring of chest pain in a patient with a cardiac history is appropriate and indicated. The care team responded to the complaint appropriately at first."
+      : "Think about what happened when the chest pain was reported: the nurse assessed, documented, and the resident ordered a workup including an EKG. Those steps are consistent with the standard of care for this patient. That points toward YES for this question.";
+  } else if (kctIndex === 1) {
+    note = isCorrect
+      ? "A myocardial infarction is a known risk in a patient with hypertension, diabetes, and heart failure. However, the standard of care, activating the STEMI protocol and initiating reperfusion therapy, was not employed when the EKG result became available. The critical mitigation step was not taken. That points to NO."
+      : "Consider the second part of this question: were standard of care steps taken to mitigate the risk once the MI was confirmed? The EKG result sat in the EHR for 38 minutes. The STEMI protocol was not activated. That gap between recognition and action is exactly what this question is asking about, and it points to NO.";
+  } else if (kctIndex === 2) {
+    note = isCorrect
+      ? "The EKG result was available in the EHR for 38 minutes before anyone acted on it. An acute STEMI requires immediate intervention: 38 minutes of inaction does not meet the standard of timely identification and response."
+      : "Look at the timeline: 38 minutes passed between the EKG result being available and any action being taken on it. In the context of an acute STEMI, where every minute of delay affects outcome, that interval does not meet the standard for timely identification. This points to NO.";
+  } else {
+    note = isCorrect
+      ? "The STEMI protocol was not activated, the rapid response team was not called, and reperfusion therapy was not initiated. The complication was not treated according to the standard of care, and the patient expired. This is NO."
+      : "Consider what treatment was actually provided after the STEMI was confirmed: the protocol was not activated, no escalation occurred, and the patient progressed to cardiac arrest without receiving guideline-directed STEMI therapy. That is not consistent with the standard of care, which points to NO.";
+  }
+
+  feedbackDiv.innerHTML = `<span style="font-weight:700;">${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</span> ${note}`;
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.onclick = () => { kctIndex++; renderKctStep(); };
+}
+
+function renderKctResult() {
+  app.innerHTML = `
+    ${progressBar(1, 5, "Discussion Point 1: Known Complication Test")}
+    <div class="card">
+      <span class="step-label">Known Complication Test &middot; Result</span>
+      <h3 class="case-title">What Does This Tell Us?</h3>
+      <div class="feedback show neutral">
+        <span style="font-weight:700;">Here is what working through those four questions tells us.</span> Three of the four answers came back NO. The Known Complication Test is clear on this point: if the answer to any one question is NO, the event is a safety event, not a known complication.
+        <br><br>
+        So our earlier conclusion, that there was no deviation in GAPS, does not hold up under scrutiny. There was a deviation, and now we are better positioned to identify it. Let's go back and take another look.
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn show" id="next-btn">Return to Discussion Point 1</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('next-btn').onclick = () => { step = "deviation"; render(); };
+}
+
+// -----------------------------------------------------------------
+// STEP 2: DID THE DEVIATION REACH THE PATIENT?
+// -----------------------------------------------------------------
+function renderReachStep() {
+  app.innerHTML = `
+    ${progressBar(2, 5, "Discussion Point 2: Did the Deviation Reach the Patient?")}
+    <div class="card">
+      <span class="step-label">Step 2 of 5</span>
+      <h3 class="case-title">Did the Deviation Reach the Patient?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>How are we defining "reaching the patient"?</strong> In the SEC algorithm, a deviation reaches the patient when it is not caught or corrected by a detection barrier before it can affect the patient. A barrier might be a person, a process, or a piece of technology that intercepts the error before it causes harm. If no barrier intervenes, the deviation reaches the patient.
+      </div>
+      <div class="question">Given that definition, did the deviation reach the patient in this event?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Discussion Point 3</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['Yes, it reached the patient', 'No, a barrier caught it first'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = val;
+    btn.onclick = () => handleReachAnswer(btn, val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleReachAnswer(btn, val, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  const isCorrect = val === 'Yes, it reached the patient';
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">That is a sound read of this situation.</span> No barrier intervened between the confirmed STEMI diagnosis and the patient's death. The EKG result was available, the diagnosis was clear, and the standard of care required immediate action. Nothing caught the delay. The deviation reached the patient without interruption.
+    `;
+  } else {
+    btn.classList.add('selected-redirect');
+    allBtns.forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's explore what a catch would have looked like here.</span> A barrier catching the deviation would mean something intervened before the patient was harmed: a charge nurse noticing the EKG result and escalating, an automated alert triggering a STEMI team notification, or a rapid response activation catching the deterioration early enough to change the outcome. None of those things happened. The patient progressed to cardiac arrest and expired. Have you thought about what that means for whether the deviation reached the patient?
+    `;
+  }
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.onclick = () => { step = "harm-info"; render(); };
+}
+
+// -----------------------------------------------------------------
+// STEP 3A: DO YOU NEED MORE INFORMATION?
+// -----------------------------------------------------------------
+function renderHarmInfoStep() {
+  app.innerHTML = `
+    ${progressBar(3, 5, "Discussion Point 3: Level of Harm")}
+    <div class="card">
+      <span class="step-label">Step 3 of 5</span>
+      <h3 class="case-title">What Was the Level of Harm?</h3>
+      ${renderVignette()}
+      <div class="question">Before scoring the level of harm, do you need more information?</div>
+      <div class="helper-text">As the reviewer, you can request additional information from the unit manager or their designee before finalizing your classification.</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  ['Yes, request more information from the manager/designee', 'No, proceed with the information available'].forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = val;
+    btn.onclick = () => handleHarmInfoAnswer(btn, val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleHarmInfoAnswer(btn, val, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  btn.classList.add('selected-correct');
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show', 'neutral');
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+
+  if (val.startsWith('Yes')) {
+    requestedInfo = true;
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Requesting additional information before finalizing a classification is sound practice.</span> You reach out to the unit manager for more context on this event.
+      <div class="info-box">
+        <strong>Manager/Designee Update: Substitution Test Finding</strong>
+        ${MANAGER_UPDATE}
+        <br><br>
+        <strong>What is the Substitution Test?</strong> The Substitution Test is a Just Culture methodology that asks: would most other people in this same role, with the same training and context, have made the same decision? If the answer is yes, the issue is systemic rather than individual. If the answer is no, individual behavior may warrant separate examination alongside the system review.
+      </div>
+      This finding does not change the SEC classification, but it significantly shapes what the CSA will need to investigate. Keep this in mind as you move through the remaining steps.
+    `;
+  } else {
+    requestedInfo = false;
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Proceeding with what is documented is a reasonable choice at this point.</span> The vignette tells us the patient expired following a code blue. Let's score the level of harm based on that information.
+    `;
+  }
+  nextBtn.onclick = () => { step = "harm-level"; render(); };
+}
+
+// -----------------------------------------------------------------
+// STEP 3B: HARM LEVEL SCORING
+// -----------------------------------------------------------------
+const HARM_OPTIONS = [
+  { key: "pse1", label: "Minor Permanent Harm (PSE 1)" },
+  { key: "pse2", label: "Minor Temporary Harm (PSE 2)" },
+  { key: "sse5", label: "Moderate Temporary Harm (SSE 5)" },
+  { key: "sse4", label: "Severe Temporary Harm (SSE 4)" },
+  { key: "sse3", label: "Moderate Permanent Harm (SSE 3)" },
+  { key: "sse2", label: "Severe Permanent Harm (SSE 2)" },
+  { key: "sse1", label: "Death (SSE 1)" }
+];
+
+function renderHarmLevelStep() {
+  const reminder = requestedInfo
+    ? `<div class="info-box"><strong>Manager/Designee Update: Substitution Test Finding</strong>${MANAGER_UPDATE}</div>`
+    : "";
+
+  app.innerHTML = `
+    ${progressBar(3, 5, "Discussion Point 3: Level of Harm")}
+    <div class="card">
+      <span class="step-label">Step 3 of 5</span>
+      <h3 class="case-title">Score the Level of Harm</h3>
+      ${renderVignette()}
+      ${reminder}
+      <div class="reference-box">
+        <strong>SEC Levels of Harm (full range):</strong>
+        <ul>
+          <li><strong>PSE 1 / 2</strong> &mdash; Minor permanent or minor temporary harm</li>
+          <li><strong>SSE 5</strong> &mdash; Moderate temporary harm</li>
+          <li><strong>SSE 4</strong> &mdash; Severe temporary harm</li>
+          <li><strong>SSE 3</strong> &mdash; Moderate permanent harm</li>
+          <li><strong>SSE 2</strong> &mdash; Severe permanent harm</li>
+          <li><strong>SSE 1</strong> &mdash; Death</li>
+        </ul>
+        Assign the level based on the actual outcome to the patient, not on the potential severity of what could have happened.
+      </div>
+      <div class="question">Based on the information available to you, how would you classify the level of harm in this event?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Discussion Point 4</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  HARM_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleHarmLevelAnswer(btn, opt, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleHarmLevelAnswer(btn, opt, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (opt.key === 'sse1') {
+    allBtns.forEach(b => b.disabled = true);
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">SSE 1: Death is the classification that the evidence supports.</span> The vignette tells us directly that the patient expired despite resuscitative efforts following a code blue. The SEC framework places death at the top of the severity scale as SSE 1. The outcome is documented and unambiguous. This is one of those situations where the information available in the initial report is sufficient to determine the harm level without requiring additional data.
+      ${requestedInfo ? '<br><br>The manager update you requested adds important context about the culture conditions that contributed to this outcome, and that will be essential for the CSA. However, it does not change the classification itself.' : '<br><br>Note that in this case the harm level is clear from the vignette itself. In other events, like Case 1, the outcome was less certain without follow-up information. Recognizing when you have enough information to classify, and when you do not, is itself a skill that develops with practice.'}
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.onclick = () => { step = "csa"; render(); };
+
+  } else {
+    allBtns.forEach(b => b.disabled = true);
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's go back to the outcome documented in the event.</span> The SEC framework instructs us to assign the level of harm based on the patient's actual condition, not on what might have happened or on the severity of the underlying diagnosis. What does the vignette tell us about what happened to this patient at the end of the event? Take another look and reconsider your selection.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Try Again";
+    nextBtn.onclick = () => {
+      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+      feedbackDiv.innerHTML = '';
+      nextBtn.classList.remove('show');
+      nextBtn.textContent = "Continue to Discussion Point 4";
+      allBtns.forEach(b => { b.disabled = false; b.classList.remove('selected-correct', 'selected-redirect'); });
+    };
+  }
+}
+
+// -----------------------------------------------------------------
+// STEP 4: CSA DISCUSSION POINT
+// -----------------------------------------------------------------
+function renderCsaSentinelStep() {
+  app.innerHTML = `
+    ${progressBar(4, 5, "Discussion Point 4: Should a CSA Be Completed?")}
+    <div class="card">
+      <span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span>
+      <h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>
+      ${renderVignette()}
+      <div class="reference-box">
+        <strong>Why this matters:</strong> The Joint Commission's Sentinel Event Policy (effective July 1, 2026) defines specific event types that require a comprehensive systematic analysis (CSA). Knowing whether an event meets sentinel event criteria determines what your organization is obligated to do next, independent of any other prioritization tool.
+      </div>
+      <div class="question">Based on what you know about this event, do you believe it meets The Joint Commission's definition of a sentinel event?</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Priority Matrix</button></div>
+    </div>
+  `;
+  const optionsDiv = document.getElementById('options');
+  [
+    { val: 'yes', label: 'Yes, this is a sentinel event' },
+    { val: 'no', label: 'No, this is not a sentinel event' },
+    { val: 'unsure', label: 'Unsure, I need to think through it' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleSentinelAnswer(btn, opt.val, optionsDiv);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function handleSentinelAnswer(btn, val, optionsDiv) {
+  const allBtns = optionsDiv.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  sentinelAnswer = val;
+  const feedbackDiv = document.getElementById('feedback');
+  feedbackDiv.classList.add('show');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (val === 'yes') {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">That is the right determination.</span> The Joint Commission's Sentinel Event Policy defines a sentinel event as a patient safety event that reaches a patient and results in death, severe harm regardless of duration, or permanent harm regardless of severity. Death is the clearest possible sentinel event criterion. For Joint Commission-accredited organizations, a CSA is required when a sentinel event occurs. Let's now use the SAC Matrix to think through how to prioritize and allocate resources for that analysis.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.onclick = () => renderCsaMatrixStep();
+
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    const criteriaBlock = `
+      <div class="info-box" style="margin-top:12px;">
+        <strong>JC Sentinel Event Policy (July 2026): Key Definition</strong>
+        A sentinel event is a patient safety event (not primarily related to the natural course of a patient's illness or underlying condition) that reaches a patient and results in any of the following:
+        <ul style="margin:8px 0 0 18px; padding:0;">
+          <li>Death</li>
+          <li>Severe harm, regardless of duration</li>
+          <li>Permanent harm, regardless of severity</li>
+        </ul>
+      </div>
+    `;
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's work through this together.</span> The JC Sentinel Event Policy uses a straightforward definition. Have a look at it below, then consider what happened to this patient.
+      ${criteriaBlock}
+      This patient was admitted to the ICU, received a confirmed STEMI diagnosis, did not receive timely treatment due to a failure to escalate, and expired. Looking at those criteria, where does this event land? Select again once you have considered it.
+    `;
+    nextBtn.classList.add('show');
+    nextBtn.textContent = "Reconsider My Answer";
+    nextBtn.onclick = () => {
+      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
+      feedbackDiv.innerHTML = '';
+      nextBtn.classList.remove('show');
+      nextBtn.textContent = "Continue to Priority Matrix";
+      allBtns.forEach(b => { b.disabled = false; b.classList.remove('selected-correct', 'selected-redirect'); });
+    };
+  }
+}
+
+function renderCsaMatrixStep() {
+  const sentinelNote = sentinelAnswer === 'yes'
+    ? `<div class="feedback show correct" style="margin-bottom:16px;"><span style="font-weight:700;">Sentinel event confirmed.</span> A CSA is required. The SAC Matrix below helps you think through the appropriate scope and urgency of that analysis.</div>`
+    : `<div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">A note before we proceed.</span> Even setting aside the sentinel event question for a moment, the SAC Matrix is a useful tool for thinking systematically about resource allocation for a comprehensive analysis. Let's work through it.</div>`;
+
+  app.innerHTML = `
+    ${progressBar(4, 5, "Discussion Point 4: Should a CSA Be Completed?")}
+    <div class="card">
+      <span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span>
+      <h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3>
+      ${sentinelNote}
+      <div class="reference-box">
+        <strong>Safety Assessment Code (SAC) Matrix (RCA2, Appendix A)</strong><br>
+        The SAC Matrix pairs <strong>Severity</strong> with <strong>Probability</strong> to produce a priority score: 3 = highest risk (CSA warranted), 2 = intermediate risk (consider CSA), 1 = lowest risk (monitor and trend).<br><br>
+        <strong>Severity categories:</strong>
+        <ul>
+          <li><strong>Catastrophic:</strong> Death or major permanent loss of function not related to illness; OR any JC sentinel event</li>
+          <li><strong>Major:</strong> Permanent lessening of bodily function; surgical intervention required; increased LOS or level of care for 3 or more patients</li>
+          <li><strong>Moderate:</strong> Increased length of stay or level of care for 1 or 2 patients</li>
+          <li><strong>Minor:</strong> No injury, no increased stay or level of care</li>
+        </ul>
+        <strong>Probability categories:</strong>
+        <ul>
+          <li><strong>Frequent:</strong> May happen several times in 1 year</li>
+          <li><strong>Occasional:</strong> May happen several times in 1 to 2 years</li>
+          <li><strong>Uncommon:</strong> May happen sometime in 2 to 5 years</li>
+          <li><strong>Remote:</strong> May happen sometime in 5 to 30 years</li>
+        </ul>
+        <em>Scenario context: At your organization, STEMI-related deaths associated with delayed escalation occur occasionally.</em>
+      </div>
+      <div class="question">How would you classify the <strong>severity</strong> of this event?</div>
+      <div class="options" id="severity-options"></div>
+      <div class="feedback" id="severity-feedback"></div>
+      <div id="probability-section" style="display:none; margin-top:22px;">
+        <div class="question">How would you classify the <strong>probability</strong> of this type of event at your organization?</div>
+        <div class="helper-text">Use the scenario context provided above.</div>
+        <div class="options" id="probability-options"></div>
+        <div class="feedback" id="probability-feedback"></div>
+      </div>
+      <div id="matrix-result" style="display:none; margin-top:22px;"></div>
+      <div class="nav-row"><button class="nav-btn" id="next-btn">See Final Summary</button></div>
+    </div>
+  `;
+
+  const sevOptions = document.getElementById('severity-options');
+  [
+    { val: 'catastrophic', label: 'Catastrophic' },
+    { val: 'major', label: 'Major' },
+    { val: 'moderate', label: 'Moderate' },
+    { val: 'minor', label: 'Minor' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleSeverityAnswer(btn, opt.val, sevOptions);
+    sevOptions.appendChild(btn);
+  });
+}
+
+function handleSeverityAnswer(btn, val, sevOptions) {
+  const allBtns = sevOptions.querySelectorAll('button');
+  allBtns.forEach(b => { b.disabled = true; });
+  sacSeverity = val;
+  const feedbackDiv = document.getElementById('severity-feedback');
+  feedbackDiv.classList.add('show');
+
+  if (val === 'catastrophic') {
+    btn.classList.add('selected-correct');
+    feedbackDiv.classList.add('correct');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Catastrophic is the right category here.</span> Death is the clearest example of Catastrophic severity in the SAC Matrix, and the RCA2 framework also notes that any JC sentinel event should be considered Catastrophic. This event meets both criteria simultaneously.
+    `;
+    showProbabilitySection();
+  } else {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `
+      <span style="font-weight:700;">Let's look at the severity definitions again.</span> The SAC Matrix defines Catastrophic as including death, and also explicitly includes any JC sentinel event. This patient expired. How does that compare to the category descriptions? Take another look and reconsider.
+    `;
+    allBtns.forEach(b => { b.disabled = false; });
+    btn.disabled = true;
+  }
+}
+
+function showProbabilitySection() {
+  const section = document.getElementById('probability-section');
+  section.style.display = 'block';
+  const probOptions = document.getElementById('probability-options');
+  [
+    { val: 'frequent', label: 'Frequent (several times per year)' },
+    { val: 'occasional', label: 'Occasional (several times in 1 to 2 years)' },
+    { val: 'uncommon', label: 'Uncommon (sometime in 2 to 5 years)' },
+    { val: 'remote', label: 'Remote (sometime in 5 to 30 years)' }
+  ].forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleProbabilityAnswer(btn, opt.val, probOptions);
+    probOptions.appendChild(btn);
+  });
+}
+
+function handleProbabilityAnswer(btn, val, probOptions) {
+  const allBtns = probOptions.querySelectorAll('button');
+  allBtns.forEach(b => b.disabled = true);
+  sacProbability = val;
+  btn.classList.add('selected-correct');
+  const feedbackDiv = document.getElementById('probability-feedback');
+  feedbackDiv.classList.add('show', 'neutral');
+  let probNote = val === 'occasional'
+    ? "Occasional aligns with the scenario context. Note that at Catastrophic severity, the SAC score is 3 regardless of which probability category applies."
+    : "The scenario context suggests Occasional is the closest fit. That said, the important teaching point here is that at Catastrophic severity, any probability category produces a SAC score of 3.";
+  feedbackDiv.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${probNote}`;
+  showMatrixResult();
+}
+
+function showMatrixResult() {
+  const resultDiv = document.getElementById('matrix-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = `
+    <div class="reference-box" style="border-left:4px solid var(--edgewood-red);">
+      <strong>SAC Matrix Result: Score of 3 (Highest Risk)</strong><br><br>
+      Catastrophic severity paired with any probability category produces a SAC score of 3. A score of 3 indicates that a comprehensive systematic analysis is warranted and organizational resources should be allocated accordingly.
+      <br><br>
+      <table class="summary-table" style="margin-top:8px; font-size:0.85rem;">
+        <tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr>
+        <tr><td><strong>Frequent</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Occasional</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Uncommon</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+        <tr><td><strong>Remote</strong></td><td style="background:#fdeaea; font-weight:700; text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td></tr>
+      </table>
+    </div>
+    <div class="feedback show neutral" style="margin-top:16px;">
+      <span style="font-weight:700;">Before moving on, one more dimension to keep in mind.</span> The SAC Matrix guides resource allocation, but your organization's own policies and accreditation requirements operate alongside it. For Joint Commission-accredited organizations, this event independently triggers a CSA requirement as a sentinel event. Always verify what your accreditation body and internal policies require.
+    </div>
+  `;
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.classList.add('show');
+  nextBtn.textContent = "See Final Summary";
+  nextBtn.onclick = () => { step = "summary"; render(); };
+}
+
+// -----------------------------------------------------------------
+// FINAL SUMMARY
+// -----------------------------------------------------------------
+function renderSummary() {
+  app.innerHTML = `
+    ${progressBar(5, 5, "Final Summary")}
+    <div class="card" style="text-align:center;">
+      <span class="step-label">Case 2 Complete</span>
+      <h3 class="case-title">Final SEC Classification</h3>
+      <div class="score-badge">SSE 1</div>
+      <p>Death</p>
+      <table class="summary-table" style="text-align:left;">
+        <tr><th>Discussion Point</th><th>Conclusion</th></tr>
+<tr><td>Taxonomy Event Type</td><td>CM8.6 &mdash; Delayed Treatment (Care Management); Inpatient ICU</td></tr>
+        <tr><td>Deviation from GAPS?</td><td>Yes &mdash; treatment was not initiated despite a confirmed STEMI diagnosis available in the EHR for 38 minutes</td></tr>
+        <tr><td>Contributing culture factor</td><td>Hierarchical deference rooted in absent psychological safety (Westrum; Edmondson)</td></tr>
+        <tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; no barrier intervened between the confirmed diagnosis and the patient's death</td></tr>
+        <tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes &mdash; Substitution Test finding revealed a systemic culture of fear-based deference on this unit" : "No"}</td></tr>
+        <tr><td>Level of harm</td><td>SSE 1 &mdash; Death</td></tr>
+        <tr><td>SEC Classification</td><td>Serious Safety Event</td></tr>
+        <tr><td>Sentinel event per JC?</td><td>Yes &mdash; death of a patient meets JC sentinel event criteria (July 2026)</td></tr>
+        <tr><td>SAC Matrix score</td><td>3 (Catastrophic severity, any probability) &mdash; CSA warranted</td></tr>
+      </table>
+
+      ${!requestedInfo ? `
+      <div class="feedback show neutral" style="text-align:left; margin-top:20px;">
+        <span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The harm level here, SSE 1 (Death), is documented clearly in the vignette itself. This is different from Case 1, where the final classification depended on follow-up information about the patient's recovery. Part of developing skill as a reviewer is recognizing when the information in hand is sufficient and when it is not. In this case, the outcome was unambiguous from the initial report.
+        <br><br>
+        However, not requesting the manager update means missing the Substitution Test finding, which reveals that this culture condition is widespread across the unit and not isolated to one individual. That finding would be essential to a complete CSA.
+      </div>` : ''}
+
+      <div class="feedback show neutral" style="text-align:left; margin-top:20px;">
+        <span style="font-weight:700;">A note on second victim syndrome.</span> Before closing this case, consider the human dimension. The resident and nurse involved in this event will likely experience what researchers call second victim syndrome: a state of traumatic stress, guilt, self-doubt, and emotional distress that clinicians often experience after a patient safety event occurs on their watch. These are individuals who came to work to provide safe, compassionate care. They made decisions in a culture that constrained their options, and a patient died. The organizational response to this event must include attending to their wellbeing, not only analyzing the system failures. A just culture and a psychologically safe environment are not only preventive measures: they are also part of how organizations care for their people after harm occurs.
+      </div>
+
+      <p class="small-note">References: HPI SEC &amp; SSER Patient Safety Measurement System for Healthcare; RCA2 SAC Matrix (Appendix A); The Joint Commission Sentinel Event Policy, July 2026; Westrum (1984); Edmondson (1999)</p>
+      <button class="restart-btn" id="restart-btn">Restart Case 2</button>
+    </div>
+  `;
+  document.getElementById('restart-btn').onclick = () => {
+    requestedInfo = null;
+    kctIndex = 0;
+    sentinelAnswer = null;
+    sacSeverity = null;
+    sacProbability = null;
+    mainDeviationFound = false;
+    step = "intro";
+    render();
+  };
+}
+
+// -----------------------------------------------------------------
+// ROUTER
+// -----------------------------------------------------------------
+function render() {
+  if (step === "intro") renderIntro();
+  else if (step === "deviation") renderDeviationStep();
+  else if (step === "deviation-round2") renderDeviationRound2();
+  else if (step === "kct") renderKctStep();
+  else if (step === "reach") renderReachStep();
+  else if (step === "harm-info") renderHarmInfoStep();
+  else if (step === "harm-level") renderHarmLevelStep();
+  else if (step === "csa") renderCsaSentinelStep();
+  else if (step === "summary") renderSummary();
+}
+
+render();
+</script>
+
+<footer class="resource-footer">
+    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
+    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
+</footer>
+</body>
+</html>
