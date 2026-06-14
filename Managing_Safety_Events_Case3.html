@@ -199,6 +199,45 @@ let sacSeverity = null;
 let sacProbability = null;
 
 const app = document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'SSE 5 — Moderate Temporary Harm',
+    taxonomyEventType: 'CM1 — Medication Error (Care Management); Inpatient Medical-Surgical',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
+
 
 function renderVignette() { return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`; }
 function progressBar(n, t, label) {
@@ -230,16 +269,19 @@ function renderDeviationStep() {
 
 function handleDev(btn, opt) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (opt.type === "main") {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That captures the convergence of system failures in this event.</span> Two conditions aligned to create the harm: first, the physical proximity of glipizide and glyburide in adjacent bins with similar labeling, a classic Look-Alike Sound-Alike (LASA) storage hazard. Second, the barcode alert, which existed precisely to catch this kind of mix-up, was overridden without review. Both are GAPS deviations. Together they removed every safeguard designed to protect the patient before this medication reached the bedside.<br><br>Now let's look at what made that second failure, the alert override, possible.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Explore the Override Culture";
     nb.onclick = () => { step = "deviation-round2"; render(); };
   } else if (opt.type === "secondary") {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">The pharmacist's retrieval of the wrong medication is part of this picture.</span> However, the pharmacist's error was enabled by a system condition: two nearly identical medications stored side by side. More importantly, a safety barrier, the barcode scan, existed specifically to catch dispensing errors like this one. Have you thought about what happened at that barrier and why it did not function as designed?`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => renderDeviationStep();
   } else if (opt.type === "factually-incorrect") {
@@ -248,11 +290,13 @@ function handleDev(btn, opt) {
       ? "Looking back at the event: the physician ordered glipizide, which is an appropriate medication for a diabetic patient. The order itself was correct. The issue arose in how that order was filled and administered."
       : "Looking back at the event: the barcode scanner did function. It generated an alert indicating a mismatch. The issue is not that the technology failed, but that the alert was overridden without review. A tool that produces a correct warning and is ignored is a process failure, not an equipment failure.";
     fb.innerHTML = `<span style="font-weight:700;">Let's go back to the event together.</span> ${detail}<br><br>Consider what was in place and what was bypassed between the pharmacy and the patient's bedside.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Apply the Known Complication Test";
     nb.onclick = () => { kctIndex = 0; step = "kct"; render(); };
   }
@@ -277,11 +321,13 @@ function renderDeviationRound2() {
 
 function handleCulture(btn, opt) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (opt.type === "main") {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">Alert fatigue and normalized override culture is the system-level condition at work here.</span><br><br>The Institute for Safe Medication Practices (ISMP) identifies alert fatigue as one of the most significant contributors to medication errors in healthcare. When clinical decision support tools, including barcode scanners, generate large numbers of alerts that staff perceive as irrelevant or overly sensitive, they begin to override them reflexively rather than investigatively. Over time, overriding alerts becomes the norm rather than the exception. The alert loses its function as a safety barrier because the culture around it has shifted.<br><br>The override log the manager found tells this story clearly: 23 overrides of this specific alert pair in 60 days, with no documented clinical rationale. The system was signaling a problem repeatedly. The culture had stopped listening. ISMP classifies this as a high-alert medication environment failure, distinct from individual error, because the conditions that made the override routine were systemic and organizational.`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show');
     nb.onclick = () => { step = "reach"; render(); };
   } else if (opt.type === "partial") {
@@ -290,18 +336,22 @@ function handleCulture(btn, opt) {
       ? "Workload and time pressure are real contributing factors and worth noting. However, they do not fully explain a pattern of 23 overrides in 60 days. Have you thought about what happens to a safety alert over time when overriding it consistently produces no consequences and no investigation? What does that pattern do to how staff perceive the alert's meaning?"
       : "Alert burden and false-positive rates are genuine system problems that contribute to alert fatigue. However, the response to a high false-positive rate is to recalibrate the system, not to bypass it. Have you thought about what it means for patient safety when a workaround becomes so normalized that it is no longer recognized as a workaround?";
     fb.innerHTML = `<span style="font-weight:700;">That is one dimension of this, and it is worth exploring further.</span> ${detail}`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => {
       fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show');
       document.querySelectorAll('#opts .opt-btn').forEach(b => { b.disabled = false; b.className = 'opt-btn'; });
+  _captureSelected(btn);
     };
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's look at the event again.</span> The nurse performed a medication scan, which indicates familiarity with the barcode process. The issue is not that she did not know how to use the system, but that she overrode its output. Have you thought about what conditions in the unit might make overriding a barcode alert feel like a reasonable and routine decision rather than a deviation from expected practice?`;
+  _logResponse('Discussion Point 1: System Factor', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => {
       fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show');
       document.querySelectorAll('#opts .opt-btn').forEach(b => { b.disabled = false; b.className = 'opt-btn'; });
+  _captureSelected(btn);
     };
   }
 }
@@ -327,9 +377,11 @@ function renderKctStep() {
 
 function handleKct(btn, val, q) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const isCorrect = val === q.answer;
   btn.classList.add(isCorrect ? 'selected-correct' : 'selected-redirect');
   if (!isCorrect) document.querySelectorAll('#opts .opt-btn').forEach(b => { if (b.textContent === q.answer) b.classList.add('selected-correct'); });
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show'); fb.classList.add(isCorrect ? 'correct' : 'neutral');
   const notes = [
     [
@@ -351,6 +403,7 @@ function handleKct(btn, val, q) {
   ];
   const [correct, incorrect] = notes[kctIndex];
   fb.innerHTML = `<span style="font-weight:700;">${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</span> ${isCorrect ? correct : incorrect}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb = document.getElementById('nb'); nb.classList.add('show');
   nb.onclick = () => { kctIndex++; renderKctStep(); };
 }
@@ -372,16 +425,20 @@ function renderReachStep() {
 
 function handleReach(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   const isCorrect = val === 'Yes, it reached the patient';
   btn.classList.add(isCorrect ? 'selected-correct' : 'selected-redirect');
   if (!isCorrect) document.querySelectorAll('#opts .opt-btn').forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
+  _captureSelected(btn);
   const fb = document.getElementById('fb'); fb.classList.add('show');
   if (isCorrect) {
     fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That is a sound read of this situation.</span> The last barrier, the barcode alert, was the final opportunity to catch the error before the medication reached the patient. It was overridden. The wrong medication was administered, and the patient developed severe hypoglycemia. Nothing intercepted the deviation.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);
   } else {
     fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A catch would require a barrier to intercept the error before the patient received the medication. The barcode alert was that barrier, and it was overridden. The wrong medication was administered, the patient became severely hypoglycemic, and was found unresponsive. The deviation was not caught before it reached the patient.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);
   }
   const nb = document.getElementById('nb'); nb.classList.add('show');
   nb.onclick = () => { step = "harm-info"; render(); };
@@ -399,14 +456,17 @@ function renderHarmInfoStep() {
 
 function handleHarmInfo(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   btn.classList.add('selected-correct');
   requestedInfo = val.startsWith('Yes');
   const fb = document.getElementById('fb'); fb.classList.add('show','neutral');
   const nb = document.getElementById('nb'); nb.classList.add('show');
   if (requestedInfo) {
     fb.innerHTML = `<span style="font-weight:700;">Reaching out for more information before finalizing is good practice.</span> You contact the nursing supervisor for a follow-up on the patient's condition and any broader context.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>With this information in hand, let's score the level of harm.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   } else {
     fb.innerHTML = `<span style="font-weight:700;">Proceeding with the documented information is a reasonable starting point.</span> The vignette tells us the patient developed severe hypoglycemia, required IV dextrose, and was discharged two days later than planned. Let's score the level of harm based on that.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   }
   nb.onclick = () => { step = "harm-level"; render(); };
 }
@@ -437,14 +497,18 @@ function handleHarmLevel(btn, opt) {
   const nb = document.getElementById('nb');
   if (opt.key === 'sse5') {
     allBtns.forEach(b => b.disabled = true);
+  _captureSelected(btn);
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is where this event lands.</span> The patient experienced severe hypoglycemia requiring IV dextrose administration and continuous glucose monitoring, representing a significant clinical intervention and a meaningful escalation in the level of care required. ${requestedInfo ? "The manager's update confirms full recovery with no lasting effects and no neurological sequelae, placing this firmly in the temporary category." : "The vignette indicates the patient was discharged with no lasting effects, which supports the temporary classification."} The extended stay of two additional days is a direct consequence of the deviation and is captured in the harm classification. SSE 5 reflects significant harm that resolved with treatment and monitoring, without reaching the life-threatening threshold of SSE 4.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');
     nb.onclick = () => { step = "csa"; render(); };
   } else if (opt.key === 'sse4') {
     allBtns.forEach(b => b.disabled = true);
+  _captureSelected(btn);
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's think about the SSE 4 threshold more carefully.</span> SSE 4 is Severe Temporary harm: critical or life-threatening harm that requires major surgery or procedure to resolve. The patient's hypoglycemia was serious and the unresponsiveness was alarming, but the intervention required was IV dextrose and monitoring, not a major surgical or procedural intervention. ${requestedInfo ? "The manager's update confirms full recovery with no lasting effects." : "Have you thought about whether requesting more information from the manager might help clarify the severity before finalizing?"} How does the actual intervention level compare to the SSE 4 definition?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     if (!requestedInfo) {
       nb.classList.add('show'); nb.textContent = "Request Information from Manager/Designee";
       nb.onclick = () => { requestedInfo = true; renderHarmLevelStep(); };
@@ -453,16 +517,20 @@ function handleHarmLevel(btn, opt) {
       nb.onclick = () => {
         fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show'); nb.textContent = "Continue to Discussion Point 4";
         allBtns.forEach(b => { b.disabled = false; b.className = 'opt-btn'; });
+  _captureSelected(btn);
       };
     }
   } else {
     allBtns.forEach(b => b.disabled = true);
+  _captureSelected(btn);
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's revisit what happened to this patient.</span> The patient became unresponsive from severe hypoglycemia, required IV dextrose, and needed continuous glucose monitoring for the remainder of an admission extended by two days. That level of clinical impact goes beyond minor harm and beyond permanent harm categories, since the patient recovered fully. Have another look at the SEC definitions and consider which category best fits a significant but fully resolved harm requiring meaningful medical intervention.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Try Again";
     nb.onclick = () => {
       fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show'); nb.textContent = "Continue to Discussion Point 4";
       allBtns.forEach(b => { b.disabled = false; b.className = 'opt-btn'; });
+  _captureSelected(btn);
     };
   }
 }
@@ -483,20 +551,24 @@ function renderCsaSentinelStep() {
 
 function handleSentinel(btn, val) {
   document.querySelectorAll('#opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sentinelAnswer = val;
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
   if (val === 'no') {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">That is the right determination for this event.</span> The Joint Commission's Sentinel Event Policy defines sentinel events as those resulting in death, severe harm regardless of duration, or permanent harm regardless of severity. This patient experienced significant but temporary harm and recovered fully. SSE 5 does not meet the sentinel event threshold. That does not reduce the seriousness of this event: it is still a significant safety event that warrants analysis. Let's use the SAC Matrix to think through the appropriate level of response.`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show'); nb.onclick = () => renderCsaMatrixStep();
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's look at the JC definition more carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026): Key Definition</strong>A sentinel event is a patient safety event that reaches a patient and results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Death</li><li>Severe harm, regardless of duration</li><li>Permanent harm, regardless of severity</li></ul></div>This patient recovered fully with no lasting effects. The harm was significant but temporary and did not reach the severe harm or permanent harm threshold. Have you thought about how that compares to the sentinel event criteria?`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Reconsider My Answer";
     nb.onclick = () => {
       fb.className = 'feedback'; fb.innerHTML = ''; nb.classList.remove('show'); nb.textContent = "Continue to Priority Matrix";
       document.querySelectorAll('#opts .opt-btn').forEach(b => { b.disabled = false; b.className = 'opt-btn'; });
+  _captureSelected(btn);
     };
   }
 }
@@ -518,6 +590,7 @@ function renderCsaMatrixStep() {
 
 function handleSeverity(btn, val) {
   document.querySelectorAll('#sev-opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sacSeverity = val;
   const fb = document.getElementById('sev-fb'); fb.classList.add('show');
   if (val === 'major') {
@@ -552,6 +625,7 @@ function showProbSection() {
 
 function handleProb(btn, val) {
   document.querySelectorAll('#prob-opts .opt-btn').forEach(b => b.disabled = true);
+  _captureSelected(btn);
   sacProbability = val;
   btn.classList.add('selected-correct');
   const fb = document.getElementById('prob-fb'); fb.classList.add('show','neutral');
@@ -567,9 +641,42 @@ function showMatrixResult() {
 }
 
 function renderSummary() {
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
   app.innerHTML = `${progressBar(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 3 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 5</div><p>Moderate Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr>
-<tr><td>Taxonomy Event Type</td><td>CM1 &mdash; Medication Error (Care Management); Inpatient Medical-Surgical</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; LASA medications in adjacent bins with similar labeling; barcode alert overridden without review</td></tr><tr><td>Contributing system factor</td><td>Alert fatigue and normalized override culture (ISMP high-alert medication framework)</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; last barrier (barcode alert) was bypassed; wrong medication administered</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes &mdash; confirmed full recovery, no lasting effects; 23 overrides in 60 days revealed" : "No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was significant but temporary; full recovery</td></tr><tr><td>SAC Matrix score</td><td>3 (Major severity, Occasional probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo ? `<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request contained a critical finding: 23 overrides of this specific alert pair in 60 days. That information fundamentally changes the scope of what a CSA would need to investigate. A single medication error looks like an individual event. Twenty-three overrides in 60 days looks like a system that has stopped functioning as a safety barrier. Knowing which picture you are dealing with shapes both the urgency and the scope of your organizational response.</div>` : ''}<p class="small-note">References: HPI SEC &amp; SSER Patient Safety Measurement System for Healthcare; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026; ISMP High-Alert Medications</p><button class="restart-btn" id="rb">Restart Case 3</button></div>`;
-  document.getElementById('rb').onclick = () => { requestedInfo = null; kctIndex = 0; sentinelAnswer = null; sacSeverity = null; sacProbability = null; step = "intro"; render(); };
+<tr><td>Taxonomy Event Type</td><td>CM1 &mdash; Medication Error (Care Management); Inpatient Medical-Surgical</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; LASA medications in adjacent bins with similar labeling; barcode alert overridden without review</td></tr><tr><td>Contributing system factor</td><td>Alert fatigue and normalized override culture (ISMP high-alert medication framework)</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; last barrier (barcode alert) was bypassed; wrong medication administered</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo ? "Yes &mdash; confirmed full recovery, no lasting effects; 23 overrides in 60 days revealed" : "No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; harm was significant but temporary; full recovery</td></tr><tr><td>SAC Matrix score</td><td>3 (Major severity, Occasional probability) &mdash; CSA warranted</td></tr></table>${!requestedInfo ? `<div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Something worth reflecting on as you close this case.</span> The manager update you did not request contained a critical finding: 23 overrides of this specific alert pair in 60 days. That information fundamentally changes the scope of what a CSA would need to investigate. A single medication error looks like an individual event. Twenty-three overrides in 60 days looks like a system that has stopped functioning as a safety barrier. Knowing which picture you are dealing with shapes both the urgency and the scope of your organizational response.</div>` : ''}<button class="restart-btn" id="rb">Restart Case 3</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 3,
+      log: {
+        finalClassification: 'SSE 5 — Moderate Temporary Harm',
+        taxonomyEventType: 'CM1 — Medication Error (Care Management)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick = () => { requestedInfo = null; kctIndex = 0; sentinelAnswer = null; sacSeverity = null; sacProbability = null; 
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step = "intro"; render(); };
 }
 
 function render() {
@@ -584,10 +691,5 @@ function render() {
   else if (step === "summary") renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
