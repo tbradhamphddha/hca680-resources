@@ -378,21 +378,25 @@ function renderHarmLevelStep(){
 }
 
 function handleHarmLevel(btn,opt){
+  _captureSelected(btn);
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.key==='pse2'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is the right classification.</span> The patient sustained a second-degree burn, a blister and erythema, that was treated with wound ointment and a bandage and healed fully without scarring or lasting effects. The intervention required was minimal: dressing application and wound care follow-up during subsequent home visits. ${requestedInfo?"The clinical supervisor's update confirms full healing within two weeks with no permanent effects.":"The vignette confirms the burn healed without scarring."} The harm was real and should not be minimized, but it falls in the minor temporary category given its limited scope and full resolution.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
   } else if(opt.key==='pse1'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at the permanent harm definition.</span> PSE 1 requires that the harm has no expected change in the patient's clinical status. Both the vignette and the manager's update confirm the burn healed fully without scarring or lasting effects. This event is temporary in nature. Have you thought about which category captures minor harm that resolved fully?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's look at what the intervention actually required.</span> SSE 5 captures significant harm requiring meaningful clinical treatment. A second-degree burn treated with wound ointment and a bandage, healing fully without scarring, is a meaningful but minor injury. The intervention required was minimal and within the scope of what the therapist could manage in the home. Have you thought about which category better captures a minor injury that resolved with minimal treatment?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
