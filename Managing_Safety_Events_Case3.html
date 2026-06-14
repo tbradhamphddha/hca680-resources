@@ -596,14 +596,17 @@ function handleSeverity(btn, val) {
   if (val === 'major') {
     btn.classList.add('selected-correct'); fb.classList.add('correct');
     fb.innerHTML = `<span style="font-weight:700;">Major is the appropriate severity classification here.</span> The SAC Matrix defines Major as including events requiring increased LOS or level of care for one to two patients, and events where surgical or significant medical intervention was required. This patient required IV dextrose administration, continuous glucose monitoring, and two additional days of inpatient care. That aligns with the Major category.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     showProbSection();
   } else if (val === 'catastrophic') {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's look at the Catastrophic definition again.</span> Catastrophic is reserved for death, major permanent loss of function, or any JC sentinel event. This patient recovered fully with no permanent effects, and we confirmed a moment ago that this is not a JC sentinel event. Have you thought about which category captures significant but fully resolved harm requiring meaningful medical intervention?`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b => { b.disabled = false; }); btn.disabled = true;
   } else {
     btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's revisit the event's clinical impact.</span> The patient became unresponsive, required IV dextrose, needed continuous glucose monitoring, and stayed two additional days. That level of impact goes beyond Moderate (which covers one to two patients needing increased LOS) in the way it required an urgent intervention and extended care. And no lasting harm means Catastrophic is not the right fit either. Have you thought about which category sits between those two?`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b => { b.disabled = false; }); btn.disabled = true;
   }
 }
@@ -630,6 +633,7 @@ function handleProb(btn, val) {
   btn.classList.add('selected-correct');
   const fb = document.getElementById('prob-fb'); fb.classList.add('show','neutral');
   fb.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${val === 'occasional' ? "Occasional aligns with the scenario context for LASA errors at this organization. Note that the 23 overrides in 60 days on this unit suggest the conditions for this type of event are Frequent even if the harm event itself is Occasional." : "The scenario context suggests Occasional for the LASA error, though the 23 overrides in 60 days signal that the underlying conditions are recurring at a much higher rate. The SAC outcome at Major + Occasional is SAC 3 regardless."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatrixResult();
 }
 
