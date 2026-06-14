@@ -481,13 +481,14 @@ function _captureSelected(btn) {
   _pendingSelected = btn.textContent.trim();
 }
 // Stage 2: called after feedback innerHTML is set, captures full feedback text
-function _logResponse(stepName, feedbackElId) {
+function _logResponse(stepName, fbText) {
   var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
   if (alreadyLogged) return;
-  var fbText = '';
-  var el = document.getElementById(feedbackElId || 'feedback');
-  if (el) fbText = el.innerText || el.textContent || '';
-  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: fbText.trim() });
+  // Strip HTML tags from feedback text
+  var div = document.createElement('div');
+  div.innerHTML = fbText || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
 }
 
 // -----------------------------------------------------------------
@@ -601,7 +602,7 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <br><br>
       Now let's think about causation for a moment. Is there a clear relationship between this deviation and the harm the patient experienced? The patient had been identified as high fall risk, and the bed alarm was a specifically prescribed safeguard in the fall prevention plan. When that alarm was off and the family left, the system had no way to alert staff that a high-risk patient was attempting to get up unassisted. That gap came immediately before the fall, which makes it causal, not just coincidental.
     `;
-  _logResponse('Discussion Point 1: Deviation', 'feedback');
+  _logResponse('Discussion Point 1: Deviation', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.textContent = "Continue to Discussion Point 2";
     nextBtn.onclick = () => { step = "reach"; render(); };
@@ -615,7 +616,7 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <br><br>
       Have you thought about whether there is a more proximate deviation, something that happened directly before the fall, with a clearer causal connection to the harm? Take another look at the options and consider what was in place, and what was not, in the moments just before the patient got up.
     `;
-  _logResponse('Discussion Point 1: Deviation', 'feedback');
+  _logResponse('Discussion Point 1: Deviation', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.textContent = "Try Again";
     nextBtn.onclick = () => { renderDeviationStep(); };
@@ -635,7 +636,7 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <br><br>
       Since that step was completed as expected, it is not the gap we are looking for here. Have you thought about what changed <em>after</em> those safeguards were in place? Something shifted between the time the interventions were set up and the moment the patient fell. Take another look at the options with that in mind.
     `;
-  _logResponse('Discussion Point 1: Deviation', 'feedback');
+  _logResponse('Discussion Point 1: Deviation', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.textContent = "Try Again";
     nextBtn.onclick = () => { renderDeviationStep(); };
@@ -647,7 +648,7 @@ function handleDeviationAnswer(btn, opt, optionsDiv) {
       <strong>Let's explore that conclusion together before we settle on it.</strong>
       One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is considered a known complication rather than a safety event. If the answer to any one of them is NO, we are looking at a safety event. Let's work through those questions and see where this case lands.
     `;
-  _logResponse('Discussion Point 1: Deviation', 'feedback');
+  _logResponse('Discussion Point 1: Deviation', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.textContent = "Apply the Known Complication Test";
     nextBtn.onclick = () => { kctVisited = true; step = "kct"; render(); };
@@ -746,7 +747,7 @@ function handleKctAnswer(btn, selected, q, optionsDiv) {
       : "The event tells us the patient received surgical repair and rehabilitation therapy, which reflects the standard of care for a hip fracture. That supports a YES for this question.";
   }
   feedbackDiv.innerHTML = `<strong>${isCorrect ? "That aligns with the evidence in the event." : "Let's think through this one together."}</strong> ${note}`;
-  _logResponse('KCT Question ' + (kctIndex + 1), 'feedback');
+  _logResponse('KCT Question ' + (kctIndex + 1), feedbackDiv.innerHTML);
 
   const nextBtn = document.getElementById('next-btn');
   nextBtn.classList.add('show');
@@ -824,7 +825,7 @@ function handleReachAnswer(btn, selected, optionsDiv) {
       <strong>That is a sound read of this situation.</strong>
       No barrier intervened between the deviation and the patient. The alarm was off, no one was alerted, and the patient got up, fell, and sustained an injury. When nothing catches the error before it affects the patient, the deviation has reached the patient.
     `;
-  _logResponse('Discussion Point 2: Reach', 'feedback');
+  _logResponse('Discussion Point 2: Reach', feedbackDiv.innerHTML);
   } else {
     btn.classList.add('selected-redirect');
     allBtns.forEach(b => { if (b.textContent === 'Yes, it reached the patient') b.classList.add('selected-correct'); });
@@ -833,7 +834,7 @@ function handleReachAnswer(btn, selected, optionsDiv) {
       <strong>Let's explore what a "catch" would have looked like here.</strong>
       A barrier catching the deviation would mean something or someone intervened before the patient was affected. For example, a staff member noticing the alarm was off and restoring it before the patient attempted to get up, or a rounding check happening at exactly the right moment. Neither of those things happened. The patient got up, fell, and fractured her hip. Have you thought about what that means for whether the deviation reached the patient?
     `;
-  _logResponse('Discussion Point 2: Reach', 'feedback');
+  _logResponse('Discussion Point 2: Reach', feedbackDiv.innerHTML);
   }
 
   const nextBtn = document.getElementById('next-btn');
@@ -891,14 +892,14 @@ function handleHarmInfoAnswer(btn, selected, optionsDiv) {
       </div>
       With that information in hand, let's think about how it affects the level of harm.
     `;
-  _logResponse('Discussion Point 3: Request More Info?', 'feedback');
+  _logResponse('Discussion Point 3: Request More Info?', feedbackDiv.innerHTML);
   } else {
     requestedInfo = false;
     feedbackDiv.innerHTML = `
       <strong>That is a reasonable choice given what is documented.</strong>
       You have a hip fracture requiring surgical repair and rehabilitation therapy to work with. Let's see how you score the level of harm based on that information.
     `;
-  _logResponse('Discussion Point 3: Request More Info?', 'feedback');
+  _logResponse('Discussion Point 3: Request More Info?', feedbackDiv.innerHTML);
   }
 
   nextBtn.onclick = () => { step = "harm-level"; render(); };
@@ -974,12 +975,12 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
       feedbackDiv.innerHTML = `
         <strong>SSE 2: Severe Permanent Harm is where the evidence points.</strong> A hip fracture requiring surgical repair is serious on its own, but the manager's update adds a critical dimension: the patient will not regain knee flexion and will require a mobility device going forward. That describes a lasting change from the patient's baseline function, not a temporary setback. When a deviation results in a permanent loss of function, the SEC framework distinguishes that from harm the patient is expected to recover from. Combined with the severity of the injury and the surgical intervention, SSE 2 is the appropriate classification.
       `;
-  _logResponse('Discussion Point 3: Harm Level', 'feedback');
+  _logResponse('Discussion Point 3: Harm Level', feedbackDiv.innerHTML);
     } else {
       feedbackDiv.innerHTML = `
         <strong>SSE 4: Severe Temporary Harm is a supportable classification based on the information available.</strong> A hip fracture requiring surgical repair and rehabilitation is a serious injury, and without additional information about the patient's expected recovery, this is a reasonable score at this point in the review.
       `;
-  _logResponse('Discussion Point 3: Harm Level', 'feedback');
+  _logResponse('Discussion Point 3: Harm Level', feedbackDiv.innerHTML);
     }
 
     nextBtn.classList.add('show');
@@ -995,7 +996,7 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
         <strong>Let's think about what we still do not know.</strong>
         Based on the documentation so far, a hip fracture requiring surgical repair and rehabilitation is a serious injury, but the event does not yet tell us what the patient's recovery is expected to look like. Have you thought about whether reaching out to the unit manager or designee might give you what you need to finalize this score?
       `;
-  _logResponse('Discussion Point 3: Harm Level', 'feedback');
+  _logResponse('Discussion Point 3: Harm Level', feedbackDiv.innerHTML);
       allBtns.forEach(b => b.disabled = true);
       nextBtn.classList.add('show');
       nextBtn.textContent = "Request Information from Manager/Designee";
@@ -1013,7 +1014,7 @@ function handleHarmLevelAnswer(btn, opt, optionsDiv) {
         hint = `Let's go back to both the injury and the manager's update together. A hip fracture with surgical repair, a permanent loss of knee flexion, and the need for device assistance going forward: how do those details together inform both the severity and the duration of the harm?`;
       }
       feedbackDiv.innerHTML = `<span style="font-weight:700;">Let's explore this a bit further.</span> ${hint}`;
-  _logResponse('Discussion Point 3: Harm Level', 'feedback');
+  _logResponse('Discussion Point 3: Harm Level', feedbackDiv.innerHTML);
       btn.disabled = true;
       btn.classList.remove('selected-redirect');
       nextBtn.classList.add('show');
@@ -1082,7 +1083,7 @@ function handleSentinelAnswer(btn, val, optionsDiv) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">That is well-reasoned.</span> The Joint Commission Sentinel Event Policy (July 2026) includes falls in a staffed-around-the-clock care setting that result in any fracture or that require surgery. This patient sustained a hip fracture and underwent surgical repair, which meets both criteria simultaneously. A CSA is required for Joint Commission-accredited organizations when a sentinel event occurs, independent of any other prioritization tool. Let's now look at the SAC Matrix to think through resource allocation.
     `;
-  _logResponse('Discussion Point 4: Sentinel Event', 'feedback');
+  _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.onclick = () => renderCsaMatrixStep();
 
@@ -1110,14 +1111,14 @@ function handleSentinelAnswer(btn, val, optionsDiv) {
         ${criteriaBlock}
         This patient fell in an inpatient unit, sustained a hip fracture, and required surgical repair. How does that compare to what you see in the fall criteria? Take another look and reconsider your selection.
       `;
-  _logResponse('Discussion Point 4: Sentinel Event', 'feedback');
+  _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
     } else {
       feedbackDiv.innerHTML = `
         <span style="font-weight:700;">Let's work through this together.</span> The Joint Commission provides specific criteria for falls that meet the sentinel event threshold. Here is the relevant language from the July 2026 policy.
         ${criteriaBlock}
         Looking at those criteria alongside what happened to this patient: a hip fracture in a staffed inpatient unit, requiring surgical repair. How does that land against the list? Select again once you have had a chance to consider it.
       `;
-  _logResponse('Discussion Point 4: Sentinel Event', 'feedback');
+  _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
     }
 
     nextBtn.classList.add('show');
@@ -1215,7 +1216,7 @@ function handleSeverityAnswer(btn, val, sevOptions) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">Catastrophic is where this event lands.</span> The SAC Matrix defines Catastrophic as including major permanent loss of function not related to the natural course of illness, and also explicitly includes any event meeting The Joint Commission's sentinel event criteria. This patient will not regain knee flexion and requires permanent device assistance, which is a permanent loss of function. The event also meets JC sentinel event criteria. Either consideration alone places this in the Catastrophic category.
     `;
-  _logResponse('Discussion Point 4: SAC Severity', 'feedback');
+  _logResponse('Discussion Point 4: SAC Severity', feedbackDiv.innerHTML);
     showProbabilitySection();
 
   } else if (val === 'major') {
@@ -1224,7 +1225,7 @@ function handleSeverityAnswer(btn, val, sevOptions) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">Major is a reasonable starting point, and there is one more dimension to consider.</span> The SAC Matrix defines Major as including events requiring surgical intervention, and this event clearly meets that criterion. However, look again at the Catastrophic definition: it includes major permanent loss of function not related to illness, and also any JC sentinel event. The manager's update tells us the patient will not regain knee flexion and requires permanent device assistance. How does that compare to the Catastrophic criteria?
     `;
-  _logResponse('Discussion Point 4: SAC Severity', 'feedback');
+  _logResponse('Discussion Point 4: SAC Severity', feedbackDiv.innerHTML);
     // Allow retry for severity
     allBtns.forEach(b => { b.disabled = false; });
     btn.disabled = true;
@@ -1235,7 +1236,7 @@ function handleSeverityAnswer(btn, val, sevOptions) {
     feedbackDiv.innerHTML = `
       <span style="font-weight:700;">Let's look at the criteria more closely.</span> A patient who sustained a hip fracture requiring surgical repair, who will not regain knee flexion, and who requires permanent device assistance represents more than a moderate or minor outcome. Work back through the severity definitions and consider which category best captures what happened to this patient.
     `;
-  _logResponse('Discussion Point 4: SAC Severity', 'feedback');
+  _logResponse('Discussion Point 4: SAC Severity', feedbackDiv.innerHTML);
     allBtns.forEach(b => { b.disabled = false; });
     btn.disabled = true;
   }
@@ -1280,7 +1281,7 @@ function handleProbabilityAnswer(btn, val, probOptions) {
   }
 
   feedbackDiv.innerHTML = `<span style="font-weight:700;">Probability noted.</span> ${probNote}`;
-  _logResponse('Discussion Point 4: SAC Probability', 'feedback');
+  _logResponse('Discussion Point 4: SAC Probability', feedbackDiv.innerHTML);
 
   // Show matrix result
   showMatrixResult();
