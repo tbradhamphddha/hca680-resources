@@ -444,9 +444,24 @@ function openCase(num){
 }
 
 function returnToLanding(){
+  // Try to get final data from iframe before closing it
+  var frame = document.getElementById('case-frame');
+  var num = window._currentCaseNum;
+  if(frame && frame.contentWindow && num){
+    try {
+      var iw = frame.contentWindow;
+      if(typeof iw._buildAttemptLog === 'function' && iw._lastAttemptSnapshot){
+        var allAttempts = (iw._allAttempts || []).concat([iw._lastAttemptSnapshot]);
+        if(!sessionLogs[num]) sessionLogs[num] = {};
+        sessionLogs[num].attempts = allAttempts;
+        sessionLogs[num].finalClassification = iw._lastAttemptSnapshot.finalClassification;
+        if(iw._lastAttemptSnapshot.finalClassification) caseStatus[num] = 'completed';
+      }
+    } catch(e) { /* cross-origin fallback - ignore */ }
+  }
   document.getElementById('case-viewer').style.display='none';
   document.getElementById('landing').style.display='block';
-  document.getElementById('case-frame').src='';
+  frame.src='';
   window._currentCaseNum = null;
   renderLanding();
 }
@@ -567,14 +582,15 @@ function generateAndPrintLog(caseNums, title){
 window.addEventListener('message', function(event){
   const d = event.data;
   if(!d || typeof d !== 'object') return;
+  console.log('Shell received message:', d.type, 'caseNum:', d.caseNum, 'attempts:', d.attempts ? d.attempts.length : 'none');
 
   if(d.type === 'case-complete' && d.caseNum){
     const num = d.caseNum;
     caseStatus[num] = 'completed';
-    // Use the full attempts array from the case file as source of truth
     if(!sessionLogs[num]) sessionLogs[num] = {};
     sessionLogs[num].attempts = d.attempts || [d.log || {}];
     sessionLogs[num].finalClassification = (d.log || {}).finalClassification;
+    console.log('Shell stored log for case', num, ':', JSON.stringify(sessionLogs[num]).substring(0,200));
     renderLanding();
   }
   if(d.type === 'case-progress' && d.caseNum){
