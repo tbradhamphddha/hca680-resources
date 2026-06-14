@@ -8,10 +8,6 @@
   :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
   *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
   .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
-  header{background:var(--black);color:var(--white);padding:28px 20px;text-align:center;}
-  header h1{font-family:'Spectral',Georgia,serif;margin:0 0 6px;font-size:1.7rem;letter-spacing:.5px;}
-  header p{margin:0;color:var(--light-grey);font-size:.95rem;}
-  .accent-bar{height:6px;background:var(--edgewood-red);}
   .card{background:var(--white);border:1px solid var(--light-grey);border-radius:6px;padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
   .progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;margin-bottom:4px;font-size:.9rem;color:var(--dark-web-grey);}
   .progress-bar-bg{background:var(--light-grey);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px;}
@@ -20,10 +16,13 @@
   .case-title{font-family:'Spectral',Georgia,serif;font-size:1.4rem;margin:0 0 14px;color:var(--black);}
   .vignette{background:var(--warm-grey);border-left:4px solid var(--slate-blue);padding:16px 18px;border-radius:4px;margin-bottom:18px;font-size:1rem;}
   .question{font-weight:700;margin-bottom:4px;font-size:1.05rem;}
+  .helper-text{font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;}
   .reference-box{background:var(--warm-grey);border:1px solid var(--light-grey);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--dark-web-grey);}
   .reference-box strong{color:var(--black);}
   .reference-box ul{margin:8px 0 0;padding-left:18px;}
   .reference-box li{margin-bottom:4px;}
+  .info-box{background:#fff8e6;border:1px solid var(--dark-gold);border-left:4px solid var(--dark-gold);border-radius:4px;padding:14px 16px;margin:16px 0;font-size:.95rem;}
+  .info-box strong{display:block;margin-bottom:4px;color:var(--dark-gold);}
   .options{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
   .opt-btn{flex:1 1 220px;background:var(--white);border:2px solid var(--slate-blue);color:var(--black);font-family:inherit;font-size:.98rem;font-weight:600;padding:14px 18px;border-radius:5px;cursor:pointer;transition:all .15s ease;text-align:left;}
   .opt-btn:hover{background:var(--slate-blue);color:var(--white);}
@@ -35,174 +34,80 @@
   .feedback.show{display:block;animation:fadein .25s ease;}
   .feedback.correct{background:#eaf5ea;border-left:4px solid #2e7d32;}
   .feedback.neutral{background:var(--warm-grey);border-left:4px solid var(--slate-blue);}
-  .feedback.outcome{background:#f0f4ff;border-left:4px solid var(--slate-blue);}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   .nav-row{display:flex;justify-content:flex-end;margin-top:22px;}
   .nav-btn{background:var(--edgewood-red);color:var(--white);border:none;font-family:inherit;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:5px;cursor:pointer;display:none;}
   .nav-btn.show{display:inline-block;}
   .nav-btn:hover{background:#930000;}
-  .not-a-safety-event{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.4rem;font-weight:700;padding:20px 30px;border-radius:6px;margin:14px 0;display:inline-block;}
   .summary-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.92rem;}
   .summary-table th,.summary-table td{border:1px solid var(--light-grey);padding:8px 10px;text-align:left;}
   .summary-table th{background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-weight:600;}
   .summary-table tr:nth-child(even) td{background:var(--warm-grey);}
+  .not-a-safety-event{display:inline-block;background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.4rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
   .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
   .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
-  .small-note{font-size:.85rem;color:var(--dark-web-grey);margin-top:18px;text-align:center;}
-  .reflection-input{width:100%;min-height:120px;border:2px solid var(--light-grey);border-radius:5px;padding:12px;font-family:inherit;font-size:0.97rem;resize:vertical;margin-top:10px;}
+  .reflection-input{width:100%;min-height:120px;border:2px solid var(--light-grey);border-radius:5px;padding:12px;font-family:inherit;font-size:.97rem;resize:vertical;margin-top:10px;}
   .reflection-input:focus{outline:none;border-color:var(--slate-blue);}
   .submit-reflection{background:var(--slate-blue);color:var(--white);border:none;font-family:inherit;font-weight:700;padding:10px 24px;border-radius:5px;cursor:pointer;margin-top:12px;}
   .submit-reflection:hover{background:#3e7a99;}
 
 /* ── Resource Page Header ── */
-.resource-header {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    color: #ffffff;
-    padding: 0.8rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
-}
-.resource-header::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #BB0000 0%, #BB0000 33%, #C8932B 33%, #C8932B 66%, #5794AD 66%, #5794AD 100%);
-}
-.resource-header-logo {
-    height: 40px;
-    width: auto;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-.resource-header-text {
-    flex: 1;
-    min-width: 0;
-}
-.resource-header-course {
-    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #C8932B;
-    line-height: 1.2;
-}
-.resource-header-title {
-    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.resource-header-back {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-    font-size: 0.78rem;
-    color: #C2C6C8;
-    text-decoration: none;
-    padding: 0.35rem 0.7rem;
-    border-radius: 4px;
-    transition: color 0.2s ease, background 0.2s ease;
-    white-space: nowrap;
-}
-.resource-header-back:hover {
-    color: #ffffff;
-    background: rgba(255,255,255,0.08);
-}
-.resource-header-back svg {
-    width: 14px;
-    height: 14px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-}
-/* ── Resource Page Footer ── */
-.resource-footer {
-    text-align: center;
-    padding: 1.5rem;
-    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-    font-size: 0.75rem;
-    color: #6D6E71;
-    border-top: 1px solid #C2C6C8;
-    background: #F8F6F3;
-}
-.resource-footer a {
-    color: #5794AD;
-    text-decoration: none;
-}
-.resource-footer a:hover {
-    text-decoration: underline;
-}
-@media (max-width: 600px) {
-    .resource-header {
-        flex-wrap: wrap;
-        padding: 0.7rem 1rem;
-        gap: 0.6rem;
-    }
-    .resource-header-back {
-        order: -1;
-        width: 100%;
-        justify-content: flex-start;
-        padding: 0.2rem 0;
-        font-size: 0.72rem;
-    }
-    .resource-header-title {
-        font-size: 0.95rem;
-        white-space: normal;
-    }
-}
+.resource-header{background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%);color:#ffffff;padding:.8rem 1.5rem;display:flex;align-items:center;gap:1rem;position:relative;}
+.resource-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#BB0000 0%,#BB0000 33%,#C8932B 33%,#C8932B 66%,#5794AD 66%,#5794AD 100%);}
+.resource-header-logo{height:40px;width:auto;border-radius:4px;flex-shrink:0;}
+.resource-header-text{flex:1;min-width:0;}
+.resource-header-course{font-family:'Source Sans 3','Source Sans Pro',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#C8932B;line-height:1.2;}
+.resource-header-title{font-family:'Source Sans 3','Source Sans Pro',sans-serif;font-size:1.05rem;font-weight:600;color:#ffffff;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.resource-header-back{flex-shrink:0;display:flex;align-items:center;gap:.3rem;font-family:'Source Sans 3','Source Sans Pro',sans-serif;font-size:.78rem;color:#C2C6C8;text-decoration:none;padding:.35rem .7rem;border-radius:4px;transition:color .2s ease,background .2s ease;white-space:nowrap;}
+.resource-header-back:hover{color:#ffffff;background:rgba(255,255,255,.08);}
+.resource-header-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+@media(max-width:600px){.resource-header{flex-wrap:wrap;padding:.7rem 1rem;gap:.6rem;}.resource-header-back{order:-1;width:100%;justify-content:flex-start;padding:.2rem 0;font-size:.72rem;}.resource-header-title{font-size:.95rem;white-space:normal;}}
 </style>
 </head>
 <body>
 <header class="resource-header">
-    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
-    <div class="resource-header-text">
-        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
-        <div class="resource-header-title">Case 15: Amniotic Fluid Embolism</div>
-    </div>
-    <a class="resource-header-back" href="Managing_Safety_Events_Index.html">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Safety Event Management Cases
-    </a>
+  <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
+  <div class="resource-header-text">
+    <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
+    <div class="resource-header-title">Case 15: Amniotic Fluid Embolism</div>
+  </div>
+  <a class="resource-header-back" href="Managing_Safety_Events_Index.html">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Safety Event Management Cases
+  </a>
 </header>
 
-<div class="accent-bar"></div>
 <div class="wrap"><div id="app"></div></div>
-<script>
-const VIGNETTE = "A 32-year-old woman, Gravida 2 Para 1, presents at 40 weeks gestation in active labor. Labor progress is appropriate and is managed according to standard Labor and Delivery protocols. There are no identified risk factors. Fetal monitoring throughout labor is reassuring. After an uncomplicated vaginal delivery, a healthy infant is born with Apgar scores of 9 and 10 at one and five minutes respectively. Within two minutes of delivery, while the mother remains on continuous monitoring, she develops sudden and extreme respiratory distress accompanied by signs consistent with disseminated intravascular coagulation (DIC). The team recognizes the emergency immediately, activates the appropriate response, and initiates all available resuscitative interventions. Despite sustained and comprehensive efforts, the mother expires. Autopsy confirms the diagnosis of amniotic fluid embolism.";
 
-let step="intro", kctIndex=0;
-const app=document.getElementById('app');
+<script>
+const VIGNETTE = "A 32-year-old woman, Gravida 2 Para 1, presents at 40 weeks gestation in active labor. She has no identified risk factors. Labor progresses appropriately and is managed according to standard Labor and Delivery protocols. Fetal monitoring throughout labor is reassuring. After an uncomplicated vaginal delivery, a healthy infant is born with Apgar scores of 9 and 10 at one and five minutes. Within two minutes of delivery, while the mother remains on continuous monitoring, she develops sudden and extreme respiratory distress accompanied by signs consistent with disseminated intravascular coagulation (DIC). The team recognizes the emergency immediately, activates the appropriate response, and initiates all available resuscitative interventions. Despite sustained and comprehensive efforts, the mother expires. Autopsy confirms the diagnosis of amniotic fluid embolism.";
+
+// Tracking
+const app = document.getElementById('app');
 const _caseStartTime = new Date();
 let _attemptLog = [];
 let _allAttempts = [];
 let _lastAttemptSnapshot = null;
 let _attemptStartTime = new Date();
 var _pendingSelected = '';
+let step = 'intro';
+let kctIndex = 0;
 
-function _captureSelected(btn) {
-  _pendingSelected = btn.textContent.trim();
-}
+function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
+function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
 
-function _logResponse(stepName, fbHTML) {
+function _captureSelected(btn){ _pendingSelected = btn.textContent.trim(); }
+
+function _logResponse(stepName, fbHTML){
   var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
-  if (alreadyLogged) return;
+  if(alreadyLogged) return;
   var div = document.createElement('div');
   div.innerHTML = fbHTML || '';
   var cleanText = (div.textContent || div.innerText || '').trim();
   _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
 }
 
-function _buildAttemptLog() {
+function _buildAttemptLog(){
   var endTime = new Date();
   var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
   var mins = Math.floor(elapsed / 60);
@@ -220,54 +125,91 @@ function _buildAttemptLog() {
     responses: _attemptLog.slice()
   };
 }
-function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
-function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
 
-
-
+// ── INTRO ──
 function renderIntro(){
-  app.innerHTML=`<div class="card"><span class="step-label">Case 15</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the final event in your queue. A maternal death has been reported from Labor and Delivery.</p><p>This case is structurally different from every case you have worked through so far. Read the event carefully and bring everything you have learned about how to evaluate whether a safety event has occurred.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
-  document.getElementById('nb').onclick=()=>{step="kct-intro";render();};
+  app.innerHTML=`<div class="card"><span class="step-label">Case 15</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the final event in your queue. A maternal death has been reported from Labor and Delivery.</p><p>This case is the most important one in the series. Read it carefully and bring everything you have learned about how to evaluate whether a safety event has occurred.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{ step='deviation'; render(); };
 }
 
-function renderKctIntro(){
-  app.innerHTML=`${pb(1,2,"Known Complication Test")}<div class="card"><span class="step-label">Applying the Known Complication Test</span><h3 class="case-title">Is This a Known Complication or a Safety Event?</h3>${vign()}<div class="reference-box"><strong>Where to begin:</strong> Before applying the SEC algorithm, the first task is always to determine whether the event represents a deviation from GAPS or whether it falls within the range of known complications of an indicated procedure or treatment. The Known Complication Test is our tool for making that determination.<br><br>You will work through all four questions. The answers in this case are different from every other case in this series. Pay close attention to how each answer connects to the clinical facts.</div><div class="nav-row"><button class="nav-btn show" id="nb">Begin the Known Complication Test</button></div></div>`;
-  document.getElementById('nb').onclick=()=>{kctIndex=0;step="kct";render();};
+// ── DISCUSSION POINT 1: GAPS ──
+function renderDeviationStep(){
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event?</div><div class="helper-text">Review the event carefully. Consider every aspect of the care provided before making your determination.</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  [
+    {key:'response', label:'The care team did not respond quickly enough when the mother deteriorated', type:'redirect'},
+    {key:'anticipate', label:'The labor and delivery team failed to anticipate the complication', type:'redirect'},
+    {key:'anesthesia', label:'The anesthesiologist should have intervened sooner', type:'redirect'},
+    {key:'nogaps', label:'There was no deviation in Generally Accepted Performance Standards (GAPS)', type:'correct'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleDeviation(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
 }
 
+function handleDeviation(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  const nb=document.getElementById('nb');
+
+  if(opt.type==='correct'){
+    btn.classList.add('selected-correct'); fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the right instinct, and working through why requires careful analysis.</span> The care team responded immediately, the protocols were followed, and the outcome was consistent with what the medical literature describes for this condition. But before we accept "no deviation" as the final answer, the SEC framework gives us a structured tool to confirm that conclusion: the Known Complication Test. If the answer to all four questions is YES, the outcome is a known complication rather than a safety event. Let's work through those questions carefully.`;
+    _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
+    nb.classList.add('show'); nb.textContent='Apply the Known Complication Test';
+    nb.onclick=()=>{ kctIndex=0; step='kct'; render(); };
+  } else {
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    const messages = {
+      response: "Let's look at what the event tells us about the team's response. The team recognized the emergency immediately when symptoms appeared two minutes after delivery, activated the appropriate response protocol, and initiated all available resuscitative interventions. The event does not indicate a delay in recognition or response. Have you thought about what the standard of care requires for amniotic fluid embolism and whether that standard was met?",
+      anticipate: "Anticipation of complications is part of clinical care, but it requires that the complication be predictable given the clinical picture. This patient had no identified risk factors. Amniotic fluid embolism is documented in the literature as an extremely rare and, in most cases, unpredictable event. Have you thought about what the standard of care actually requires in terms of anticipating a complication with no reliable predictors?",
+      anesthesia: "The event describes the full team responding immediately. It does not identify any delay or deviation in the anesthesiologist's involvement. Have you thought about what a GAPS deviation requires: a departure from the accepted standard of care? Is there evidence in this event that the standard of care was not met by any member of the team?"
+    };
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at that more carefully.</span> ${messages[opt.key]}<br><br>Before settling on a conclusion, it may help to work through the Known Complication Test systematically.`;
+    _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
+    nb.classList.add('show'); nb.textContent='Apply the Known Complication Test';
+    nb.onclick=()=>{ kctIndex=0; step='kct'; render(); };
+  }
+}
+
+// ── KCT ──
 const KCT_QS=[
   {
     text:"Was the procedure or treatment (vaginal delivery at 40 weeks gestation for a Gravida 2 Para 1 patient with no identified risk factors) appropriate or warranted based on nationally recognized standards of care?",
     answer:"YES",
-    correct_note:"Vaginal delivery is the standard and appropriate mode of delivery for a low-risk patient at 40 weeks gestation. The clinical management throughout labor and delivery was consistent with nationally recognized standards. The procedure was indicated.",
-    incorrect_note:"Think about this patient's clinical picture: a healthy 32-year-old at 40 weeks with no identified risk factors, progressing normally through labor. Vaginal delivery is the indicated, standard approach. The procedure was clinically appropriate, pointing toward YES."
+    correct:"Vaginal delivery is the standard and appropriate mode of delivery for a low-risk patient at 40 weeks gestation. The clinical management throughout labor was consistent with nationally recognized standards. The procedure was indicated and appropriate.",
+    incorrect:"Think about this patient's clinical picture: a healthy 32-year-old at 40 weeks with no identified risk factors, progressing normally through labor. Vaginal delivery is the indicated, standard approach for this presentation. The procedure was clinically appropriate, pointing toward YES."
   },
   {
     text:"Was the complication (amniotic fluid embolism resulting in death) a known risk of vaginal delivery, and was the standard of care employed to mitigate that risk during the labor and delivery?",
     answer:"YES",
-    correct_note:"Amniotic fluid embolism is a recognized, documented risk of labor and delivery. It is listed in the informed consent for childbirth at most institutions. The mortality rate is documented in the literature at 80% or greater. The standard of care does not include specific prophylactic measures to prevent AFE, as no reliable preventive intervention exists. The team employed all appropriate monitoring and labor management protocols. The risk was known and the standard of care was employed.",
-    incorrect_note:"This question has two parts: was it a known risk, and was the standard of care employed? Amniotic fluid embolism is a documented complication of labor and delivery. It is extremely rare and unpredictable, but it is known. More importantly, there are no standard of care interventions that can reliably prevent it. The team employed all appropriate monitoring and labor management. Both parts of this question point toward YES."
+    correct:"Amniotic fluid embolism is a recognized, documented risk of labor and delivery. It is listed in informed consent for childbirth at most institutions. The mortality rate is documented at 80% or greater. The standard of care does not include specific prophylactic measures to prevent AFE because no reliable preventive intervention exists. The team employed all appropriate monitoring and labor management protocols throughout. The risk was known and the standard of care was employed.",
+    incorrect:"This question has two parts: was the complication a known risk, and was the standard of care employed to mitigate it? Amniotic fluid embolism is a documented complication of labor and delivery. Critically, there are no standard-of-care interventions that reliably prevent it. The team employed all appropriate monitoring. Both parts of this question point toward YES."
   },
   {
     text:"Was the complication identified in a timely manner?",
     answer:"YES",
-    correct_note:"The team recognized the emergency immediately when the mother developed sudden respiratory distress and signs of DIC within two minutes of delivery. The response was activated without delay. The complication was identified as quickly as the clinical presentation allowed.",
-    incorrect_note:"Looking at the event: the mother was on continuous monitoring and the team recognized the emergency the moment it presented. The activation of the response was immediate. The complication was identified in a timely manner, pointing toward YES."
+    correct:"The team recognized the emergency immediately when the mother developed sudden respiratory distress and signs of DIC within two minutes of delivery. She was on continuous monitoring and the response was activated without delay. The complication was identified as quickly as the clinical presentation allowed.",
+    incorrect:"The mother was on continuous monitoring and the team recognized the emergency the moment it presented. The response was immediate. The complication was identified in a timely manner, pointing toward YES."
   },
   {
     text:"Was the complication treated according to the standard of care, in a timely manner?",
     answer:"YES",
-    correct_note:"The team activated the appropriate emergency response, initiated all available resuscitative interventions, and sustained comprehensive efforts. The standard of care for amniotic fluid embolism is aggressive supportive care; there is no targeted antidote or reversal. The team did everything that evidence-based medicine makes available. The fact that the patient did not survive does not mean the standard of care was not met: the mortality rate for AFE is 80% or greater even with optimal treatment.",
-    incorrect_note:"Consider what the standard of care for AFE actually requires: aggressive supportive care, resuscitation, management of DIC, and sustained effort. There is no targeted therapy that reverses AFE. The team did everything available. The patient's death is consistent with the known mortality rate of this condition, not with a failure to treat appropriately. This points toward YES."
+    correct:"The team activated the appropriate emergency response and initiated all available resuscitative interventions with sustained and comprehensive effort. The standard of care for amniotic fluid embolism is aggressive supportive care. There is no targeted antidote or reversal agent. The team did everything that evidence-based medicine makes available. The patient's death is consistent with the known mortality rate of 80% or greater, not with a failure to treat appropriately.",
+    incorrect:"Consider what the standard of care for AFE actually requires: aggressive supportive care, resuscitation, management of DIC, and sustained effort. There is no targeted therapy that reverses AFE. The team did everything available. The outcome is consistent with the known mortality rate for this condition even with optimal treatment. This points toward YES."
   }
 ];
 
 function renderKctStep(){
-  if(kctIndex>=KCT_QS.length){renderKctResult();return;}
+  if(kctIndex>=KCT_QS.length){ renderKctResult(); return; }
   const q=KCT_QS[kctIndex];
-  app.innerHTML=`${pb(1,2,"Known Complication Test &middot; Question "+(kctIndex+1)+" of 4")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Working Through the Known Complication Test</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> ALL four YES = Known Complication, not a safety event. ANY NO = safety event requiring further classification.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test \u00b7 Question "+(kctIndex+1)+" of 4")}<div class="card"><span class="step-label">Known Complication Test &middot; Question ${kctIndex+1} of 4</span><h3 class="case-title">Is This a Known Complication?</h3>${vign()}<div class="reference-box"><strong>Reminder:</strong> If ALL four answers are YES, the outcome is a known complication and this is not a safety event. If ANY answer is NO, it is a safety event requiring further classification.</div><div class="question">${q.text}</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
   ['YES','NO'].forEach(val=>{
-    const btn=document.createElement('button');btn.className='opt-btn';btn.style.flex="1 1 100px";btn.textContent=val;
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.style.flex='1 1 100px'; btn.textContent=val;
     btn.onclick=()=>handleKct(btn,val,q);
     document.getElementById('opts').appendChild(btn);
   });
@@ -278,50 +220,157 @@ function handleKct(btn,val,q){
   _captureSelected(btn);
   const isC=val===q.answer;
   btn.classList.add(isC?'selected-correct':'selected-redirect');
-  if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
-  _captureSelected(btn);
-  const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
-  fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?q.correct_note:q.incorrect_note}`;
-  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
-  const nb=document.getElementById('nb');nb.classList.add('show');
-  nb.onclick=()=>{kctIndex++;renderKctStep();};
+  if(!isC) document.querySelectorAll('#opts .opt-btn').forEach(b=>{ if(b.textContent===q.answer) b.classList.add('selected-correct'); });
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show', isC?'correct':'neutral');
+  fb.innerHTML=`<span style="font-weight:700;">${isC?'That aligns with the evidence in this event.':'Let\'s think through this one together.'}</span> ${isC?q.correct:q.incorrect}`;
+  _logResponse('KCT Question '+(kctIndex+1), fb.innerHTML);
+  const nb=document.getElementById('nb');
+  nb.classList.add('show');
+  nb.onclick=()=>{ kctIndex++; renderKctStep(); };
 }
 
 function renderKctResult(){
-  app.innerHTML=`${pb(1,2,"Known Complication Test &middot; Result")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show correct"><span style="font-weight:700;">All four answers are YES.</span><br><br>When all four Known Complication Test answers are YES, the conclusion is clear: this outcome falls within the range of known complications of an indicated procedure, performed according to the standard of care, with timely identification and treatment. This is <strong>not a safety event.</strong><br><br>The Medical Staff Peer Review Committee's analysis supports this conclusion. They focused particularly on Questions 2 through 4. Amniotic fluid embolism was identified as an extremely rare and, in most cases, unpredictable complication with no known preventive intervention. This patient had no identifiable risk factors. Once the complication began, the team recognized it immediately and made all efforts to save her life. The literature documents a mortality rate of 80% or greater even with optimal treatment. The team's response was consistent with the standard of care.<br><br>The committee's determination: this was not a preventable patient safety event.</div><div class="nav-row"><button class="nav-btn show" id="nb">Continue to the Organizational Question</button></div></div>`;
-  document.getElementById('nb').onclick=()=>{step="reflection";render();};
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test \u00b7 Result")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show correct"><span style="font-weight:700;">All four answers are YES.</span><br><br>When all four Known Complication Test answers are YES, the conclusion is clear: this outcome falls within the range of known complications of an indicated procedure, performed according to the standard of care, identified in a timely manner, and treated appropriately. This is <strong>not a safety event.</strong><br><br>The Medical Staff Peer Review Committee's analysis supports this conclusion. They focused particularly on Questions 2 through 4. Amniotic fluid embolism was identified as an extremely rare and, in most cases, unpredictable complication with no known preventive intervention. This patient had no identifiable risk factors. Once the complication began, the team recognized it immediately and made all efforts to save her life. The literature documents a mortality rate of 80% or greater even with optimal treatment.<br><br>The committee's determination: this was not a preventable patient safety event.</div><div class="nav-row"><button class="nav-btn show" id="nb">Continue to Discussion Point 2</button></div></div>`;
+  document.getElementById('nb').onclick=()=>{ step='reach'; render(); };
 }
 
-function renderReflection(){
-  app.innerHTML=`${pb(2,2,"Organizational Reflection")}<div class="card"><span class="step-label">Closing Reflection</span><h3 class="case-title">What Does Your Organization Owe This Family?</h3>${vign()}<div class="feedback show outcome"><span style="font-weight:700;">This event is not a classifiable safety event.</span> The Known Complication Test was clear. The care was appropriate, the complication was unpredictable, the team responded correctly, and the outcome was consistent with the known mortality rate for amniotic fluid embolism. There is no SEC classification to assign. There is no sentinel event designation. There is no SAC Matrix to complete.<br><br>And yet: a 32-year-old woman came to your hospital to have a baby and did not go home.</div><div class="reference-box"><strong>The distinction between tragedy and preventable harm:</strong> Not every patient death in a healthcare setting is a safety event. Some deaths are the result of disease processes that remain beyond the reach of current medicine, even when everything is done correctly. Making this distinction is essential for two reasons. First, it protects the integrity of the safety event classification system: if everything that goes wrong is treated as a safety event, the system loses its ability to prioritize real prevention opportunities. Second, it protects the care team: holding clinicians accountable for outcomes that were genuinely unpreventable is a form of injustice that erodes the culture of psychological safety that patient safety depends on.</div><div class="question">Reflection: What does your organization owe this family, even though this event is not a classifiable safety event?</div><p style="font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;">There is no single correct answer. This reflection is about how you, as a future healthcare administrator, think about organizational responsibility in the face of tragedy that is not preventable.</p><textarea class="reflection-input" id="reflection-text" placeholder="Consider: communication with the family, support for the care team, institutional grief, disclosure obligations, and what it means to bear witness to tragedy with integrity..."></textarea><button class="submit-reflection" id="submit-reflection">Submit My Reflection</button><div class="feedback" id="reflection-fb"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+// ── DISCUSSION POINT 2: REACH ──
+function renderReachStep(){
+  app.innerHTML=`${pb(2,5,"Discussion Point 2: Did the Deviation Reach the Patient?")}<div class="card"><span class="step-label">Step 2 of 5</span><h3 class="case-title">Did the Deviation Reach the Patient?</h3>${vign()}<div class="reference-box"><strong>A note on this step:</strong> The SEC algorithm asks whether a deviation reached the patient. In this case, the Known Complication Test has already established that there was no deviation from Generally Accepted Performance Standards. When there is no deviation, the question of whether it reached the patient does not apply in the usual sense. This step asks you to reflect on what that means.</div><div class="question">Given the Known Complication Test result, how do you apply Discussion Point 2 to this event?</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 3</button></div></div>`;
+  [
+    {key:'na', label:'This step is not applicable because no deviation from GAPS occurred', type:'correct'},
+    {key:'yes', label:'Yes, the complication reached the patient because she died', type:'redirect'},
+    {key:'no', label:'No, the complication did not reach the patient because the team responded', type:'redirect'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleReach(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
 
-  document.getElementById('submit-reflection').onclick=()=>{
+function handleReach(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==='correct'){
+    btn.classList.add('selected-correct'); fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is exactly right.</span> The SEC algorithm's second question, whether the deviation reached the patient, presupposes that a deviation occurred. When the Known Complication Test determines that the outcome was a known complication of an appropriate procedure performed according to the standard of care, there is no deviation to trace forward. The algorithm does not continue in the usual way. This step is not applicable.`;
+  } else if(opt.key==='yes'){
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's think carefully about the distinction this step requires.</span> The patient did die, and that is a profound tragedy. However, the SEC algorithm's second question asks whether a <em>deviation from GAPS</em> reached the patient. The Known Complication Test established that there was no deviation. A complication reaching a patient is not the same as a deviation reaching a patient. When no deviation occurred, this discussion point does not apply in the way it does in the other 14 cases.`;
+  } else {
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at this from the framework's perspective.</span> The question of whether a deviation reached the patient assumes a deviation occurred. The Known Complication Test determined that it did not. The team's response, while relevant to the KCT analysis, is not what makes this step inapplicable. The step is not applicable because the first condition, a GAPS deviation, was not established. Have you thought about which answer reflects that logic?`;
+  }
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);
+  nb.classList.add('show');
+  nb.onclick=()=>{ step='harm'; render(); };
+}
+
+// ── DISCUSSION POINT 3: HARM ──
+function renderHarmStep(){
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">What Was the Level of Harm?</h3>${vign()}<div class="reference-box"><strong>A note on this step:</strong> The SEC harm classification framework is designed to score harm that resulted from a safety event, specifically from a deviation from GAPS that reached the patient. When there is no safety event, the harm classification does not apply in the same way. The mother died, and that is a real and devastating outcome. But the SEC classification exists to measure preventable harm, not all harm.</div><div class="question">How does the SEC harm classification framework apply to this event?</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [
+    {key:'na', label:'Harm classification is not applicable because this is not a classifiable safety event', type:'correct'},
+    {key:'sse1', label:'SSE 1: Death, because the patient died regardless of the cause', type:'redirect'},
+    {key:'sse5', label:'SSE 5: Moderate Temporary Harm, because the mother survived delivery before the complication', type:'redirect'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleHarm(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleHarm(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==='correct'){
+    btn.classList.add('selected-correct'); fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the correct application of the framework.</span> The SEC harm classification exists to score harm resulting from preventable safety events. When the Known Complication Test determines that an outcome was a known complication of appropriate care, the harm classification does not apply. This does not mean the death is unimportant or that the organization has no obligations to the family. It means the SEC algorithm has a specific and bounded purpose: classifying preventable harm. This outcome falls outside that boundary.`;
+  } else {
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's think about what the harm classification is designed to measure.</span> The SEC framework classifies harm that results from a deviation from GAPS that reached a patient. The Known Complication Test established that no deviation occurred and this is not a safety event. Applying a harm classification to a non-safety-event would misuse the framework and could falsely imply that the care team made an error when the evidence shows they did not. Have you thought about which answer reflects the correct application of the SEC algorithm when no safety event has occurred?`;
+  }
+  _logResponse('Discussion Point 3: Harm Classification', fb.innerHTML);
+  nb.classList.add('show');
+  nb.onclick=()=>{ step='csa'; render(); };
+}
+
+// ── DISCUSSION POINT 4: CSA ──
+function renderCsaStep(){
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5</span><h3 class="case-title">Should a Comprehensive Systematic Analysis Be Completed?</h3>${vign()}<div class="reference-box"><strong>A note on this step:</strong> A CSA is triggered by sentinel events and high SAC scores, both of which presuppose a safety event has occurred. This event has been determined to be not a safety event. However, the question of what the organization owes this family remains, and it is distinct from whether a CSA is required.</div><div class="question">Is a Comprehensive Systematic Analysis required for this event?</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 5</button></div></div>`;
+  [
+    {key:'no', label:'No, a CSA is not required because this is not a classifiable safety event', type:'correct'},
+    {key:'yes', label:'Yes, a CSA is required because a patient died in the hospital', type:'redirect'},
+    {key:'maybe', label:'It depends on the organization\'s policy for unexpected maternal deaths', type:'partial'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleCsa(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
+
+function handleCsa(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  const nb=document.getElementById('nb');
+  if(opt.type==='correct'){
+    btn.classList.add('selected-correct'); fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is correct within the SEC framework.</span> A CSA is a structured analytical process triggered by sentinel events and high SAC scores, both of which require a classifiable safety event as their foundation. This event is not a safety event. A CSA as defined in the SEC algorithm is therefore not required.<br><br>However, this is not the end of the organization's obligations. An unexpected maternal death, regardless of whether it is a safety event, represents a critical organizational moment. Most healthcare organizations have separate processes for reviewing unexpected maternal deaths, including perinatal mortality review committees, that operate independently of the safety event classification system. Those reviews examine whether systems, communication, and care delivery can be improved even when no error occurred. That is a different question from whether a safety event happened, and it is an important one.`;
+  } else if(opt.type==='partial'){
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Organizational policy is worth examining here, and that instinct is sound.</span> Many organizations do have policies requiring review of unexpected maternal deaths regardless of safety event classification, and those reviews serve an important purpose. However, in the specific context of the SEC algorithm and the CSA as a formal process, the triggering conditions, sentinel event status or high SAC score, require a classifiable safety event. This event has been determined not to be a safety event. The formal CSA requirement does not apply. Separate organizational review processes may still be appropriate and are worth knowing about.`;
+  } else {
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what triggers a CSA in the SEC framework.</span> A Comprehensive Systematic Analysis is required when an event is classified as a sentinel event or scores SAC 3. Both of those conditions require a classifiable safety event as their starting point. The Known Complication Test has determined that this is not a safety event. Without a safety event, the SEC-defined CSA trigger does not apply. Have you thought about which answer reflects that logic?`;
+  }
+  _logResponse('Discussion Point 4: Should a CSA Be Completed?', fb.innerHTML);
+  nb.classList.add('show');
+  nb.onclick=()=>{ step='reflection'; render(); };
+}
+
+// ── DISCUSSION POINT 5: REFLECTION ──
+function renderReflectionStep(){
+  app.innerHTML=`${pb(5,5,"Discussion Point 5: Organizational Obligations")}<div class="card"><span class="step-label">Step 5 of 5</span><h3 class="case-title">What Does Your Organization Owe This Family?</h3>${vign()}<div class="feedback show neutral" style="margin-bottom:18px;"><span style="font-weight:700;">This event is not a classifiable safety event.</span> The Known Complication Test was clear. The care was appropriate, the complication was unpredictable, the team responded correctly, and the outcome is consistent with the known mortality rate for amniotic fluid embolism even with optimal treatment. There is no SEC classification to assign. There is no sentinel event designation. There is no CSA requirement.<br><br>And yet: a 32-year-old woman came to your hospital to have a baby and did not go home.</div><div class="question">Reflection: What does your organization owe this family, even though this event is not a classifiable safety event?</div><p style="font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;">Consider communication with the family, support for the care team, disclosure obligations, and what it means to bear witness to tragedy with integrity. There is no single correct answer. This reflection is about how you, as a future healthcare administrator, think about organizational responsibility in the face of unavoidable harm.</p><textarea class="reflection-input" id="reflection-text" placeholder="Write your reflection here..."></textarea><button class="submit-reflection" id="submit-btn">Submit Reflection</button><div class="feedback" id="feedback" style="margin-top:16px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+
+  document.getElementById('submit-btn').onclick=()=>{
     const text=document.getElementById('reflection-text').value.trim();
-    const fb=document.getElementById('reflection-fb');
+    const fb=document.getElementById('feedback');
     fb.classList.add('show','neutral');
     if(text.length<20){
-      fb.innerHTML=`Take a moment with this question. There is no formula for what comes next, but there is an organizational responsibility. What does it look like in practice?`;
+      fb.innerHTML=`Take a moment with this question before moving on. There is no formula for the right answer, but how you think about it matters.`;
     } else {
-      fb.innerHTML=`<span style="font-weight:700;">Your reflection has been recorded.</span> There are several dimensions many healthcare leaders identify when they encounter this question.<br><br><strong>Transparent, compassionate communication:</strong> The family deserves to know what happened, how the team responded, and that everything that could be done was done. Even when there is no error to disclose, there is an obligation to explain, to sit with the family, and to not let them wonder in silence about whether something went wrong.<br><br><strong>Support for the care team:</strong> The nurses, physicians, and staff who worked to save this mother will carry this experience. They did everything correctly and still watched a healthy young woman die. That is a profound psychological burden. The organization owes them acknowledgment, support, and a space to process what happened without being left to carry it alone.<br><br><strong>Institutional acknowledgment:</strong> A death that is not a safety event is still a death. Organizations that treat "not preventable" as the end of their responsibility miss the human dimension of care. A letter to the family, a debriefing for the team, and a transparent conversation about what happened are not admissions of fault: they are expressions of the organization's commitment to the people it serves, even when the outcome was beyond its control.<br><br><strong>Connection to disclosure policy:</strong> Your organization's disclosure policy likely addresses how to communicate with families after unexpected outcomes, including those that are not classified as safety events. Knowing that policy, and knowing how to activate it with compassion and clarity, is part of your leadership responsibility.`;
-      document.getElementById('submit-reflection').disabled=true;
-      // Log the reflection text
-      _logResponse('Reflection: What does your organization owe this family?', fb.innerHTML);
-      var nb = document.getElementById('nb');
+      _pendingSelected = text.substring(0,120)+(text.length>120?'...':'');
+      fb.innerHTML=`<span style="font-weight:700;">Your reflection has been recorded.</span> There are several dimensions many healthcare leaders identify when thinking through this question.<br><br><strong>Transparent, compassionate communication:</strong> The family deserves to know what happened, how the team responded, and that everything available was done. Even when there is no error to disclose, there is an obligation to explain, to sit with the family, and not to let them wonder in silence about whether something went wrong.<br><br><strong>Support for the care team:</strong> The nurses, physicians, and staff who worked to save this mother will carry this experience. They did everything correctly and still watched a young woman die. The organization owes them acknowledgment, support, and space to process what happened without carrying it alone.<br><br><strong>Institutional acknowledgment:</strong> A death that is not a safety event is still a death. Organizations that treat "not preventable" as the end of their responsibility miss the human dimension of care. A letter to the family, a team debriefing, and a transparent conversation about what happened are expressions of the organization's commitment to the people it serves.<br><br><strong>Connection to disclosure policy:</strong> Your organization's disclosure policy addresses how to communicate with families after unexpected outcomes, including those not classified as safety events. Knowing that policy and being able to activate it with compassion is part of your leadership responsibility.`;
+      _logResponse('Discussion Point 5: Organizational Reflection', fb.innerHTML);
+      document.getElementById('submit-btn').disabled=true;
+      const nb=document.getElementById('nb');
       nb.classList.add('show');
-      nb.onclick = () => { step='summary'; render(); };
+      nb.onclick=()=>{ step='summary'; render(); };
     }
   };
 }
 
+// ── SUMMARY ──
 function renderSummary(){
   const _currentAttemptSnapshot = _buildAttemptLog();
   _lastAttemptSnapshot = _currentAttemptSnapshot;
   var _snapshotToSend = _currentAttemptSnapshot;
   var _allToSend = _allAttempts.concat([_snapshotToSend]);
 
-  app.innerHTML=`<div class="card" style="text-align:center;"><span class="step-label">Case 15 Complete</span><h3 class="case-title">Known Complication Test Result</h3><div class="not-a-safety-event">Not a Safety Event</div><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>N/A &mdash; Not a Safety Event</td></tr><tr><td>Known Complication Test</td><td>All four answers YES: procedure appropriate; complication known and unpreventable; team identified emergency immediately; team treated according to standard of care</td></tr><tr><td>Was this a safety event?</td><td>No &mdash; amniotic fluid embolism is an extremely rare, unpredictable complication with no known preventive intervention; mortality rate 80% or greater even with optimal treatment</td></tr><tr><td>SEC Classification</td><td>Not applicable &mdash; event does not meet the threshold for safety event classification</td></tr><tr><td>Sentinel event per JC?</td><td>Not applicable &mdash; not a safety event</td></tr><tr><td>SAC Matrix</td><td>Not applicable &mdash; not a safety event</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Why this case is here.</span> You have now worked through 15 cases. In 14 of them, there was a safety event: a deviation from GAPS, a harm that reached a patient, a systemic failure that needed analysis and response. This case is here because your ability to recognize what is NOT a safety event is as important as your ability to classify what is.<br><br>A healthcare administrator who treats every bad outcome as a preventable error will exhaust resources on events that cannot be improved through system change, erode the psychological safety of care teams who are held accountable for unpreventable outcomes, and dilute the attention and energy that should be focused on genuinely preventable harm. Knowing where the boundary is, and being able to explain it to a family, a medical staff committee, an accreditation reviewer, and your own leadership team, is a core competency for the work you are entering.<br><br>The distinction between tragedy and preventable harm is not a legal defense. It is a clinical and ethical commitment to honesty about what healthcare can and cannot do, and to directing improvement efforts where they can actually make a difference.</div><button class="restart-btn" id="rb">Restart Case 15</button></div>`;
-  
-  // Send completion data to parent shell
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 15 Complete</span><h3 class="case-title">Final Determination</h3><div class="not-a-safety-event">Not a Safety Event</div><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>N/A &mdash; Not a Safety Event</td></tr><tr><td>Discussion Point 1: GAPS / Known Complication Test</td><td>All four KCT answers YES &mdash; procedure appropriate; complication known and unpreventable; identified immediately; treated according to standard of care</td></tr><tr><td>Discussion Point 2: Did it reach the patient?</td><td>Not applicable &mdash; no GAPS deviation established</td></tr><tr><td>Discussion Point 3: Level of harm</td><td>Not applicable &mdash; SEC harm classification requires a safety event</td></tr><tr><td>Discussion Point 4: Should a CSA be completed?</td><td>Not required &mdash; no sentinel event and no safety event classification; separate organizational mortality review may be appropriate</td></tr><tr><td>Discussion Point 5: Organizational obligations</td><td>Transparent communication with the family; support for the care team; disclosure policy activation; institutional acknowledgment of the loss</td></tr><tr><td>SEC Classification</td><td>Not applicable &mdash; this is not a classifiable safety event</td></tr><tr><td>Sentinel event per JC?</td><td>Not applicable</td></tr><tr><td>SAC Matrix</td><td>Not applicable</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">Why this case is here.</span> You have now worked through 15 cases. In 14 of them, there was a safety event: a deviation from GAPS, a harm that reached a patient, a systemic failure that needed analysis and response. This case is here because your ability to recognize what is NOT a safety event is as important as your ability to classify what is.<br><br>A healthcare administrator who treats every bad outcome as a preventable error will exhaust resources on events that cannot be improved through system change, erode the psychological safety of care teams who are held accountable for unpreventable outcomes, and dilute the attention and energy that should be focused on genuinely preventable harm. Knowing where the boundary is, and being able to explain it to a family, a medical staff committee, an accreditation reviewer, and your own leadership team, is a core competency for the work you are entering.<br><br>The distinction between tragedy and preventable harm is not a legal defense. It is a clinical and ethical commitment to honesty about what healthcare can and cannot do, and to directing improvement efforts where they can actually make a difference.</div><button class="restart-btn" id="rb">Restart Case 15</button></div>`;
+
   setTimeout(function(){
     window.parent.postMessage({
       type: 'case-complete',
@@ -330,20 +379,29 @@ function renderSummary(){
       attempts: _allToSend
     }, '*');
   }, 100);
-  document.getElementById('rb').onclick=()=>{kctIndex=0;
-    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
-    _attemptLog = [];
-    _attemptStartTime = new Date();
-    step="intro";render();};
+
+  document.getElementById('rb').onclick=()=>{
+    if(_lastAttemptSnapshot){ _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot=null; }
+    _attemptLog=[];
+    _attemptStartTime=new Date();
+    kctIndex=0;
+    step='intro';
+    render();
+  };
 }
 
+// ── ROUTER ──
 function render(){
-  if(step==="intro")renderIntro();
-  else if(step==="kct-intro")renderKctIntro();
-  else if(step==="kct")renderKctStep();
-  else if(step==="reflection")renderReflection();
-  else if(step==="summary")renderSummary();
+  if(step==='intro') renderIntro();
+  else if(step==='deviation') renderDeviationStep();
+  else if(step==='kct') renderKctStep();
+  else if(step==='reach') renderReachStep();
+  else if(step==='harm') renderHarmStep();
+  else if(step==='csa') renderCsaStep();
+  else if(step==='reflection') renderReflectionStep();
+  else if(step==='summary') renderSummary();
 }
 render();
-</script></body>
+</script>
+</body>
 </html>
