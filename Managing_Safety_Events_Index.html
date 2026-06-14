@@ -172,6 +172,99 @@
         white-space: normal;
     }
 }
+
+  /* ── Warning Card ── */
+  .warning-card {
+    background: #fff8e6;
+    border: 1px solid var(--dark-gold);
+    border-left: 5px solid var(--dark-gold);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .warning-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    color: var(--dark-gold);
+    margin-top: 2px;
+  }
+  .warning-icon svg { width: 28px; height: 28px; }
+  .warning-content strong {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: var(--black);
+  }
+  .warning-content p {
+    font-size: 0.88rem;
+    color: var(--dark-web-grey);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── Instructions Card ── */
+  .instructions-card {
+    background: var(--white);
+    border: 1px solid var(--light-grey);
+    border-radius: 6px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  }
+  .instructions-card h2 {
+    font-family: "Spectral", Georgia, serif;
+    font-size: 1.15rem;
+    margin: 0 0 16px;
+    color: var(--black);
+    border-bottom: 2px solid var(--edgewood-red);
+    padding-bottom: 8px;
+  }
+  .inst-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .inst-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .inst-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--edgewood-red);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 2px;
+  }
+  .inst-text {
+    font-size: 0.92rem;
+    color: #3a3a3a;
+    line-height: 1.55;
+  }
+  .inst-text strong { color: var(--black); }
+  .inst-note {
+    font-size: 0.82rem;
+    color: var(--dark-web-grey);
+    background: var(--warm-grey);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 0;
+    line-height: 1.55;
+    border-left: 3px solid var(--slate-blue);
+  }
 </style>
 </head>
 <body>
@@ -197,6 +290,43 @@
     <h2>About This Case Series</h2>
     <p>This series of 15 cases walks you through the Safety Event Classification (SEC) framework used in healthcare organizations to identify, classify, and respond to patient safety events. Each case presents a clinical vignette and guides you through five discussion points: identifying deviations from Generally Accepted Performance Standards (GAPS), determining whether the deviation reached the patient, scoring the level of harm, determining sentinel event status, and applying the SAC Priority Matrix.</p>
     <p>Cases may be completed in any order. Your progress and responses are saved in this session. Use the Download Log buttons to generate a record of your work to submit.</p>
+  </div>
+
+  <div class="warning-card">
+    <div class="warning-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="warning-content">
+      <strong>Important: Save Your Work Before Closing This Page</strong>
+      <p>Your responses are stored in your browser session only. If you close this tab, refresh the page, or navigate away, all recorded responses will be permanently lost. Download your response log before closing.</p>
+    </div>
+  </div>
+
+  <div class="instructions-card">
+    <h2>How to Use the Response Log</h2>
+    <div class="inst-grid">
+      <div class="inst-step">
+        <div class="inst-num">1</div>
+        <div class="inst-text"><strong>Complete a case.</strong> Work through all five discussion points in a case and reach the Final Summary screen. Your responses are recorded automatically when you reach the summary.</div>
+      </div>
+      <div class="inst-step">
+        <div class="inst-num">2</div>
+        <div class="inst-text"><strong>Download per case.</strong> Use the download button in the top-right corner of any open case to save a log for that case only. You can do this immediately after completing each case.</div>
+      </div>
+      <div class="inst-step">
+        <div class="inst-num">3</div>
+        <div class="inst-text"><strong>Download all cases.</strong> Use the Download Complete Response Log button on this page to generate a single log covering every case you have completed in this session.</div>
+      </div>
+      <div class="inst-step">
+        <div class="inst-num">4</div>
+        <div class="inst-text"><strong>Save as PDF.</strong> When the log opens, use your browser's print dialog (File &rarr; Print, or Ctrl+P / Cmd+P) and select "Save as PDF." This creates the file you will submit to your instructor.</div>
+      </div>
+      <div class="inst-step">
+        <div class="inst-num">5</div>
+        <div class="inst-text"><strong>Redoing a case.</strong> If you restart a case and complete it again, both attempts are recorded separately in your log. Each attempt shows your selections, the feedback you received, and your total time on that attempt.</div>
+      </div>
+    </div>
+    <p class="inst-note">The log captures your first selection at each discussion point, the feedback you received, and your total time on the case. Classification answers are only shown in the log after you complete a case so that working through the cases first is required to see results.</p>
   </div>
 
   <div class="progress-summary" id="prog-summary">
@@ -385,25 +515,37 @@ function generateAndPrintLog(caseNums, title){
     const st = caseStatus[num];
     html += `<h2>Case ${num}: ${c.name}</h2>`;
     html += `<table><tr><th>Field</th><th>Value</th></tr>`;
-    html += `<tr><td>Setting</td><td>${c.setting}</td></tr>`;
-    html += `<tr><td>Taxonomy Event Type</td><td>${c.taxonomy}</td></tr>`;
-    html += `<tr><td>Expected Classification</td><td>${c.classification}</td></tr>`;
     html += `<tr><td>Status</td><td><span class="badge badge-${st}">${st==='completed'?'Completed':st==='in-progress'?'In Progress':'Not Started'}</span></td></tr>`;
-    if(log && log.finalClassification){
-      if(log.startTime) html += `<tr><td>Session Started</td><td>${log.startTime}</td></tr>`;
-      if(log.endTime) html += `<tr><td>Session Ended</td><td>${log.endTime}</td></tr>`;
-      if(log.timeOnTask) html += `<tr><td>Time on Task</td><td>${log.timeOnTask}</td></tr>`;
-      html += `</table>`;
-      html += `<h3>Classification Results</h3><table><tr><th>Field</th><th>Value</th></tr>`;
-      html += `<tr><td>SEC Classification</td><td>${log.finalClassification||'Not recorded'}</td></tr>`;
-      if(log.taxonomyEventType) html += `<tr><td>Taxonomy Event Type</td><td>${log.taxonomyEventType}</td></tr>`;
-      if(log.managerUpdateRequested) html += `<tr><td>Manager Update Requested?</td><td>${log.managerUpdateRequested}</td></tr>`;
-      if(log.sentinelEvent) html += `<tr><td>Sentinel Event per JC?</td><td>${log.sentinelEvent}</td></tr>`;
-      if(log.sacSeverity && log.sacSeverity !== 'Not applicable') html += `<tr><td>SAC Severity</td><td>${log.sacSeverity}</td></tr>`;
-      if(log.sacProbability && log.sacProbability !== 'Not applicable') html += `<tr><td>SAC Probability</td><td>${log.sacProbability}</td></tr>`;
-      html += `</table>`;
+    if(st !== 'completed' || !log){
+      html += `</table><p class="no-data">${st==='new'?'This case has not been started. No data to display.':'This case was opened but not completed. Reach the Final Summary screen to record results.'}</p>`;
     } else {
-      html += `</table><p class="no-data">No response data recorded for this case. ${st==='new'?'This case has not been started.':'Complete the case by reaching the Final Summary screen to record results.'}</p>`;
+      html += `</table>`;
+      // Render each attempt
+      const attempts = log.attempts || [log];
+      attempts.forEach(function(attempt, idx){
+        if(!attempt || !attempt.finalClassification) return;
+        html += `<h3>Attempt ${idx+1} of ${attempts.length}</h3>`;
+        html += `<table><tr><th>Field</th><th>Value</th></tr>`;
+        html += `<tr><td>Total Time on Case</td><td>${attempt.timeOnTask||'Not recorded'}</td></tr>`;
+        html += `<tr><td>Started</td><td>${attempt.startTime||''}</td></tr>`;
+        html += `<tr><td>Completed</td><td>${attempt.endTime||''}</td></tr>`;
+        html += `<tr><td>SEC Classification</td><td>${attempt.finalClassification||''}</td></tr>`;
+        html += `<tr><td>Taxonomy Event Type</td><td>${attempt.taxonomyEventType||''}</td></tr>`;
+        html += `<tr><td>Manager Update Requested?</td><td>${attempt.managerUpdateRequested||''}</td></tr>`;
+        html += `<tr><td>Sentinel Event per JC?</td><td>${attempt.sentinelEvent||''}</td></tr>`;
+        if(attempt.sacSeverity && attempt.sacSeverity!=='Not applicable') html += `<tr><td>SAC Severity</td><td>${attempt.sacSeverity}</td></tr>`;
+        if(attempt.sacProbability && attempt.sacProbability!=='Not applicable') html += `<tr><td>SAC Probability</td><td>${attempt.sacProbability}</td></tr>`;
+        html += `</table>`;
+        // Discussion point responses
+        if(attempt.responses && attempt.responses.length > 0){
+          html += `<h3 style="margin-top:14px;">Discussion Point Responses &mdash; Attempt ${idx+1}</h3>`;
+          html += `<table><tr><th style="width:18%">Step</th><th style="width:28%">Selected</th><th>Feedback Received</th></tr>`;
+          attempt.responses.forEach(function(r){
+            html += `<tr><td>${r.step||''}</td><td>${r.selected||''}</td><td style="font-size:8.5pt;line-height:1.4;">${r.feedback||''}</td></tr>`;
+          });
+          html += `</table>`;
+        }
+      });
     }
   });
 
@@ -429,14 +571,18 @@ window.addEventListener('message', function(event){
   if(d.type === 'case-complete' && d.caseNum){
     const num = d.caseNum;
     caseStatus[num] = 'completed';
-    sessionLogs[num] = d.log || {};
+    // Accumulate attempts rather than overwriting
+    if(!sessionLogs[num]) sessionLogs[num] = {attempts: []};
+    if(!sessionLogs[num].attempts) sessionLogs[num].attempts = [];
+    sessionLogs[num].attempts.push(d.log || {});
+    // Keep top-level finalClassification for quick status checks
+    sessionLogs[num].finalClassification = (d.log || {}).finalClassification;
     renderLanding();
   }
   if(d.type === 'case-progress' && d.caseNum){
     const num = d.caseNum;
     if(caseStatus[num] !== 'completed') caseStatus[num] = 'in-progress';
-    if(!sessionLogs[num]) sessionLogs[num] = {};
-    Object.assign(sessionLogs[num], d.log || {});
+    if(!sessionLogs[num]) sessionLogs[num] = {attempts: []};
   }
 });
 
