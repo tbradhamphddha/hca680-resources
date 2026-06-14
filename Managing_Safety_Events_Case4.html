@@ -441,6 +441,7 @@ function renderHarmLevelStep() {
 }
 
 function handleHarmLevel(btn, opt) {
+  _captureSelected(btn);
   const allBtns = document.querySelectorAll('#opts .opt-btn');
   const fb = document.getElementById('fb'); fb.classList.add('show');
   const nb = document.getElementById('nb');
@@ -449,18 +450,22 @@ function handleHarmLevel(btn, opt) {
     allBtns.forEach(b => b.disabled = true); btn.classList.add('selected-correct'); fb.classList.add('correct');
     if (requestedInfo) {
       fb.innerHTML = `<span style="font-weight:700;">SSE 3: Moderate Permanent Harm is where the evidence points with the manager's update in hand.</span> The neurologist's assessment at 30 and 90 days documents mild but persistent motor developmental delays on the left side, classified as likely permanent. Permanent neurological impairment, even when described as mild, places this event in the permanent harm category. SSE 3 captures significant harm that permanently impacts function or daily living without rising to the severe permanent harm or loss of organ or limb threshold of SSE 2. This is an important distinction: the infant survived and was not catastrophically impaired, but will carry the consequences of this medication error into the future.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     } else {
       fb.innerHTML = `<span style="font-weight:700;">SSE 4: Severe Temporary Harm is a reasonable classification based on the information available.</span> The infant sustained an intracranial hemorrhage and required reversal treatment and stabilization, which is critical care. Without knowing whether the neurological effects will be permanent, classifying this as severe but temporary harm reflects what the vignette tells us. Note that if you had requested the manager update, you would know that the neurological effects have been classified as likely permanent, which would shift this to SSE 3.`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     }
     nb.classList.add('show'); nb.onclick = () => { step = "csa"; render(); };
   } else if (opt.key === 'sse3' && !requestedInfo) {
     allBtns.forEach(b => b.disabled = true); btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's think about what we know versus what we do not yet know.</span> SSE 3 reflects permanent harm, and you may be picking up on the intracranial hemorrhage as a signal that permanent effects are possible. That instinct is sound. However, the vignette does not tell us whether the neurological effects are permanent. Have you thought about whether requesting more information from the manager might give you the data you need to make that determination?`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = "Request Information from Manager/Designee";
     nb.onclick = () => { requestedInfo = true; renderHarmLevelStep(); };
   } else if (opt.key === 'sse2') {
     allBtns.forEach(b => b.disabled = true); btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's look at the SSE 2 definition more carefully.</span> SSE 2 is reserved for life-changing events resulting in permanent loss of organ, limb, or vital physiologic or neurologic function. ${requestedInfo ? "The manager's update documents mild motor developmental delays, which are significant and likely permanent, but do not rise to the level of loss of vital neurologic function described in SSE 2. The harm is meaningful and permanent, but SSE 3 more accurately reflects its scope." : "Without knowing the permanence of the neurological effects, it is premature to classify at SSE 2. Have you thought about whether additional information would help you distinguish between SSE 2 and a lower permanent harm category?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = requestedInfo ? "Try Again" : "Request Information from Manager/Designee";
     nb.onclick = requestedInfo
       ? () => { fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';}); }
@@ -468,6 +473,7 @@ function handleHarmLevel(btn, opt) {
   } else {
     allBtns.forEach(b => b.disabled = true); btn.classList.add('selected-redirect'); fb.classList.add('neutral');
     fb.innerHTML = `<span style="font-weight:700;">Let's revisit the clinical picture.</span> A neonate received 100 times the intended heparin dose, developed an intracranial hemorrhage, and required reversal treatment and intensive stabilization. That level of harm goes well beyond the moderate or minor temporary categories. ${requestedInfo ? "The manager's update documents likely permanent neurological effects. Consider which category reflects both the severity of what occurred and the permanence of the outcome." : "Have you thought about whether requesting more information would help clarify the expected trajectory of the infant's neurological status?"}`;
+  _logResponse('Discussion Point 3: Harm Level', fb.innerHTML);
     nb.classList.add('show'); nb.textContent = requestedInfo ? "Try Again" : "Request Information from Manager/Designee";
     nb.onclick = requestedInfo
       ? () => { fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';}); }
