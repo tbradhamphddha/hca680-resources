@@ -571,11 +571,9 @@ window.addEventListener('message', function(event){
   if(d.type === 'case-complete' && d.caseNum){
     const num = d.caseNum;
     caseStatus[num] = 'completed';
-    // Accumulate attempts rather than overwriting
-    if(!sessionLogs[num]) sessionLogs[num] = {attempts: []};
-    if(!sessionLogs[num].attempts) sessionLogs[num].attempts = [];
-    sessionLogs[num].attempts.push(d.log || {});
-    // Keep top-level finalClassification for quick status checks
+    // Use the full attempts array from the case file as source of truth
+    if(!sessionLogs[num]) sessionLogs[num] = {};
+    sessionLogs[num].attempts = d.attempts || [d.log || {}];
     sessionLogs[num].finalClassification = (d.log || {}).finalClassification;
     renderLanding();
   }
