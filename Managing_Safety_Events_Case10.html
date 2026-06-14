@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Managing Safety Events: Case 10</title>
+<title>Managing Safety Events: Case 9</title>
 <style>
   :root{--edgewood-red:#BB0000;--black:#000000;--white:#FFFFFF;--dark-gold:#C8932B;--warm-grey:#F0EEEB;--dark-web-grey:#58595B;--slate-blue:#5794AD;--light-grey:#C2C6C8;}
   *{box-sizing:border-box;}body{font-family:'Source Sans Pro',Arial,sans-serif;background:var(--warm-grey);color:var(--black);margin:0;padding:0;line-height:1.6;}
@@ -165,7 +165,7 @@
     <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
     <div class="resource-header-text">
         <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
-        <div class="resource-header-title">Case 10: LTC Fall &mdash; Volunteer Return</div>
+        <div class="resource-header-title">Case 9: Home Care Burn</div>
     </div>
     <a class="resource-header-back" href="Managing_Safety_Events_Index.html">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -176,25 +176,65 @@
 <div class="accent-bar"></div>
 <div class="wrap"><div id="app"></div></div>
 <script>
-const VIGNETTE = "A resident in a long-term care facility has left-sided weakness resulting from a prior stroke and has been formally identified as high fall risk. The facility does not use bed alarms as a matter of policy; clinical evidence indicated that bed alarms increased confusion and distress among residents with cognitive impairment, and the decision was made to address fall prevention through other means. A facility volunteer returned the resident to his room after accompanying him to an outside physician appointment. She raised his side rails and placed his call bell within reach, then left the room without notifying the nursing staff that he had returned. Approximately 30 minutes later, the resident got out of bed unassisted to use the bathroom, fell, and sustained an injury to his right wrist. He was seen by the nursing staff, and the wrist was splinted for two weeks to stabilize the injury while it healed. He experienced difficulty completing activities of daily living requiring additional nursing assistance during the recovery period. He returned to his prior functional baseline after the splint was removed.";
-const MANAGER_UPDATE = "Per the director of nursing's follow-up, the resident recovered fully after the splint was removed and returned to his prior functional baseline. A review of the facility's volunteer protocol reveals that while volunteers are trained to assist residents with transportation, there is no documented requirement for them to notify nursing staff when returning a resident designated as high fall risk. The nursing staff were unaware the resident had returned to his room until he was found on the floor. Three similar events involving volunteers returning high-fall-risk residents without nursing notification have occurred in the past 18 months.";
+const VIGNETTE = "A patient receiving home health occupational therapy services is recovering at home following a traumatic brain injury. Her injury has resulted in reduced ability to communicate pain and discomfort clearly and reliably. During a scheduled home visit, the OT applies a wet heat pack to the patient's wrist and hand as part of her treatment session. The heat pack was heated in a microwave and wrapped in a washcloth prior to application. The therapist assesses the temperature by touch before applying it and determines it is acceptable. She does not observe the patient's non-verbal response at the time of application. She does not perform a skin check for 15 minutes after application. When she does check, she finds a second-degree burn: erythema and a small blister on the patient's wrist and hand. Wound ointment and a gauze bandage are applied. The burn heals without scarring or lasting effects.";
+const MANAGER_UPDATE = "Per the home health clinical supervisor's follow-up, the patient's burn healed fully within two weeks with no scarring and no lasting functional effects. The patient required dressing changes at subsequent home visits. A review of the agency's heat pack protocol reveals that the standard of care for patients with known communication impairments requires verification of the pack temperature using a thermometer or standardized temperature strip before application, and a skin check within five minutes of application. Neither step was documented for this visit.";
 
 let step="intro",requestedInfo=null,kctIndex=0,sentinelAnswer=null,sacSeverity=null,sacProbability=null;
 const app=document.getElementById('app');
+const _caseStartTime = new Date();
+let _attemptLog = [];
+let _allAttempts = [];
+let _lastAttemptSnapshot = null;
+let _attemptStartTime = new Date();
+var _pendingSelected = '';
+
+function _captureSelected(btn) {
+  _pendingSelected = btn.textContent.trim();
+}
+
+function _logResponse(stepName, fbHTML) {
+  var alreadyLogged = _attemptLog.some(function(r){ return r.step === stepName; });
+  if (alreadyLogged) return;
+  var div = document.createElement('div');
+  div.innerHTML = fbHTML || '';
+  var cleanText = (div.textContent || div.innerText || '').trim();
+  _attemptLog.push({ step: stepName, selected: _pendingSelected, feedback: cleanText });
+}
+
+function _buildAttemptLog() {
+  var endTime = new Date();
+  var elapsed = Math.round((endTime - _attemptStartTime) / 1000);
+  var mins = Math.floor(elapsed / 60);
+  var secs = elapsed % 60;
+  return {
+    finalClassification: 'PSE 2 — Minor Temporary Harm',
+    taxonomyEventType: 'EE2 — Burn (Environmental); Home Health',
+    managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+    sentinelEvent: (typeof sentinelAnswer !== 'undefined') ? (sentinelAnswer === 'yes' ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable') : 'Not applicable',
+    sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+    sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+    startTime: _attemptStartTime.toLocaleString(),
+    endTime: endTime.toLocaleString(),
+    timeOnTask: mins + ' min ' + secs + ' sec',
+    responses: _attemptLog.slice()
+  };
+}
 function vign(){return `<div class="vignette"><strong>The Event:</strong> ${VIGNETTE}</div>`;}
 function pb(n,t,l){return `<div class="progress-row"><span>${l}</span><span>Step ${n} of ${t}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.round(n/t*100)}%;"></div></div>`;}
 
+
+
 function renderIntro(){
-  app.innerHTML=`<div class="card"><span class="step-label">Case 10</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a fall reported from a long-term care facility involving a volunteer and a high-fall-risk resident.</p><p>Read the event carefully. This case includes an organizational policy decision that is relevant to your analysis.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
+  app.innerHTML=`<div class="card"><span class="step-label">Case 9</span><div style="font-size:1.05rem;margin-bottom:16px;"><p>You open the next event: a burn injury reported from a home health occupational therapy visit. This case takes place in the home care setting.</p><p>Read the event carefully before working through the discussion points.</p></div>${vign()}<div class="nav-row"><button class="nav-btn show" id="nb">Begin Discussion</button></div></div>`;
   document.getElementById('nb').onclick=()=>{step="deviation";render();};
 }
 
 function renderDeviationStep(){
-  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>A note on the no-alarm policy:</strong> The facility's decision not to use bed alarms is a deliberate, evidence-informed organizational policy. It is not a GAPS deviation. When an organization makes a deliberate policy decision based on clinical evidence, that decision itself is not a safety event. However, that decision creates a context in which other compensatory safeguards become more important. Identifying what those compensatory safeguards are, and whether they were followed, is the analysis task.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Identifying Deviations")}<div class="card"><span class="step-label">Step 1 of 5</span><h3 class="case-title">Were There Any Deviations?</h3>${vign()}<div class="reference-box"><strong>Context for this setting:</strong> Home health practice standards require that clinicians adapt their assessment and monitoring protocols to account for patient-specific factors that may affect the patient's ability to communicate harm. A patient with a known communication impairment from a brain injury requires heightened monitoring during treatments that carry a thermal risk.</div><div class="question">Was there a deviation from Generally Accepted Performance Standards (GAPS) in this event? Select the option that best represents the main deviation.</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue</button></div></div>`;
   [
-    {key:"notify",label:"The volunteer did not notify nursing staff that a high-fall-risk resident had been returned to his room, and no protocol existed requiring her to do so",type:"main"},
-    {key:"alarm",label:"The facility's decision not to use bed alarms was the cause of this fall",type:"incorrect"},
-    {key:"volunteer",label:"The volunteer should not have been involved in returning a high-fall-risk resident to his room",type:"secondary"},
+    {key:"main",label:"The heat pack temperature was not adequately verified before application and the patient was not monitored within the required timeframe, despite her known inability to reliably communicate discomfort",type:"main"},
+    {key:"micro",label:"The microwave used to heat the pack was not calibrated correctly",type:"incorrect"},
+    {key:"heat",label:"Heat packs should not be used in home health settings",type:"incorrect"},
     {key:"none",label:"There was no deviation in Generally Accepted Performance Standards (GAPS)",type:"no-gaps"}
   ].forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
@@ -205,34 +245,36 @@ function renderDeviationStep(){
 
 function handleDev(btn,opt){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(opt.type==="main"){
     btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">That captures the deviation in this event well.</span> The volunteer completed her role in accompanying and returning the resident, but left the room without notifying the nursing staff. In a facility that does not use bed alarms, the nursing staff's awareness of a high-fall-risk resident's location and status is especially critical, because there is no electronic signal to alert them when the resident moves. The absence of a notification in that environment is the gap that allowed 30 minutes to pass without anyone knowing the resident was unsupervised. Critically, the manager's update tells us there was no protocol requiring volunteers to make this notification. The deviation is not only in what the volunteer did: it is in the system that did not define what she was required to do.`;
+    fb.innerHTML=`<span style="font-weight:700;">That captures the GAPS deviation in this event.</span> Two things needed to happen and did not: the temperature was not verified using an objective measure before application, and the skin check was not performed within the required window. Both failures are amplified by a patient-specific factor that was known: this patient has a brain injury that impairs her ability to reliably communicate pain or discomfort. When a patient cannot tell you something is wrong, the clinician's monitoring responsibility increases, not decreases. The standard of care requires more vigilant temperature verification and earlier skin assessment for patients with this profile, not the same as for patients without communication limitations.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Continue to Discussion Point 2";
     nb.onclick=()=>{step="reach";render();};
   } else if(opt.type==="incorrect"){
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at the no-alarm policy more carefully.</span> The facility made a deliberate, evidence-informed decision not to use bed alarms because they increased confusion and distress among residents with cognitive impairment. That decision is within the organization's clinical authority and is not itself a GAPS deviation. Have you thought about what safeguards should exist in place of bed alarms for high-fall-risk residents, and whether those safeguards were in place and followed?`;
-    nb.classList.add('show');nb.textContent="Try Again";
-    nb.onclick=()=>renderDeviationStep();
-  } else if(opt.type==="secondary"){
-    btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">The scope of the volunteer's role is worth examining as a contributing factor.</span> However, the event does not indicate that a volunteer accompanying a resident to an appointment is outside accepted practice. The more direct question is: what should happen at the moment the volunteer returns the resident to his room, particularly given his fall risk designation? Have you thought about what the expected handoff process should look like and whether it occurred?`;
+    const d=opt.key==="micro"
+      ?"The event does not identify a problem with the microwave itself. The issue is in how the temperature of the heated pack was assessed before it was applied to the patient. Have you thought about what an adequate temperature verification process looks like for a patient who cannot reliably communicate that something is too hot?"
+      :"Heat packs are an accepted modality in home health occupational therapy. The issue is not the use of the modality but how it was applied and monitored in the context of this specific patient's clinical needs.";
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at this from a different angle.</span> ${d}`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> The Known Complication Test can help us think through whether this outcome was a known complication rather than a safety event. Let's work through those four questions.`;
+  _logResponse('Unknown Step', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
     nb.onclick=()=>{kctIndex=0;step="kct";render();};
   }
 }
 
 const KCT_QS=[
-  {text:"Was the activity (accompanying a high-fall-risk resident to a physician appointment and returning him to his room) appropriate or warranted?",answer:"YES"},
-  {text:"Was the complication (fall resulting in wrist injury) a known risk for this resident, and was the standard of care employed to mitigate that risk upon his return?",answer:"NO"},
+  {text:"Was the treatment (application of a wet heat pack to the wrist and hand) appropriate or warranted for this patient based on standards of care for home health occupational therapy?",answer:"YES"},
+  {text:"Was the complication (second-degree burn) a known risk of heat pack application, and was the standard of care employed to mitigate that risk given this patient's communication impairment?",answer:"NO"},
   {text:"Was the complication identified in a timely manner?",answer:"YES"},
   {text:"Was the complication treated according to the standard of care, in a timely manner?",answer:"YES"}
 ];
@@ -250,24 +292,27 @@ function renderKctStep(){
 
 function handleKct(btn,val,q){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val===q.answer;
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show',isC?'correct':'neutral');
   const notes=[
-    ["Accompanying a resident to an outside appointment and returning him to his room is appropriate and consistent with the volunteer's role in this facility.","Think about whether escorting this resident to an appointment is appropriate given his needs and the facility's volunteer program. It is, pointing toward YES."],
-    ["A fall is a known risk for this resident: he is formally designated as high fall risk due to left-sided weakness. The standard of care mitigation upon return, notifying nursing staff so they could monitor him, was not employed. The mitigation step was absent, pointing to NO.","Consider both parts of this question. A fall was a known risk. But was the standard of care employed to mitigate that risk when he was returned to his room? In a facility without bed alarms, nursing notification is the key compensatory safeguard. It did not happen, pointing to NO."],
-    ["The resident was found on the floor and nursing staff responded. The fall was identified during the same event period.","The fall was discovered and the resident received prompt assessment and care. That is timely identification, pointing toward YES."],
-    ["The wrist was assessed, splinted, and the resident received appropriate nursing support during the two-week recovery. That is consistent with the standard of care for this type of injury in a long-term care setting.","Splinting and nursing support during recovery is the appropriate care for a wrist injury in this setting. This points toward YES."]
+    ["Wet heat pack application to the wrist and hand is an appropriate occupational therapy modality for a patient recovering from a traumatic brain injury.","Think about the clinical picture: heat therapy to the wrist and hand is a standard occupational therapy treatment. The modality itself was appropriate for this patient's condition, pointing toward YES."],
+    ["Burns are a known risk of heat pack application. However, the standard of care mitigation for a patient with a known communication impairment requires objective temperature verification and earlier monitoring. Neither was performed. The mitigation was not employed as required for this patient's specific risk profile. This points to NO.","Consider both parts of this question. A burn from a heat pack is a known risk, yes. But was the standard of care employed to mitigate that risk for a patient who cannot tell you something is wrong? Objective temperature verification and early skin assessment are the mitigation steps. They did not occur. This points to NO."],
+    ["The burn was identified when the therapist performed the skin check 15 minutes after application. While delayed from the protocol-required five minutes, the burn was found during that visit and treated immediately.","The burn was found during the same visit and treated promptly. That is timely identification given the context, pointing toward YES."],
+    ["Wound ointment and a gauze bandage were applied at the time of discovery. That is the appropriate first-line treatment for a second-degree burn of this nature. The patient received follow-up wound care at subsequent visits.","The immediate application of ointment and a bandage, followed by wound care at subsequent visits, is consistent with the standard of care for this type of burn. This points toward YES."]
   ];
   const[c,i]=notes[kctIndex];
   fb.innerHTML=`<span style="font-weight:700;">${isC?"That aligns with the evidence in the event.":"Let's think through this one together."}</span> ${isC?c:i}`;
+  _logResponse('KCT Question ' + (typeof kctIndex !== 'undefined' ? kctIndex + 1 : ''), fb.innerHTML);
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{kctIndex++;renderKctStep();};
 }
 
 function renderKctResult(){
-  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">One of the four answers came back NO.</span> This is a safety event. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
+  app.innerHTML=`${pb(1,5,"Discussion Point 1: Known Complication Test")}<div class="card"><span class="step-label">Known Complication Test &middot; Result</span><h3 class="case-title">What Does This Tell Us?</h3><div class="feedback show neutral"><span style="font-weight:700;">One of the four answers came back NO.</span> The Known Complication Test is clear: if the answer to any one question is NO, this is a safety event. Let's go back and identify the deviation.</div><div class="nav-row"><button class="nav-btn show" id="nb">Return to Discussion Point 1</button></div></div>`;
   document.getElementById('nb').onclick=()=>{step="deviation";render();};
 }
 
@@ -282,12 +327,16 @@ function renderReachStep(){
 
 function handleReach(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const isC=val==='Yes, it reached the patient';
   btn.classList.add(isC?'selected-correct':'selected-redirect');
   if(!isC)document.querySelectorAll('#opts .opt-btn').forEach(b=>{if(b.textContent==='Yes, it reached the patient')b.classList.add('selected-correct');});
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
-  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> No barrier intercepted the gap in notification. Nursing staff were unaware the resident had returned. Without that awareness, no one could initiate the monitoring or redirection that might have prevented him from attempting to get up unassisted. The deviation reached the patient directly.`;}
-  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A catch would have required nursing staff to know the resident had returned so they could monitor him or redirect him to a safer option for toileting. That awareness never happened. Thirty minutes passed, the resident got up alone, and fell. The deviation reached the patient without any intervention.`;}
+  if(isC){fb.classList.add('correct');fb.innerHTML=`<span style="font-weight:700;">That is a sound read of this situation.</span> The patient was unable to communicate discomfort reliably, and no early skin check was performed to compensate for that limitation. The burn occurred and was not discovered until 15 minutes after application. The deviation reached the patient without any barrier catching it.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
+  else{fb.classList.add('neutral');fb.innerHTML=`<span style="font-weight:700;">Let's think about what a catch would have looked like here.</span> A barrier would have been an early skin check or an objective temperature verification that caught a problem before the burn occurred. Neither happened. The burn developed over 15 minutes while the patient, who could not communicate her discomfort, was left unmonitored.`;
+  _logResponse('Discussion Point 2: Reach', fb.innerHTML);}
   const nb=document.getElementById('nb');nb.classList.add('show');
   nb.onclick=()=>{step="harm-info";render();};
 }
@@ -303,22 +352,25 @@ function renderHarmInfoStep(){
 
 function handleHarmInfo(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   btn.classList.add('selected-correct');
   requestedInfo=val.startsWith('Yes');
   const fb=document.getElementById('fb');fb.classList.add('show','neutral');
   const nb=document.getElementById('nb');nb.classList.add('show');
   if(requestedInfo){
-    fb.innerHTML=`<span style="font-weight:700;">Reaching out for more information is sound practice.</span> The vignette tells us the resident recovered to his prior functional baseline, but confirming the full trajectory and any system context is good practice. You contact the director of nursing.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`;
+    fb.innerHTML=`<span style="font-weight:700;">Reaching out for more information is sound practice.</span> The vignette notes the burn healed without scarring, but confirming the full clinical trajectory is good practice. You contact the clinical supervisor.<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   } else {
-    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is reasonable.</span> The vignette tells us the resident sustained a wrist injury requiring a splint for two weeks, needed additional nursing assistance during recovery, and returned to his prior baseline. Let's score based on what is documented.`;
+    fb.innerHTML=`<span style="font-weight:700;">Proceeding with the documented information is reasonable.</span> The vignette tells us the burn healed without scarring. Let's score based on what is documented.`;
+  _logResponse('Discussion Point 3: Request Info?', fb.innerHTML);
   }
   nb.onclick=()=>{step="harm-level";render();};
 }
 
 function renderHarmLevelStep(){
   const rem=requestedInfo?`<div class="info-box"><strong>Manager/Designee Update</strong>${MANAGER_UPDATE}</div>`:"";
-  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring a higher level of care, monitoring, or a minor procedure to resolve; no permanent residual</li><li><strong>PSE 2</strong> &mdash; Minor Temporary Harm: minimal harm, time-limited, little or no intervention required</li><li><strong>PSE 1</strong> &mdash; Minor Permanent Harm: minimal harm with no expected change in clinical status</li></ul>Assign based on actual patient outcome.</div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
-  [{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"},{key:"pse2",label:"Minor Temporary Harm (PSE 2)"},{key:"pse1",label:"Minor Permanent Harm (PSE 1)"},{key:"sse4",label:"Severe Temporary Harm (SSE 4)"}].forEach(opt=>{
+  app.innerHTML=`${pb(3,5,"Discussion Point 3: Level of Harm")}<div class="card"><span class="step-label">Step 3 of 5</span><h3 class="case-title">Score the Level of Harm</h3>${vign()}${rem}<div class="reference-box"><strong>SEC Levels of Harm:</strong><ul><li><strong>PSE 2</strong> &mdash; Minor Temporary Harm: minimal harm, time-limited, requires little or no intervention</li><li><strong>PSE 1</strong> &mdash; Minor Permanent Harm: minimal harm with no expected change in clinical status</li><li><strong>SSE 5</strong> &mdash; Moderate Temporary Harm: significant harm requiring meaningful treatment to resolve</li></ul></div><div class="question">How would you classify the level of harm in this event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Discussion Point 4</button></div></div>`;
+  [{key:"pse2",label:"Minor Temporary Harm (PSE 2)"},{key:"pse1",label:"Minor Permanent Harm (PSE 1)"},{key:"sse5",label:"Moderate Temporary Harm (SSE 5)"}].forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
     btn.onclick=()=>handleHarmLevel(btn,opt);
     document.getElementById('opts').appendChild(btn);
@@ -329,23 +381,18 @@ function handleHarmLevel(btn,opt){
   const allBtns=document.querySelectorAll('#opts .opt-btn');
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
-  if(opt.key==='sse5'){
+  if(opt.key==='pse2'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">SSE 5: Moderate Temporary Harm is the right classification.</span> The resident sustained a wrist injury requiring splinting for two weeks and an increased level of nursing assistance for activities of daily living during the recovery period. The SEC definition of SSE 5 includes events where significant harm requires a higher level of care or monitoring to resolve. The additional nursing assistance required for ADLs during a two-week recovery represents that elevated care need. ${requestedInfo?"The director of nursing confirmed full return to prior functional baseline after splint removal.":"The vignette confirms full return to prior baseline."} The harm was real, required meaningful intervention, and resolved fully.`;
+    fb.innerHTML=`<span style="font-weight:700;">PSE 2: Minor Temporary Harm is the right classification.</span> The patient sustained a second-degree burn, a blister and erythema, that was treated with wound ointment and a bandage and healed fully without scarring or lasting effects. The intervention required was minimal: dressing application and wound care follow-up during subsequent home visits. ${requestedInfo?"The clinical supervisor's update confirms full healing within two weeks with no permanent effects.":"The vignette confirms the burn healed without scarring."} The harm was real and should not be minimized, but it falls in the minor temporary category given its limited scope and full resolution.`;
     nb.classList.add('show');nb.onclick=()=>{step="csa";render();};
-  } else if(opt.key==='pse2'){
-    allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at what minor temporary harm requires.</span> PSE 2 captures minimal harm requiring little or no intervention. This resident required splinting, two weeks of restricted function, and an increased level of nursing assistance for activities of daily living. That level of impact and care need goes beyond the PSE 2 threshold. Have you thought about which category better captures a temporary injury requiring a meaningful increase in care?`;
-    nb.classList.add('show');nb.textContent="Try Again";
-    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else if(opt.key==='pse1'){
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the permanent harm criteria.</span> The resident returned to his prior functional baseline after the splint was removed. Permanent harm requires that the harm has no expected change in the patient's clinical status. Full recovery has occurred here. Have you thought about which category captures significant but fully resolved harm?`;
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the permanent harm definition.</span> PSE 1 requires that the harm has no expected change in the patient's clinical status. Both the vignette and the manager's update confirm the burn healed fully without scarring or lasting effects. This event is temporary in nature. Have you thought about which category captures minor harm that resolved fully?`;
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     allBtns.forEach(b=>b.disabled=true);btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at the SSE 4 threshold.</span> SSE 4 is reserved for critical or potentially life-threatening harm requiring major surgery. A wrist splint applied for two weeks is a meaningful but minor intervention, not a critical or life-threatening condition requiring major surgery. Have you thought about which category better fits a temporary injury managed with splinting and additional nursing support?`;
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at what the intervention actually required.</span> SSE 5 captures significant harm requiring meaningful clinical treatment. A second-degree burn treated with wound ointment and a bandage, healing fully without scarring, is a meaningful but minor injury. The intervention required was minimal and within the scope of what the therapist could manage in the home. Have you thought about which category better captures a minor injury that resolved with minimal treatment?`;
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Discussion Point 4";allBtns.forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
@@ -362,22 +409,25 @@ function renderCsaSentinelStep(){
 
 function handleSentinel(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(val==='no'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy criteria for falls specify that a fall is a sentinel event when it results in a fracture, surgery, casting or traction, or death or permanent harm. A wrist splint applied for stabilization falls outside the fracture and casting threshold. The resident recovered fully. This event does not meet the sentinel event threshold. Let's use the SAC Matrix to determine the appropriate level of response.`;
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient sustained a minor temporary burn that healed fully without scarring. The harm does not meet the sentinel event threshold. Let's use the SAC Matrix to think through the appropriate level of response.`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC fall criteria carefully.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026): Fall Criteria</strong>A fall is a sentinel event when it results in:<ul style="margin:8px 0 0 18px;padding:0;"><li>Any fracture</li><li>Surgery, casting, or traction</li><li>Required consult or management for neurological or internal injury</li><li>A patient with coagulopathy who receives blood products as a result of the fall</li><li>Death or permanent harm</li></ul></div>A wrist splint for stabilization is not the same as casting or fracture management. The resident recovered fully. Have you thought about how the intervention in this event compares to the sentinel event fall criteria?`;
+    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>This patient sustained a minor second-degree burn that healed completely without scarring or lasting effects. Have you thought about whether that level of harm meets the death, severe, or permanent threshold?`;
+  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Reconsider My Answer";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
 }
 
 function renderCsaMatrixStep(){
-  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a sentinel event.</span> The SAC Matrix will help determine the appropriate level of response.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; surgical intervention required; increased LOS or level of care for 3 or more patients</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Falls among high-fall-risk residents at your facility occur occasionally. Three similar volunteer notification events have occurred in the past 18 months.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a sentinel event.</span> The SAC Matrix will help determine the appropriate level of response.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Burns associated with heat therapy in your home health program occur occasionally.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
   [{val:'catastrophic',label:'Catastrophic'},{val:'major',label:'Major'},{val:'moderate',label:'Moderate'},{val:'minor',label:'Minor'}].forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
     btn.onclick=()=>handleSev(btn,opt.val);
@@ -387,19 +437,17 @@ function renderCsaMatrixStep(){
 
 function handleSev(btn,val){
   document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   const fb=document.getElementById('sev-fb');fb.classList.add('show');
-  if(val==='moderate'){
+  if(val==='minor'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">Moderate is the right severity classification.</span> The SAC Matrix defines Moderate as including events resulting in increased LOS or level of care for one to two patients. This resident required an increased level of nursing assistance for two weeks during his recovery, representing an increase in his care needs beyond his baseline. That aligns with Moderate severity.`;
+    fb.innerHTML=`<span style="font-weight:700;">Minor is the right severity classification.</span> The SAC Matrix defines Minor as no injury or no increased stay or level of care. The patient sustained a minor burn treated with wound ointment and a bandage, healed fully, and the home health visit schedule was not significantly altered. This aligns with Minor severity.`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     showProb();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    const h=val==='catastrophic'
-      ?"Catastrophic requires death, major permanent loss of function, or a JC sentinel event. This event is not a sentinel event and the resident recovered fully. Have you thought about which category captures an increase in care level without permanent or catastrophic consequences?"
-      :val==='major'
-      ?"Major captures permanent lessening of function or surgical intervention. The resident returned to his prior baseline after two weeks. Have you thought about which category captures a temporary increase in care level with full recovery?"
-      :"Minor captures events with no injury and no increased stay or level of care. This resident required a splint and two weeks of additional nursing assistance. Have you thought about which category captures that increase in care need?";
-    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> ${h}`;
+    fb.innerHTML=`<span style="font-weight:700;">Let's revisit the severity definitions.</span> The patient sustained a minor second-degree burn treated with a bandage and wound ointment. There was no increase in care level, no hospitalization, and no lasting effects. Have you thought about which category captures a minor injury with minimal intervention and no lasting clinical impact?`;
+  _logResponse('Discussion Point 4: SAC Severity', fb.innerHTML);
     document.querySelectorAll('#sev-opts .opt-btn').forEach(b=>b.disabled=false);btn.disabled=true;
   }
 }
@@ -415,22 +463,57 @@ function showProb(){
 
 function handleProbFn(btn,val){
   document.querySelectorAll('#prob-opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
   sacProbability=val;btn.classList.add('selected-correct');
   const fb=document.getElementById('prob-fb');fb.classList.add('show','neutral');
-  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Moderate + Occasional = SAC 1.":"The scenario context suggests Occasional for falls among high-fall-risk residents. Note that Moderate severity produces a SAC score of 1 at Occasional, Uncommon, and Remote probability. The three similar events in 18 months may suggest a higher probability for the specific volunteer notification gap."}`;
+  fb.innerHTML=`<span style="font-weight:700;">Probability noted.</span> ${val==='occasional'?"Occasional aligns with the scenario context. Minor + Occasional = SAC 1.":"The scenario context suggests Occasional. At Minor severity, all probability categories produce a SAC score of 1."}`;
+  _logResponse('Discussion Point 4: SAC Probability', fb.innerHTML);
   showMatRes();
 }
 
 function showMatRes(){
   const r=document.getElementById('matrix-result');r.style.display='block';
-  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--slate-blue);"><strong>SAC Matrix Result: Score of 1 (Lowest Risk)</strong><br><br>Moderate severity with Occasional probability = SAC 1. Monitor and trend is the indicated response based on the matrix alone. However, note that the manager's update reveals three similar events in 18 months involving the same volunteer notification gap. When multiple similar events cluster around a specific system failure, trending those events together may reveal a pattern warranting a more structured review even when the individual event SAC score does not require one.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td><td style="text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">Before moving on.</span> The SAC Matrix guides resource allocation alongside organizational policy and accreditation requirements. Always verify what your accreditation body and internal policies require.</div>`;
+  r.innerHTML=`<div class="reference-box" style="border-left:4px solid var(--slate-blue);"><strong>SAC Matrix Result: Score of 1 (Lowest Risk)</strong><br><br>Minor severity with any probability = SAC 1. A SAC score of 1 indicates that monitoring and trending is the appropriate response. A full CSA is not indicated by the matrix alone for this event.<br><br><table class="summary-table" style="margin-top:8px;font-size:.85rem;"><tr><th></th><th>Catastrophic</th><th>Major</th><th>Moderate</th><th>Minor</th></tr><tr><td><strong>Frequent</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td></tr><tr><td><strong>Occasional</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td></tr><tr><td><strong>Uncommon</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td></tr><tr><td><strong>Remote</strong></td><td style="text-align:center;">3</td><td style="text-align:center;">2</td><td style="text-align:center;">1</td><td style="background:#eaf5ea;font-weight:700;text-align:center;">1</td></tr></table></div><div class="feedback show neutral" style="margin-top:16px;"><span style="font-weight:700;">An important teaching point about SAC 1 events.</span> A SAC score of 1 does not mean this event is unimportant or that nothing needs to happen. It means a full comprehensive systematic analysis is not indicated based on the matrix alone. The appropriate response for a SAC 1 event is monitoring and trending: tracking similar events over time to identify patterns that might not be visible in a single case. If this type of event recurred frequently, the aggregate picture might call for a more structured review. Always verify what your organizational policy and accreditation body require, as those standards may set additional thresholds beyond the SAC score.</div>`;
   const nb=document.getElementById('nb');nb.classList.add('show');nb.textContent="See Final Summary";
   nb.onclick=()=>{step="summary";render();};
 }
 
 function renderSummary(){
-  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 10 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">SSE 5</div><p>Moderate Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>EE3 &mdash; Fall (Environmental); Long-Term Care Setting</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; volunteer did not notify nursing staff upon returning a high-fall-risk resident; no protocol existed requiring this notification</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; nursing staff unaware of resident's return; no monitoring or redirection possible</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full recovery confirmed; three similar volunteer notification events identified in the past 18 months; no protocol requiring notification existed":"No"}</td></tr><tr><td>Level of harm</td><td>SSE 5 &mdash; Moderate Temporary Harm (wrist splint; two weeks of increased nursing assistance; full recovery)</td></tr><tr><td>SEC Classification</td><td>Serious Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; wrist splint does not meet fracture or casting threshold; full recovery</td></tr><tr><td>SAC Matrix score</td><td>1 (Moderate severity, Occasional probability) &mdash; monitor and trend; note three similar events in 18 months</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on the long-term care setting and volunteer programs.</span> This case illustrates a dimension of patient safety that extends beyond licensed clinical staff. Volunteers, contractors, transport aides, and other non-clinical personnel who interact with patients or residents are part of the safety environment whether or not they are covered by clinical protocols. An administrator overseeing a long-term care facility must ensure that everyone with access to high-risk residents understands their role in the safety system, including what to do and who to notify when they complete an interaction. Safety does not stop at the nursing station.</div><p class="small-note">References: HPI SEC &amp; SSER; RCA2 SAC Matrix; JC Sentinel Event Policy July 2026</p><button class="restart-btn" id="rb">Restart Case 10</button></div>`;
-  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;step="intro";render();};
+  const _currentAttemptSnapshot = _buildAttemptLog();
+  _lastAttemptSnapshot = _currentAttemptSnapshot;
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
+
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 9 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>EE2 &mdash; Burn/Smoke Inhalation (Environmental); Home Health Setting</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; temperature not objectively verified; skin check not performed within required timeframe; patient's known communication impairment not accounted for in monitoring</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; burn developed over 15 minutes without monitoring; patient could not communicate discomfort</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; full healing confirmed within two weeks; no scarring; protocol review revealed objective temperature verification and 5-minute skin check requirements not followed":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (second-degree burn; healed fully without scarring)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Minor severity, any probability) &mdash; monitor and trend; full CSA not indicated by matrix</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">A note on the home health setting.</span> This case illustrates a dimension of the continuum of care that is often underrepresented in patient safety discussions: home health. In a home environment, the clinician is operating without immediate backup, without the institutional infrastructure of a hospital, and with patients whose home environments may present unique risks. Monitoring and assessment protocols that work in a clinical setting may need to be adapted for the home, particularly for patients with communication or sensory limitations. Healthcare administrators overseeing home health programs must ensure that protocols account for the unique risk profile of care delivered in the community setting.</div><button class="restart-btn" id="rb">Restart Case 9</button></div>`;
+  
+  // Send completion data to parent shell
+  setTimeout(function(){
+    var endTime = new Date();
+    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    var timeStr = mins + ' min ' + secs + ' sec';
+    window.parent.postMessage({
+      type: 'case-complete',
+      caseNum: 9,
+      log: {
+        finalClassification: 'PSE 2 — Minor Temporary Harm',
+        taxonomyEventType: 'EE2 — Burn (Environmental)',
+        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
+        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
+        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
+        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
+        startTime: _caseStartTime.toLocaleString(),
+        endTime: endTime.toLocaleString(),
+        timeOnTask: timeStr
+      }
+    }, '*');
+  }, 100);
+  document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;
+    if (_lastAttemptSnapshot) { _allAttempts.push(_lastAttemptSnapshot); _lastAttemptSnapshot = null; }
+    _attemptLog = [];
+    _attemptStartTime = new Date();
+    step="intro";render();};
 }
 
 function render(){
@@ -444,10 +527,5 @@ function render(){
   else if(step==="summary")renderSummary();
 }
 render();
-</script>
-<footer class="resource-footer">
-    &copy; 2026 Edgewood University &middot; Henry Predolin College of Health Sciences<br>
-    <a href="https://www.edgewood.edu" target="_blank" rel="noopener">edgewood.edu</a>
-</footer>
-</body>
+</script></body>
 </html>
