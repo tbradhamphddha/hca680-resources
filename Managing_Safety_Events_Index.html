@@ -389,28 +389,21 @@ function generateAndPrintLog(caseNums, title){
     html += `<tr><td>Taxonomy Event Type</td><td>${c.taxonomy}</td></tr>`;
     html += `<tr><td>Expected Classification</td><td>${c.classification}</td></tr>`;
     html += `<tr><td>Status</td><td><span class="badge badge-${st}">${st==='completed'?'Completed':st==='in-progress'?'In Progress':'Not Started'}</span></td></tr>`;
-    if(log){
-      if(log.timeOnTask) html += `<tr><td>Time on Task</td><td>${log.timeOnTask}</td></tr>`;
+    if(log && log.finalClassification){
       if(log.startTime) html += `<tr><td>Session Started</td><td>${log.startTime}</td></tr>`;
       if(log.endTime) html += `<tr><td>Session Ended</td><td>${log.endTime}</td></tr>`;
+      if(log.timeOnTask) html += `<tr><td>Time on Task</td><td>${log.timeOnTask}</td></tr>`;
       html += `</table>`;
-      if(log.responses && log.responses.length > 0){
-        html += `<h3>Discussion Point Responses</h3><table><tr><th>Step</th><th>Question</th><th>Your Selection</th><th>Feedback Received</th></tr>`;
-        log.responses.forEach(r => {
-          html += `<tr><td>${r.step||''}</td><td>${r.question||''}</td><td>${r.selected||''}</td><td>${r.feedback||''}</td></tr>`;
-        });
-        html += `</table>`;
-      }
-      if(log.finalClassification){
-        html += `<h3>Final Classification</h3><table>`;
-        html += `<tr><td>SEC Classification</td><td>${log.finalClassification||'Not recorded'}</td></tr>`;
-        if(log.sentinelEvent!==undefined) html += `<tr><td>Sentinel Event?</td><td>${log.sentinelEvent}</td></tr>`;
-        if(log.sacScore) html += `<tr><td>SAC Matrix Score</td><td>${log.sacScore}</td></tr>`;
-        if(log.managerUpdateRequested!==undefined) html += `<tr><td>Manager Update Requested?</td><td>${log.managerUpdateRequested?'Yes':'No'}</td></tr>`;
-        html += `</table>`;
-      }
+      html += `<h3>Classification Results</h3><table><tr><th>Field</th><th>Value</th></tr>`;
+      html += `<tr><td>SEC Classification</td><td>${log.finalClassification||'Not recorded'}</td></tr>`;
+      if(log.taxonomyEventType) html += `<tr><td>Taxonomy Event Type</td><td>${log.taxonomyEventType}</td></tr>`;
+      if(log.managerUpdateRequested) html += `<tr><td>Manager Update Requested?</td><td>${log.managerUpdateRequested}</td></tr>`;
+      if(log.sentinelEvent) html += `<tr><td>Sentinel Event per JC?</td><td>${log.sentinelEvent}</td></tr>`;
+      if(log.sacSeverity && log.sacSeverity !== 'Not applicable') html += `<tr><td>SAC Severity</td><td>${log.sacSeverity}</td></tr>`;
+      if(log.sacProbability && log.sacProbability !== 'Not applicable') html += `<tr><td>SAC Probability</td><td>${log.sacProbability}</td></tr>`;
+      html += `</table>`;
     } else {
-      html += `</table><p class="no-data">No response data recorded for this case. ${st==='new'?'This case has not been started.':'Complete the case to record responses.'}</p>`;
+      html += `</table><p class="no-data">No response data recorded for this case. ${st==='new'?'This case has not been started.':'Complete the case by reaching the Final Summary screen to record results.'}</p>`;
     }
   });
 
@@ -432,15 +425,15 @@ function generateAndPrintLog(caseNums, title){
 window.addEventListener('message', function(event){
   const d = event.data;
   if(!d || typeof d !== 'object') return;
-  const num = window._currentCaseNum;
-  if(!num) return;
 
-  if(d.type === 'case-complete'){
+  if(d.type === 'case-complete' && d.caseNum){
+    const num = d.caseNum;
     caseStatus[num] = 'completed';
     sessionLogs[num] = d.log || {};
     renderLanding();
   }
-  if(d.type === 'case-progress'){
+  if(d.type === 'case-progress' && d.caseNum){
+    const num = d.caseNum;
     if(caseStatus[num] !== 'completed') caseStatus[num] = 'in-progress';
     if(!sessionLogs[num]) sessionLogs[num] = {};
     Object.assign(sessionLogs[num], d.log || {});
