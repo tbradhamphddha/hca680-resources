@@ -46,10 +46,7 @@
   .not-a-safety-event{display:inline-block;background:var(--black);color:var(--white);font-family:'Spectral',Georgia,serif;font-size:1.4rem;font-weight:700;padding:14px 28px;border-radius:6px;margin:14px 0;}
   .restart-btn{background:transparent;border:2px solid var(--dark-web-grey);color:var(--dark-web-grey);font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;}
   .restart-btn:hover{background:var(--dark-web-grey);color:var(--white);}
-  .reflection-input{width:100%;min-height:120px;border:2px solid var(--light-grey);border-radius:5px;padding:12px;font-family:inherit;font-size:.97rem;resize:vertical;margin-top:10px;}
-  .reflection-input:focus{outline:none;border-color:var(--slate-blue);}
-  .submit-reflection{background:var(--slate-blue);color:var(--white);border:none;font-family:inherit;font-weight:700;padding:10px 24px;border-radius:5px;cursor:pointer;margin-top:12px;}
-  .submit-reflection:hover{background:#3e7a99;}
+
 
 /* ── Resource Page Header ── */
 .resource-header{background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%);color:#ffffff;padding:.8rem 1.5rem;display:flex;align-items:center;gap:1rem;position:relative;}
@@ -340,26 +337,54 @@ function handleCsa(btn,opt){
   nb.onclick=()=>{ step='reflection'; render(); };
 }
 
-// ── DISCUSSION POINT 5: REFLECTION ──
+// ── DISCUSSION POINT 5: ORGANIZATIONAL OBLIGATIONS ──
 function renderReflectionStep(){
-  app.innerHTML=`${pb(5,5,"Discussion Point 5: Organizational Obligations")}<div class="card"><span class="step-label">Step 5 of 5</span><h3 class="case-title">What Does Your Organization Owe This Family?</h3>${vign()}<div class="feedback show neutral" style="margin-bottom:18px;"><span style="font-weight:700;">This event is not a classifiable safety event.</span> The Known Complication Test was clear. The care was appropriate, the complication was unpredictable, the team responded correctly, and the outcome is consistent with the known mortality rate for amniotic fluid embolism even with optimal treatment. There is no SEC classification to assign. There is no sentinel event designation. There is no CSA requirement.<br><br>And yet: a 32-year-old woman came to your hospital to have a baby and did not go home.</div><div class="question">Reflection: What does your organization owe this family, even though this event is not a classifiable safety event?</div><p style="font-size:.92rem;color:var(--dark-web-grey);margin:6px 0 14px;">Consider communication with the family, support for the care team, disclosure obligations, and what it means to bear witness to tragedy with integrity. There is no single correct answer. This reflection is about how you, as a future healthcare administrator, think about organizational responsibility in the face of unavoidable harm.</p><textarea class="reflection-input" id="reflection-text" placeholder="Write your reflection here..."></textarea><button class="submit-reflection" id="submit-btn">Submit Reflection</button><div class="feedback" id="feedback" style="margin-top:16px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  app.innerHTML=`${pb(5,5,"Discussion Point 5: Organizational Obligations")}<div class="card"><span class="step-label">Step 5 of 5</span><h3 class="case-title">What Does Your Organization Owe This Family?</h3>${vign()}<div class="reference-box"><strong>A note on this step:</strong> This event is not a classifiable safety event. The Known Complication Test was clear, the care was appropriate, and the outcome is consistent with the known mortality rate for amniotic fluid embolism. There is no SEC classification, no sentinel event designation, and no CSA requirement. And yet: a 32-year-old woman came to your hospital to have a baby and did not go home.</div><div class="question">What does your organization owe this family, even though this is not a classifiable safety event?</div><div class="options" id="opts"></div><div class="feedback" id="feedback"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
+  [
+    {key:'comm', label:'Transparent communication explaining what happened, how the team responded, and that everything available was done, even though no error occurred', type:'partial'},
+    {key:'apology', label:'A formal apology and disclosure, because a patient died regardless of the cause', type:'redirect'},
+    {key:'none', label:'No specific organizational obligation beyond standard bereavement support, because this was not a preventable event', type:'redirect'},
+    {key:'full', label:'Activation of the organization\'s disclosure and communication policy, support for the care team, and institutional acknowledgment of the loss', type:'correct'}
+  ].forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.textContent=opt.label;
+    btn.onclick=()=>handleReflection(btn,opt);
+    document.getElementById('opts').appendChild(btn);
+  });
+}
 
-  document.getElementById('submit-btn').onclick=()=>{
-    const text=document.getElementById('reflection-text').value.trim();
-    const fb=document.getElementById('feedback');
-    fb.classList.add('show','neutral');
-    if(text.length<20){
-      fb.innerHTML=`Take a moment with this question before moving on. There is no formula for the right answer, but how you think about it matters.`;
-    } else {
-      _pendingSelected = text.substring(0,120)+(text.length>120?'...':'');
-      fb.innerHTML=`<span style="font-weight:700;">Your reflection has been recorded.</span> There are several dimensions many healthcare leaders identify when thinking through this question.<br><br><strong>Transparent, compassionate communication:</strong> The family deserves to know what happened, how the team responded, and that everything available was done. Even when there is no error to disclose, there is an obligation to explain, to sit with the family, and not to let them wonder in silence about whether something went wrong.<br><br><strong>Support for the care team:</strong> The nurses, physicians, and staff who worked to save this mother will carry this experience. They did everything correctly and still watched a young woman die. The organization owes them acknowledgment, support, and space to process what happened without carrying it alone.<br><br><strong>Institutional acknowledgment:</strong> A death that is not a safety event is still a death. Organizations that treat "not preventable" as the end of their responsibility miss the human dimension of care. A letter to the family, a team debriefing, and a transparent conversation about what happened are expressions of the organization's commitment to the people it serves.<br><br><strong>Connection to disclosure policy:</strong> Your organization's disclosure policy addresses how to communicate with families after unexpected outcomes, including those not classified as safety events. Knowing that policy and being able to activate it with compassion is part of your leadership responsibility.`;
-      _logResponse('Discussion Point 5: Organizational Reflection', fb.innerHTML);
-      document.getElementById('submit-btn').disabled=true;
-      const nb=document.getElementById('nb');
-      nb.classList.add('show');
-      nb.onclick=()=>{ step='summary'; render(); };
-    }
-  };
+function handleReflection(btn,opt){
+  document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
+  _captureSelected(btn);
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  const nb=document.getElementById('nb');
+
+  if(opt.type==='correct'){
+    btn.classList.add('selected-correct'); fb.classList.add('correct');
+    fb.innerHTML=`<span style="font-weight:700;">That is the most complete answer, and it reflects how experienced healthcare leaders think about organizational responsibility after unavoidable harm.</span><br><br><strong>Disclosure and communication policy:</strong> Your organization's disclosure policy applies to unexpected outcomes, including those that are not safety events. The family deserves a transparent conversation: what happened, how the team responded, and what was done to try to save her. Not an apology implying fault, but an honest, compassionate explanation from senior leadership.<br><br><strong>Care team support:</strong> The nurses, physicians, and staff who worked to save this mother did everything correctly and still watched a young woman die. They will carry that experience. The organization owes them acknowledgment, a structured debrief, and access to support without any implication that they failed. Second victim support is not only for events where errors occurred.<br><br><strong>Institutional acknowledgment:</strong> A death that is not a safety event is still a death. Organizations that treat "not preventable" as the end of their responsibility miss the human dimension of care. A team debriefing, a letter to the family, and a transparent conversation about the event are expressions of the institution's commitment to the people it serves.`;
+    _logResponse('Discussion Point 5: Organizational Obligations', fb.innerHTML);
+    nb.classList.add('show');
+    nb.onclick=()=>{ step='summary'; render(); };
+  } else if(opt.type==='partial'){
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">Family communication is an essential dimension, and you have identified an important part of the answer.</span> Transparent communication with the family is absolutely required. However, this answer addresses only one of three dimensions of organizational responsibility after an unexpected death. Have you thought about what the organization owes the care team who responded to this event, and what institutional acknowledgment looks like beyond the family conversation?`;
+    _logResponse('Discussion Point 5: Organizational Obligations', fb.innerHTML);
+    nb.classList.add('show'); nb.textContent='Try Again';
+    nb.onclick=()=>{ fb.className='feedback'; fb.innerHTML=''; nb.classList.remove('show'); nb.textContent='See Final Summary'; document.querySelectorAll('#opts .opt-btn').forEach(b=>{ b.disabled=false; b.className='opt-btn'; }); };
+  } else if(opt.key==='apology'){
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The instinct to respond to the family with care and honesty is exactly right, but a formal apology implies fault where the evidence shows none existed.</span> A formal apology in the clinical and legal context carries an acknowledgment of error. In this case, the care was appropriate, the complication was unpreventable, and the team did everything available. Apologizing for an unavoidable outcome misrepresents what happened to the family and may expose the organization and clinicians to liability for a harm they did not cause. Have you thought about what honest, compassionate communication looks like when there is no error to apologize for?`;
+    _logResponse('Discussion Point 5: Organizational Obligations', fb.innerHTML);
+    nb.classList.add('show'); nb.textContent='Try Again';
+    nb.onclick=()=>{ fb.className='feedback'; fb.innerHTML=''; nb.classList.remove('show'); nb.textContent='See Final Summary'; document.querySelectorAll('#opts .opt-btn').forEach(b=>{ b.disabled=false; b.className='opt-btn'; }); };
+  } else {
+    btn.classList.add('selected-redirect'); fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">The fact that this outcome was not preventable does not end the organization's obligations to the family or to the team.</span> "Not preventable" is a clinical and analytical determination. It tells you where to focus improvement resources. It does not tell you how to respond as a human institution to a family that lost a mother, or how to support the clinicians who spent their effort trying to save her. Have you thought about what organizational responsibility looks like when the outcome could not have been prevented but still caused profound harm to everyone involved?`;
+    _logResponse('Discussion Point 5: Organizational Obligations', fb.innerHTML);
+    nb.classList.add('show'); nb.textContent='Try Again';
+    nb.onclick=()=>{ fb.className='feedback'; fb.innerHTML=''; nb.classList.remove('show'); nb.textContent='See Final Summary'; document.querySelectorAll('#opts .opt-btn').forEach(b=>{ b.disabled=false; b.className='opt-btn'; }); };
+  }
 }
 
 // ── SUMMARY ──
