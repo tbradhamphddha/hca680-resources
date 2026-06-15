@@ -252,13 +252,13 @@ function handleDev(btn,opt){
   if(opt.type==="main"){
     btn.classList.add('selected-correct');fb.classList.add('correct');
     fb.innerHTML=`<span style="font-weight:700;">That identifies the central deviation in this event.</span> The standard of care for patient identification, in every care setting including outpatient radiology, requires verification using at least two patient identifiers before any procedure. Calling a name from a doorway and proceeding when someone responds is not patient identification: it is name recognition. The technologist did not use a date of birth, a photo ID, or any other second identifier. That single deviation from standard practice is what made the wrong-patient scan possible.<br><br>Now let's look at the broader context this event sits within.`;
-  _logResponse('Unknown Step', fb.innerHTML);
+  _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Explore the System Context";
     nb.onclick=()=>{step="deviation-round2";render();};
   } else if(opt.type==="secondary"){
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Scheduling proximity is worth noting as a contributing system factor.</span> When two patients with similar names share an appointment window, the risk of a name mix-up increases. However, that risk exists precisely to be caught by patient identification procedures. Have you thought about what the standard of care requires at the point of patient contact, regardless of how similar the names are?`;
-  _logResponse('Unknown Step', fb.innerHTML);
+  _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else if(opt.type==="incorrect"){
@@ -267,13 +267,13 @@ function handleDev(btn,opt){
       ?"Similar names are a risk condition, not a GAPS deviation. The deviation is in what the technologist did, not in what the names looked like. Have you thought about what the standard of care requires a clinician to do when name similarity creates ambiguity, rather than treating a name as sufficient identification?"
       :"Outpatient settings do not always use wristbands, but the absence of wristbands does not eliminate the requirement for two-identifier verification. Date of birth, photo ID, and other identifiers are available in outpatient settings. Have you thought about what two-identifier verification looks like when wristbands are not part of the workflow?";
     fb.innerHTML=`<span style="font-weight:700;">Let's look at this from a different angle.</span> ${d}`;
-  _logResponse('Unknown Step', fb.innerHTML);
+  _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>renderDeviationStep();
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
     fb.innerHTML=`<span style="font-weight:700;">Let's explore that conclusion together before we settle on it.</span> One useful tool when we are uncertain whether a GAPS deviation exists is the <strong>Known Complication Test</strong>. If the answer to all four questions is YES, the event is a known complication. If the answer to any one is NO, it is a safety event. Let's work through those questions.`;
-  _logResponse('Unknown Step', fb.innerHTML);
+  _logResponse('Discussion Point 1: Deviation', fb.innerHTML);
     nb.classList.add('show');nb.textContent="Apply the Known Complication Test";
     nb.onclick=()=>{kctIndex=0;step="kct";render();};
   }
