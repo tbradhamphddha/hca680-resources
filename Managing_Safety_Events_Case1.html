@@ -426,22 +426,11 @@
         white-space: normal;
     }
 }
+  .next-case-btn{background:var(--slate-blue);color:var(--white);border:none;font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;margin-left:12px;}
+  .next-case-btn:hover{background:#3e7a99;}
 </style>
 </head>
 <body>
-<header class="resource-header">
-    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
-    <div class="resource-header-text">
-        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
-        <div class="resource-header-title">Case 1: Fall with Hip Fracture</div>
-    </div>
-    <a class="resource-header-back" href="Managing_Safety_Events_Index.html">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Safety Event Management Cases
-    </a>
-</header>
-
-
 <div class="accent-bar"></div>
 
 <div class="wrap">
@@ -1350,7 +1339,7 @@ function renderSummary() {
         <strong>Something worth reflecting on as you close this case.</strong>
         Because no additional information was requested, this event was scored as SSE 4 based on what was documented at the time. In practice, the manager's update, that the patient will not regain knee flexion and will require permanent device assistance, would shift this classification to SSE 2: Severe Permanent Harm. This is a good illustration of why gathering complete information before finalizing a score matters. The same event can land in a different category depending on what the reviewer knows, and that difference has real implications for the response the organization is obligated to provide.
       </div>` : ''}
-      <button class="restart-btn" id="restart-btn">Restart Case 1</button>
+      <button class="restart-btn" id="restart-btn"> <button class="next-case-btn" id="next-case-btn" onclick="window.parent.postMessage({type:'open-case',caseNum:2},'*')">Go to Case 2 &#8594;</button>Restart Case 1</button>
     </div>
   `;
   
