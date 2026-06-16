@@ -158,21 +158,11 @@
         white-space: normal;
     }
 }
+  .next-case-btn{background:var(--slate-blue);color:var(--white);border:none;font-family:inherit;font-weight:700;padding:10px 22px;border-radius:5px;cursor:pointer;margin-top:18px;margin-left:12px;}
+  .next-case-btn:hover{background:#3e7a99;}
 </style>
 </head>
 <body>
-<header class="resource-header">
-    <img class="resource-header-logo" src="eu_logo_primary.jpg" alt="Edgewood University">
-    <div class="resource-header-text">
-        <div class="resource-header-course">HCA 680: Patient Safety and Risk</div>
-        <div class="resource-header-title">Case 14: Central Line Infection</div>
-    </div>
-    <a class="resource-header-back" href="Managing_Safety_Events_Index.html">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Safety Event Management Cases
-    </a>
-</header>
-
 <div class="accent-bar"></div>
 <div class="wrap"><div id="app"></div></div>
 <script>
@@ -533,29 +523,18 @@ function renderSummary(){
   var _snapshotToSend = _currentAttemptSnapshot;
   var _allToSend = _allAttempts.concat([_snapshotToSend]);
 
-  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 14 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>CM11 &mdash; Healthcare Associated Infection (Care Management); Outpatient Dialysis Setting</td></tr><tr><td>GAPS determination method</td><td>Organizational case law: CLABSI meeting NHSN criteria treated as a universally preventable safety event; deviation confirmed through IP specialist investigation</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; "scrub the hub" performed for average of 8 seconds vs. required 15 seconds across all unit staff; gap between actual and required practice not previously identified</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; inadequate disinfection time contributed to CLABSI</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; IP specialist demonstration revealed 8-second average; no nurse demonstrated full 15-second scrub; all staff believed they were compliant":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (two-week oral antibiotics; full resolution; no lasting effects)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Moderate severity, Occasional probability) &mdash; monitor and trend; note that system investigation revealed a unit-wide practice gap requiring intervention beyond the SAC score alone</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">The most important concept from this case: organizational case law.</span> This event would have been unclassifiable under a strict documentation-based approach: no specific deviation was identified, no individual could be named. By treating CLABSIs meeting NHSN criteria as universally preventable safety events and triggering an investigation, the organization surfaced a unit-wide practice gap that had likely persisted for an extended period. That gap, 8 seconds instead of 15, is now correctable. Without the classification decision and the investigation it prompted, it would have remained invisible. This is organizational case law in practice: a deliberate decision to treat a category of event as a safety event because the evidence base shows it is preventable, even when individual causation cannot be proven.</div><button class="restart-btn" id="rb">Restart Case 14</button></div>`;
+  app.innerHTML=`${pb(5,5,"Final Summary")}<div class="card" style="text-align:center;"><span class="step-label">Case 14 Complete</span><h3 class="case-title">Final SEC Classification</h3><div class="score-badge">PSE 2</div><p>Minor Temporary Harm</p><table class="summary-table" style="text-align:left;"><tr><th>Discussion Point</th><th>Conclusion</th></tr><tr><td>Taxonomy Event Type</td><td>CM11 &mdash; Healthcare Associated Infection (Care Management); Outpatient Dialysis Setting</td></tr><tr><td>GAPS determination method</td><td>Organizational case law: CLABSI meeting NHSN criteria treated as a universally preventable safety event; deviation confirmed through IP specialist investigation</td></tr><tr><td>Deviation from GAPS?</td><td>Yes &mdash; "scrub the hub" performed for average of 8 seconds vs. required 15 seconds across all unit staff; gap between actual and required practice not previously identified</td></tr><tr><td>Did the deviation reach the patient?</td><td>Yes &mdash; inadequate disinfection time contributed to CLABSI</td></tr><tr><td>Additional information requested?</td><td>${requestedInfo?"Yes &mdash; IP specialist demonstration revealed 8-second average; no nurse demonstrated full 15-second scrub; all staff believed they were compliant":"No"}</td></tr><tr><td>Level of harm</td><td>PSE 2 &mdash; Minor Temporary Harm (two-week oral antibiotics; full resolution; no lasting effects)</td></tr><tr><td>SEC Classification</td><td>Precursor Safety Event</td></tr><tr><td>Sentinel event per JC?</td><td>No &mdash; minor temporary harm; does not meet sentinel event threshold</td></tr><tr><td>SAC Matrix score</td><td>1 (Moderate severity, Occasional probability) &mdash; monitor and trend; note that system investigation revealed a unit-wide practice gap requiring intervention beyond the SAC score alone</td></tr></table><div class="feedback show neutral" style="text-align:left;margin-top:20px;"><span style="font-weight:700;">The most important concept from this case: organizational case law.</span> This event would have been unclassifiable under a strict documentation-based approach: no specific deviation was identified, no individual could be named. By treating CLABSIs meeting NHSN criteria as universally preventable safety events and triggering an investigation, the organization surfaced a unit-wide practice gap that had likely persisted for an extended period. That gap, 8 seconds instead of 15, is now correctable. Without the classification decision and the investigation it prompted, it would have remained invisible. This is organizational case law in practice: a deliberate decision to treat a category of event as a safety event because the evidence base shows it is preventable, even when individual causation cannot be proven.</div><button class="restart-btn" id="rb"> <button class="next-case-btn" id="next-case-btn" onclick="window.parent.postMessage({type:'open-case',caseNum:15},'*')">Go to Case 15 &#8594;</button>Restart Case 14</button></div>`;
   
   // Send completion data to parent shell
+  // Send completion data to parent shell using pre-captured snapshot
+  var _snapshotToSend = _currentAttemptSnapshot;
+  var _allToSend = _allAttempts.concat([_snapshotToSend]);
   setTimeout(function(){
-    var endTime = new Date();
-    var elapsed = Math.round((endTime - _caseStartTime) / 1000);
-    var mins = Math.floor(elapsed / 60);
-    var secs = elapsed % 60;
-    var timeStr = mins + ' min ' + secs + ' sec';
     window.parent.postMessage({
       type: 'case-complete',
       caseNum: 14,
-      log: {
-        finalClassification: 'PSE 2 — Minor Temporary Harm',
-        taxonomyEventType: 'CM11 — Healthcare Associated Infection (Care Management)',
-        managerUpdateRequested: (typeof requestedInfo !== 'undefined' && requestedInfo) ? 'Yes' : 'No',
-        sentinelEvent: (typeof sentinelAnswer !== 'undefined' && sentinelAnswer === 'yes') ? 'Yes' : sentinelAnswer === 'no' ? 'No' : 'Not applicable',
-        sacSeverity: (typeof sacSeverity !== 'undefined' && sacSeverity) ? sacSeverity : 'Not applicable',
-        sacProbability: (typeof sacProbability !== 'undefined' && sacProbability) ? sacProbability : 'Not applicable',
-        startTime: _caseStartTime.toLocaleString(),
-        endTime: endTime.toLocaleString(),
-        timeOnTask: timeStr
-      }
+      log: _snapshotToSend,
+      attempts: _allToSend
     }, '*');
   }, 100);
   document.getElementById('rb').onclick=()=>{requestedInfo=null;kctIndex=0;sentinelAnswer=null;sacSeverity=null;sacProbability=null;
