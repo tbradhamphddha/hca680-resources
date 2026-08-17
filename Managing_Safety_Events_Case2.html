@@ -956,9 +956,9 @@ function renderCsaSentinelStep() {
       <h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>
       ${renderVignette()}
       <div class="reference-box">
-        <strong>Why this matters:</strong> The Joint Commission's Sentinel Event Policy (effective July 1, 2026) defines specific event types that require a comprehensive systematic analysis (CSA). Knowing whether an event meets sentinel event criteria determines what your organization is obligated to do next, independent of any other prioritization tool.
+        <strong>Updated SRE Framework (2025 NQF / JC 2027 Transition):</strong> Joint Commission is aligning its Sentinel Events List with the 2025 NQF Serious Reportable Events (SRE) List, effective no later than January 1, 2027. The updated list includes 28 SREs across four categories. Relevant to this event: <strong>SRE 28: Patient harm associated with unrecognized clinical deterioration</strong> &mdash; a new event for Joint Commission not previously listed as a standalone sentinel event. The broader sentinel event definition continues to apply: a patient safety event that reaches a patient and results in death, severe harm, or permanent harm.
       </div>
-      <div class="question">Based on what you know about this event, do you believe it meets The Joint Commission's definition of a sentinel event?</div>
+      <div class="question">Does this event meet the definition of a sentinel event, and which SRE applies?</div>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback"></div>
       <div class="nav-row"><button class="nav-btn" id="next-btn">Continue to Priority Matrix</button></div>
@@ -966,7 +966,8 @@ function renderCsaSentinelStep() {
   `;
   const optionsDiv = document.getElementById('options');
   [
-    { val: 'yes', label: 'Yes, this is a sentinel event' },
+    { val: 'yes_sre28', label: 'Yes, this is a sentinel event under SRE 28: Patient harm associated with unrecognized clinical deterioration' },
+    { val: 'yes_other', label: 'Yes, this is a sentinel event, but under a different SRE' },
     { val: 'no', label: 'No, this is not a sentinel event' },
     { val: 'unsure', label: 'Unsure, I need to think through it' }
   ].forEach(opt => {
@@ -978,6 +979,7 @@ function renderCsaSentinelStep() {
   });
 }
 
+
 function handleSentinelAnswer(btn, val, optionsDiv) {
   const allBtns = optionsDiv.querySelectorAll('button');
   allBtns.forEach(b => b.disabled = true);
@@ -987,48 +989,32 @@ function handleSentinelAnswer(btn, val, optionsDiv) {
   feedbackDiv.classList.add('show');
   const nextBtn = document.getElementById('next-btn');
 
-  if (val === 'yes') {
+  if (val === 'yes_sre28') {
     btn.classList.add('selected-correct');
     feedbackDiv.classList.add('correct');
-    feedbackDiv.innerHTML = `
-      <span style="font-weight:700;">That is the right determination.</span> The Joint Commission's Sentinel Event Policy defines a sentinel event as a patient safety event that reaches a patient and results in death, severe harm regardless of duration, or permanent harm regardless of severity. Death is the clearest possible sentinel event criterion. For Joint Commission-accredited organizations, a CSA is required when a sentinel event occurs. Let's now use the SAC Matrix to think through how to prioritize and allocate resources for that analysis.
-    `;
-  _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
+    feedbackDiv.innerHTML = `<span style="font-weight:700;">That is the right determination, and the right SRE.</span> This event meets the sentinel event definition: a patient safety event not primarily related to the natural course of illness that reached a patient and resulted in death. The STEMI was identified, but the failure to escalate treatment in a timely manner is the deviation from GAPS that caused the death. This is precisely what SRE 28 captures: patient harm associated with unrecognized clinical deterioration.<br><br>SRE 28 is new for Joint Commission, effective no later than January 1, 2027. Under the current (2025/2026) JC Sentinel Event Policy, this event meets the broader sentinel event definition based on the death outcome. The 2027 transition gives it an explicit named SRE category for the first time. For JC-accredited organizations, a CSA is required.`;
+    _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
     nextBtn.classList.add('show');
     nextBtn.onclick = () => renderCsaMatrixStep();
+
+  } else if (val === 'yes_other') {
+    btn.classList.add('selected-redirect');
+    feedbackDiv.classList.add('neutral');
+    feedbackDiv.innerHTML = `<span style="font-weight:700;">This is a sentinel event, and you are right that it is one &mdash; but let's identify the most specific SRE that applies.</span> The 2025 NQF SRE List includes 28 named events across four categories. The deviation in this case was a failure to recognize and act on a patient's deteriorating condition in a timely manner. SRE 28 (Patient harm associated with unrecognized clinical deterioration) was added specifically for situations like this one. Have you thought about which of the four options captures the mechanism of harm most precisely?`;
+    _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
+    nextBtn.classList.add('show'); nextBtn.textContent = 'Try Again';
+    nextBtn.onclick = () => { feedbackDiv.className='feedback'; feedbackDiv.innerHTML=''; nextBtn.classList.remove('show'); nextBtn.textContent='Continue to Priority Matrix'; allBtns.forEach(b=>{b.disabled=false;b.classList.remove('selected-correct','selected-redirect');}); };
 
   } else {
     btn.classList.add('selected-redirect');
     feedbackDiv.classList.add('neutral');
-    const criteriaBlock = `
-      <div class="info-box" style="margin-top:12px;">
-        <strong>JC Sentinel Event Policy (July 2026): Key Definition</strong>
-        A sentinel event is a patient safety event (not primarily related to the natural course of a patient's illness or underlying condition) that reaches a patient and results in any of the following:
-        <ul style="margin:8px 0 0 18px; padding:0;">
-          <li>Death</li>
-          <li>Severe harm, regardless of duration</li>
-          <li>Permanent harm, regardless of severity</li>
-        </ul>
-      </div>
-    `;
-    feedbackDiv.innerHTML = `
-      <span style="font-weight:700;">Let's work through this together.</span> The JC Sentinel Event Policy uses a straightforward definition. Have a look at it below, then consider what happened to this patient.
-      ${criteriaBlock}
-      This patient was admitted to the ICU, received a confirmed STEMI diagnosis, did not receive timely treatment due to a failure to escalate, and expired. Looking at those criteria, where does this event land? Select again once you have considered it.
-    `;
-  _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
-    nextBtn.classList.add('show');
-    nextBtn.textContent = "Reconsider My Answer";
-    nextBtn.onclick = () => {
-      feedbackDiv.classList.remove('show', 'neutral', 'correct', 'redirect');
-      feedbackDiv.innerHTML = '';
-      nextBtn.classList.remove('show');
-      nextBtn.textContent = "Continue to Priority Matrix";
-      allBtns.forEach(b => { b.disabled = false; b.classList.remove('selected-correct', 'selected-redirect'); });
-  _captureSelected(btn);
-    };
+    feedbackDiv.innerHTML = `<span style="font-weight:700;">Let's work through the sentinel event criteria together.</span> A sentinel event is a patient safety event, not primarily related to the natural course of a patient's illness or underlying condition, that reaches a patient and results in death, severe harm, or permanent harm. This patient had a confirmed STEMI, received a delayed treatment response due to a failure to escalate, and died. The underlying STEMI created the vulnerability, but the deviation &mdash; the failure to act on the escalating clinical picture &mdash; is the patient safety event. Under the 2025 NQF SRE List, this falls under SRE 28 (Patient harm associated with unrecognized clinical deterioration), which is new for JC effective 2027. Have you thought about how those criteria apply here?`;
+    _logResponse('Discussion Point 4: Sentinel Event', feedbackDiv.innerHTML);
+    nextBtn.classList.add('show'); nextBtn.textContent = 'Reconsider My Answer';
+    nextBtn.onclick = () => { feedbackDiv.className='feedback'; feedbackDiv.innerHTML=''; nextBtn.classList.remove('show'); nextBtn.textContent='Continue to Priority Matrix'; allBtns.forEach(b=>{b.disabled=false;b.classList.remove('selected-correct','selected-redirect');}); };
   }
 }
+
 
 function renderCsaMatrixStep() {
   const sentinelNote = sentinelAnswer === 'yes'
