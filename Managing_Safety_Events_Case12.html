@@ -448,13 +448,14 @@ function handleHarmLevel(btn,opt){
 }
 
 function renderCsaSentinelStep(){
-  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
-  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event / SRE Determination</span><h3 class="case-title">Does This Event Qualify as a Serious Reportable Event?</h3>${vign()}<div class="reference-box"><strong>Relevant SRE to examine:</strong> <strong>SRE 1: Surgery or other invasive procedure performed at the wrong site, on the wrong patient, or that is the wrong procedure, regardless of the type of procedure or the outcome.</strong><br><br>The question in this case is whether an unnecessary chest tube constitutes a "wrong procedure" under SRE 1. The distinction between an unnecessary procedure and a wrong procedure is central to applying this SRE correctly.</div><div class="question">Does the insertion of an unnecessary chest tube qualify as a Serious Reportable Event under SRE 1?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, an unnecessary chest tube is a wrong procedure under SRE 1, regardless of outcome'},{val:'no',label:'No, an unnecessary procedure is not the same as a wrong procedure under SRE 1'},{val:'unsure',label:'It depends on how the wrong procedure definition is interpreted'}].forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
     btn.onclick=()=>handleSentinel(btn,opt.val);
     document.getElementById('opts').appendChild(btn);
   });
 }
+
 
 function handleSentinel(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
@@ -462,25 +463,26 @@ function handleSentinel(btn,val){
   sentinelAnswer=val;
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
-  const isSentinel=requestedInfo;
-  if(val==='yes'&&isSentinel){
+  if(val==='no'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">That is the right determination given what the manager update revealed.</span> With the scar confirmed as a permanent physical change, this event now involves permanent harm. The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. A permanent scar from an unnecessary invasive procedure meets the permanent harm criterion. A CSA is required.`;
-  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination, and the distinction is important for how organizations apply SRE 1 in practice.</span><br><br><strong>Wrong procedure vs. unnecessary procedure:</strong> SRE 1 is designed for situations where the intended procedure was correct for the patient's condition, but the wrong procedure was performed instead: a knee replacement done on the wrong knee, a biopsy of the wrong organ, a procedure intended for one clinical indication performed when a different procedure was indicated. The key element is substitution: the right procedure existed and was not done.<br><br>An unnecessary procedure is a different category of error. The chest tube was inserted based on a misread imaging result. The correct clinical response given the accurate imaging finding would have been no procedure at all. The error was diagnostic, not procedural substitution. SRE 1's "wrong procedure" language does not extend to situations where the procedure performed was unnecessary based on a diagnostic error.<br><br>This event is still a serious patient safety event. The chest tube insertion caused real harm and the diagnostic error that caused it warrants a full systematic review. The harm classification, the SAC score, and the CSA requirement all stand. But the event does not qualify as a named SRE under SRE 1.`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
-  } else if(val==='no'&&!isSentinel){
-    btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">That is the right determination based on the information available without the manager update.</span> Without knowing about the scar, the harm appears temporary: an unnecessary procedure from which the patient recovered. The harm does not meet the sentinel event threshold based on what the vignette alone tells us. However, note that if you had requested the manager update, the scar would shift this to a sentinel event. Let's use the SAC Matrix to think through the appropriate response.`;
-  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
-    nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else if(val==='yes'){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">SRE 1 is the right place to look, and the event caused real harm that justifies the question. Let's look at what the wrong procedure designation is actually designed to capture.</span> SRE 1 targets situations where the correct procedure for the patient's condition existed but was not performed &mdash; where a different procedure was substituted for the intended one. In this case, the correct clinical response given accurate imaging would have been no procedure at all. The error was a misread X-ray that led to an unnecessary intervention. That is a diagnostic error that caused procedural harm, not a procedural substitution. Have you thought about whether "unnecessary" and "wrong" describe the same type of error?`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC definition in the context of what you know.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>${isSentinel?"The manager update confirmed a permanent scar from the unnecessary procedure. Permanent harm, even minor permanent harm, meets the sentinel event criterion.":"Based on the vignette alone, the patient recovered fully and was discharged. Have you thought about whether the harm documented in the vignette meets the sentinel event threshold?"}`;
-  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
-    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    fb.innerHTML=`<span style="font-weight:700;">The interpretation question is the right instinct &mdash; here is how the framework resolves it.</span> The 2025 NQF Clinical Application Guidance for SRE 1 focuses on procedural substitution: performing a different procedure than the one clinically indicated for the patient. The wrong procedure framework assumes there was a right procedure and a different one was done instead. An unnecessary procedure error is one where the diagnostic error eliminated the clinical indication for any procedure at all. These are meaningfully different error types. The distinction matters for how you investigate, what systemic causes you look for, and which corrective actions you design.`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
+    nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
 }
+
 
 function renderCsaMatrixStep(){
   const sentNote=requestedInfo
