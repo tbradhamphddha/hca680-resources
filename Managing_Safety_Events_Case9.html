@@ -393,32 +393,41 @@ function handleHarmLevel(btn,opt){
 }
 
 function renderCsaSentinelStep(){
-  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event Determination</span><h3 class="case-title">Is This a Sentinel Event per The Joint Commission?</h3>${vign()}<div class="question">Do you believe this event meets The Joint Commission's definition of a sentinel event?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
-  [{val:'yes',label:'Yes, this is a sentinel event'},{val:'no',label:'No, this is not a sentinel event'},{val:'unsure',label:'Unsure, I need to think through it'}].forEach(opt=>{
+  app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; Sentinel Event / SRE Determination</span><h3 class="case-title">Does This Event Qualify as a Serious Reportable Event?</h3>${vign()}<div class="reference-box"><strong>Relevant SRE:</strong> <strong>SRE 18: Patient harm associated with an unintended burn from any source.</strong> SRE 18 applies across all care settings including home health, and covers burns from any source including heating devices. The 2025 NQF inclusion criteria require the event to be both <em>serious</em> and <em>largely preventable</em>. Both criteria must be met for the event to qualify as an SRE.</div><div class="question">Does this event qualify as a Serious Reportable Event under SRE 18?</div><div class="options" id="opts"></div><div class="feedback" id="fb"></div><div class="nav-row"><button class="nav-btn" id="nb">Continue to Priority Matrix</button></div></div>`;
+  [{val:'yes',label:'Yes, this qualifies as an SRE under SRE 18: Patient harm associated with an unintended burn'},{val:'no',label:'No, this event does not qualify as a named SRE under SRE 18'},{val:'unsure',label:'It depends on how the harm threshold is interpreted'}].forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt-btn';btn.textContent=opt.label;
     btn.onclick=()=>handleSentinel(btn,opt.val);
     document.getElementById('opts').appendChild(btn);
   });
 }
 
+
 function handleSentinel(btn,val){
   document.querySelectorAll('#opts .opt-btn').forEach(b=>b.disabled=true);
   _captureSelected(btn);
+  sentinelAnswer=val;
   const fb=document.getElementById('fb');fb.classList.add('show');
   const nb=document.getElementById('nb');
   if(val==='no'){
     btn.classList.add('selected-correct');fb.classList.add('correct');
-    fb.innerHTML=`<span style="font-weight:700;">That is the right determination.</span> The JC Sentinel Event Policy defines sentinel events as resulting in death, severe harm, or permanent harm. This patient sustained a minor temporary burn that healed fully without scarring. The harm does not meet the sentinel event threshold. Let's use the SAC Matrix to think through the appropriate level of response.`;
-  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
+    fb.innerHTML=`<span style="font-weight:700;">That is the right determination, and the reasoning matters as much as the answer.</span><br><br>SRE 18 covers patient harm associated with an unintended burn from any source. The burn in this event is real and documented. The event is preventable: proper heat pack application instruction and wound care assessment would likely have prevented it. However, the 2025 NQF SRE inclusion criteria require that the harm be <em>serious</em>. Seriousness is defined as resulting in death, severe harm, or permanent harm, or requiring significant intervention to resolve.<br><br>This patient experienced a superficial burn characterized as minor temporary harm. The wound required wound care follow-up, which is a manageable intervention. It does not meet the serious threshold as defined. The burn is a real patient safety event, it is a PSE 2 under the SEC classification, and it warrants a structured review. But it does not qualify as an SRE under SRE 18 because the harm level does not cross the serious threshold.<br><br>This is an important distinction: not every preventable harm is an SRE. The SRE designation is reserved for events that are both serious and largely preventable.`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
     nb.classList.add('show');nb.onclick=()=>renderCsaMatrixStep();
+  } else if(val==='yes'){
+    btn.classList.add('selected-redirect');fb.classList.add('neutral');
+    fb.innerHTML=`<span style="font-weight:700;">SRE 18 is the right SRE to examine here, and the event is clearly preventable. Let's look more carefully at the other required criterion.</span> The 2025 NQF SRE inclusion criteria require that a qualifying event be both largely preventable AND serious. Seriousness requires that the harm result in death, severe harm, or permanent harm, or require significant intervention to resolve. The burn in this case was documented as a minor temporary burn. The patient required wound care follow-up. Have you thought about whether that level of harm crosses the serious threshold as defined?`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
+    nb.classList.add('show');nb.textContent="Try Again";
+    nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   } else {
     btn.classList.add('selected-redirect');fb.classList.add('neutral');
-    fb.innerHTML=`<span style="font-weight:700;">Let's look at the JC criteria.</span><div class="info-box"><strong>JC Sentinel Event Policy (July 2026)</strong>A sentinel event results in death, severe harm regardless of duration, or permanent harm regardless of severity.</div>This patient sustained a minor second-degree burn that healed completely without scarring or lasting effects. Have you thought about whether that level of harm meets the death, severe, or permanent threshold?`;
-  _logResponse('Discussion Point 4: Sentinel Event', fb.innerHTML);
-    nb.classList.add('show');nb.textContent="Reconsider My Answer";
+    fb.innerHTML=`<span style="font-weight:700;">The interpretation question is exactly the right one to ask, and here is how the framework resolves it.</span> The 2025 NQF SRE List defines seriousness as: death, severe harm, or permanent harm, or harm requiring significant intervention to resolve. The burn in this event was a superficial burn requiring wound care follow-up in home health. Wound care is a routine nursing intervention, not a significant procedural intervention. The harm does not meet the serious threshold. The event is a patient safety event, classified as PSE 2, and warrants systematic review &mdash; but it does not qualify as an SRE.`;
+    _logResponse('Discussion Point 4: SRE Determination', fb.innerHTML);
+    nb.classList.add('show');nb.textContent="Try Again";
     nb.onclick=()=>{fb.className='feedback';fb.innerHTML='';nb.classList.remove('show');nb.textContent="Continue to Priority Matrix";document.querySelectorAll('#opts .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});};
   }
 }
+
 
 function renderCsaMatrixStep(){
   app.innerHTML=`${pb(4,5,"Discussion Point 4: Should a CSA Be Completed?")}<div class="card"><span class="step-label">Step 4 of 5 &middot; SAC Priority Matrix</span><h3 class="case-title">Using the SAC Matrix to Guide Resource Allocation</h3><div class="feedback show neutral" style="margin-bottom:16px;"><span style="font-weight:700;">This event is not a sentinel event.</span> The SAC Matrix will help determine the appropriate level of response.</div><div class="reference-box"><strong>SAC Matrix (RCA2, Appendix A)</strong><br><strong>Severity:</strong><ul><li><strong>Catastrophic:</strong> Death, major permanent loss of function, or any JC sentinel event</li><li><strong>Major:</strong> Permanent lessening of function; significant intervention required</li><li><strong>Moderate:</strong> Increased LOS or level of care for 1 to 2 patients</li><li><strong>Minor:</strong> No injury, no increased stay or care</li></ul><strong>Probability:</strong><ul><li><strong>Frequent:</strong> Several times per year</li><li><strong>Occasional:</strong> Several times in 1 to 2 years</li><li><strong>Uncommon:</strong> Sometime in 2 to 5 years</li><li><strong>Remote:</strong> Sometime in 5 to 30 years</li></ul><em>Scenario context: Burns associated with heat therapy in your home health program occur occasionally.</em></div><div class="question">How would you classify the <strong>severity</strong>?</div><div class="options" id="sev-opts"></div><div class="feedback" id="sev-fb"></div><div id="prob-section" style="display:none;margin-top:22px;"><div class="question">How would you classify the <strong>probability</strong>?</div><div class="options" id="prob-opts"></div><div class="feedback" id="prob-fb"></div></div><div id="matrix-result" style="display:none;margin-top:22px;"></div><div class="nav-row"><button class="nav-btn" id="nb">See Final Summary</button></div></div>`;
